@@ -1,0 +1,14 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#4A90D9",
+    "navigationBarTitleText": "每日天气提醒",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F0F6FF"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

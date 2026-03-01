@@ -1,0 +1,74 @@
+<!--
+  index.wxml - 首页
+  功能：展示当前天气 + 订阅/取消订阅天气提醒
+-->
+<view class="container">
+  
+  <!-- 城市输入区域 -->
+  <view class="city-section">
+    <text class="section-label">📍 查询城市</text>
+    <view class="city-input-row">
+      <input
+        class="city-input"
+        value="{{city}}"
+        placeholder="输入城市名，如：杭州"
+        bindinput="onCityInput"
+        confirm-type="search"
+        bindconfirm="onSearchWeather"
+      />
+      <button class="search-btn" bindtap="onSearchWeather" size="mini">查询</button>
+    </view>
+  </view>
+
+  <!-- 天气卡片 -->
+  <view class="weather-card" wx:if="{{weather}}">
+    <view class="weather-city">{{ weather.city }}</view>
+    <view class="weather-temp">{{ weather.temp }}°</view>
+    <view class="weather-desc">{{ weather.weather }}</view>
+    <view class="weather-range">{{ weather.min_temp }}° ~ {{ weather.max_temp }}°</view>
+    <view class="weather-detail">
+      <text>💧 湿度 {{ weather.humidity }}%</text>
+      <text>🌬️ {{ weather.wind_dir }} {{ weather.wind_scale }}级</text>
+    </view>
+    <view class="weather-update">更新于 {{ weather.update_time }}</view>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading-box" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <!-- 无数据提示 -->
+  <view class="empty-box" wx:if="{{!weather && !loading}}">
+    <text>请输入城市名查询天气 ☁️</text>
+  </view>
+
+  <!-- 分割线 -->
+  <view class="divider"></view>
+
+  <!-- 订阅区域 -->
+  <view class="subscribe-section">
+    <text class="section-label">🔔 每日天气提醒</text>
+    <text class="subscribe-desc">每天早上 8 点，准时推送您所在城市的天气预报</text>
+
+    <!-- 已订阅状态 -->
+    <view wx:if="{{isSubscribed}}" class="subscribed-box">
+      <text class="subscribed-tag">✓ 已订阅 · {{ subscribedCity }}</text>
+      <button class="unsubscribe-btn" bindtap="onUnsubscribe" loading="{{unsubLoading}}">取消订阅</button>
+    </view>
+
+    <!-- 未订阅状态 -->
+    <view wx:else>
+      <button
+        class="subscribe-btn"
+        bindtap="onSubscribe"
+        loading="{{subLoading}}"
+        disabled="{{!openid}}"
+      >
+        订阅每日天气提醒
+      </button>
+      <text class="subscribe-hint" wx:if="{{!openid}}">正在获取登录信息，请稍候...</text>
+    </view>
+  </view>
+
+</view>
