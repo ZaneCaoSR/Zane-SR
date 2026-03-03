@@ -124,6 +124,13 @@ Page({
     });
   },
 
+  // 跳转天气
+  onWeatherTap() {
+    wx.navigateTo({
+      url: '/pages/weather-detail/weather-detail'
+    });
+  },
+
   // 跳转设置
   onSettingsTap() {
     wx.navigateTo({

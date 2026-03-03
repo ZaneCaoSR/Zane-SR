@@ -3,8 +3,13 @@
   <!-- 顶部导航 -->
   <view class="header">
     <view class="title">{{babyName}}的成长相册</view>
-    <view class="settings-btn" bindtap="onSettingsTap">
-      <text class="iconfont icon-settings">⚙️</text>
+    <view class="header-btns">
+      <view class="weather-btn" bindtap="onWeatherTap">
+        <text>🌤️</text>
+      </view>
+      <view class="settings-btn" bindtap="onSettingsTap">
+        <text>⚙️</text>
+      </view>
     </view>
   </view>
 
