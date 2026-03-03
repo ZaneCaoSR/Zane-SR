@@ -170,6 +170,11 @@ async def get_weather(city_name: str) -> dict | None:
         "forecast": forecast,
     }
 
+    # 获取空气质量
+    air = await get_air_quality(city_id)
+    if air:
+        weather_data["air"] = air
+
     # 写入缓存
     _set_cached_weather(city_name, weather_data)
     return weather_data
@@ -269,6 +274,11 @@ async def get_weather_by_city_id(city_id: str, city_name: str = None) -> dict | 
         "forecast": forecast,
     }
 
+    # 获取空气质量
+    air = await get_air_quality(city_id)
+    if air:
+        weather_data["air"] = air
+
     # 写入30分钟缓存
     _set_cached_weather_by_city_id(city_id, weather_data)
     return weather_data
@@ -344,4 +354,72 @@ async def get_weather_indices(city_id: str) -> dict | None:
 
     except Exception as e:
         logger.warning(f"[Weather] 获取生活指数失败: {e}")
+        return None
+
+
+# ===== 空气质量 =====
+
+_air_cache = {}
+AIR_CACHE_TTL = 30 * 60  # 30分钟
+
+
+def _get_cached_air(city_id: str) -> dict | None:
+    """获取缓存的空气质量"""
+    if city_id in _air_cache:
+        data, timestamp = _air_cache[city_id]
+        if time.time() - timestamp < AIR_CACHE_TTL:
+            return data
+    return None
+
+
+def _set_cached_air(city_id: str, data: dict):
+    """设置空气质量缓存"""
+    _air_cache[city_id] = (data, time.time())
+
+
+async def get_air_quality(city_id: str) -> dict | None:
+    """
+    获取空气质量
+    """
+    # 先检查缓存
+    cached = _get_cached_air(city_id)
+    if cached:
+        return cached
+
+    token = get_jwt_token()
+    if not token:
+        return None
+
+    headers = {"Authorization": f"Bearer {token}"}
+
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.get(
+                f"{QWEATHER_BASE_URL}/air/now",
+                params={"location": city_id, "lang": "zh"},
+                headers=headers
+            )
+            data = resp.json()
+
+        if data.get("code") != "200":
+            return None
+
+        now = data.get("now", {})
+        air_data = {
+            "aqi": now.get("aqi"),
+            "category": now.get("category"),
+            "pm25": now.get("pm2p5"),
+            "pm10": now.get("pm10"),
+            "so2": now.get("so2"),
+            "no2": now.get("no2"),
+            "co": now.get("co"),
+            "o3": now.get("o3"),
+        }
+
+        # 写入缓存
+        _set_cached_air(city_id, air_data)
+        return air_data
+
+    except Exception as e:
+        logger.warning(f"[Weather] 获取空气质量失败: {e}")
         return None

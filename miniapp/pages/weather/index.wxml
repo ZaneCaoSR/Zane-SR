@@ -99,6 +99,21 @@
           </view>
         </view>
 
+        <!-- 空气质量 -->
+        <view class="air-section" wx:if="{{item.weatherData.air}}">
+          <view class="air-header">
+            <text class="air-title">🌬️ 空气质量</text>
+            <text class="air-aqi">AQI {{item.weatherData.air.aqi}}</text>
+          </view>
+          <view class="air-info">
+            <text class="air-category {{item.weatherData.air.category}}">{{item.weatherData.air.category}}</text>
+            <view class="air-detail" wx:if="{{item.weatherData.air.pm25}}">
+              <text>PM2.5: {{item.weatherData.air.pm25}}</text>
+              <text>PM10: {{item.weatherData.air.pm10}}</text>
+            </view>
+          </view>
+        </view>
+
         <!-- 3日预报 -->
         <view class="forecast-section" wx:if="{{item.weatherData.forecast && item.weatherData.forecast.length > 0}}">
           <view class="forecast-header">

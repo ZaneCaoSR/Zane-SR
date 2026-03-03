@@ -320,6 +320,83 @@
   font-weight: 500;
 }
 
+/* 空气质量 */
+.air-section {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.air-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.air-title {
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.air-aqi {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.air-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.air-category {
+  font-size: 32rpx;
+  font-weight: 600;
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-md);
+}
+
+.air-category.优 {
+  background: #e6f7e6;
+  color: #52c41a;
+}
+
+.air-category.良 {
+  background: #f6ffed;
+  color: #1890ff;
+}
+
+.air-category.轻度 {
+  background: #fff7e6;
+  color: #faad14;
+}
+
+.air-category.中度 {
+  background: #fff1f0;
+  color: #fa541c;
+}
+
+.air-category.重度 {
+  background: #fff2f0;
+  color: #f5222d;
+}
+
+.air-category.严重 {
+  background: #fff0f0;
+  color: #a8071a;
+}
+
+.air-detail {
+  display: flex;
+  gap: var(--spacing-md);
+  font-size: 22rpx;
+  color: var(--color-text-tertiary);
+}
+
 /* 更新时间 */
 .update-info {
   text-align: center;
