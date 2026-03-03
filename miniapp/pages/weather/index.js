@@ -271,11 +271,12 @@ Page({
   // 加载单个城市的天气
   loadWeatherForCity(city, index = null) {
     const idx = index !== null ? index : this.data.currentCityIndex;
-    const cities = this.data.cities;
 
-    // 设置加载状态
-    cities[idx].loading = true;
-    this.setData({ cities: cities, loading: true });
+    // 设置加载状态 - 使用路径语法
+    this.setData({
+      [`cities[${idx}].loading`]: true,
+      loading: true
+    });
 
     wx.request({
       url: `${BASE_URL}/api/weather/${encodeURIComponent(city)}`,
@@ -296,25 +297,22 @@ Page({
             const airCategoryMap = { '优': 'excellent', '良': 'good', '轻度污染': 'light', '中度污染': 'moderate', '重度污染': 'heavy', '严重污染': 'severe' };
             weatherData.air.categoryClass = airCategoryMap[weatherData.air.category] || 'good';
           }
-          cities[idx].weatherData = weatherData;
-          cities[idx].weatherTheme = getWeatherTheme(res.data.weather);
-          // 添加天气提示
-          cities[idx].weatherTips = getWeatherTips(
-            res.data.weather,
-            res.data.temp,
-            res.data.humidity,
-            res.data.air
-          );
-          // 添加舒适度
-          cities[idx].comfort = getComfortLevel(res.data.temp, res.data.humidity);
-          cities[idx].loaded = true;
-          cities[idx].loading = false;
-          this.setData({ cities: cities });
 
           // 更新时间
           const now = new Date();
           const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-          this.setData({ updateTime: timeStr, loading: false });
+
+          // 合并所有 setData 为一次调用
+          this.setData({
+            [`cities[${idx}].weatherData`]: weatherData,
+            [`cities[${idx}].weatherTheme`]: getWeatherTheme(res.data.weather),
+            [`cities[${idx}].weatherTips`]: getWeatherTips(res.data.weather, res.data.temp, res.data.humidity, res.data.air),
+            [`cities[${idx}].comfort`]: getComfortLevel(res.data.temp, res.data.humidity),
+            [`cities[${idx}].loaded`]: true,
+            [`cities[${idx}].loading`]: false,
+            updateTime: timeStr,
+            loading: false
+          });
 
           // 加载生活指数
           this.loadWeatherIndices(city, idx);
@@ -322,16 +320,16 @@ Page({
       },
       fail: (err) => {
         console.error(`[Weather] 获取 ${city} 天气失败:`, err);
-        cities[idx].loading = false;
-        this.setData({ cities: cities, loading: false });
+        this.setData({
+          [`cities[${idx}].loading`]: false,
+          loading: false
+        });
       }
     });
   },
 
   // 加载生活指数
   loadWeatherIndices(city, index) {
-    const cities = this.data.cities;
-
     wx.request({
       url: `${BASE_URL}/api/cities/search?keyword=${encodeURIComponent(city)}`,
       success: (res) => {
@@ -342,8 +340,9 @@ Page({
             url: `${BASE_URL}/api/weather-indices/${cityId}`,
             success: (indicesRes) => {
               if (indicesRes.data) {
-                cities[index].indices = indicesRes.data;
-                this.setData({ cities: cities });
+                this.setData({
+                  [`cities[${index}].indices`]: indicesRes.data
+                });
               }
             }
           });

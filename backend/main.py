@@ -54,23 +54,66 @@ async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
 
 # ===== 请求/响应模型 =====
 
+from pydantic import Field
+
 class SubscribeRequest(BaseModel):
-    openid: str   # 微信用户 openid（由小程序登录获取）
-    city: str = "杭州"  # 订阅城市
+    openid: str = Field(..., min_length=1, description="微信用户 openid")
+    city: str = Field(default="杭州", min_length=1, description="订阅城市")
 
 
 class UnsubscribeRequest(BaseModel):
-    openid: str
+    openid: str = Field(..., min_length=1)
 
 
 class SubscribeMultipleRequest(BaseModel):
-    openid: str
-    cities: list[dict]  # [{"city": "杭州", "cityId": "101210101", "pushTime": "08:00"}]
+    openid: str = Field(..., min_length=1)
+    cities: list[dict] = Field(..., description="城市列表")
 
 
 class UnsubscribeCityRequest(BaseModel):
-    openid: str
+    openid: str = Field(..., min_length=1)
+    city: str = Field(..., min_length=1)
+
+
+# ===== 响应模型 =====
+
+class SubscribeResponse(BaseModel):
+    success: bool
+    is_new: bool
+    message: str
+
+
+class SubscribedCitiesResponse(BaseModel):
+    subscribed: bool
+    cities: list[dict]
+
+
+class WeatherResponse(BaseModel):
     city: str
+    weather: str
+    temp: str
+    feels_like: str
+    humidity: str
+    wind_dir: str
+    wind_scale: str
+    min_temp: str
+    max_temp: str
+    day_weather: str
+    update_time: str
+    forecast: list[dict] = []
+    air: dict | None = None
+    hourly: list[dict] = []
+    alerts: list[dict] = []
+
+
+class PhotosResponse(BaseModel):
+    photos: list[dict]
+
+
+class PhotoResponse(BaseModel):
+    success: bool
+    photo: dict | None = None
+    tags: list[dict] = []
 
 
 # ===== 路由 =====
@@ -242,7 +285,7 @@ async def get_subscriber_status(openid: str):
     }
 
 
-@app.get("/api/weather/{city_name}", summary="查询天气（调试用）")
+@app.get("/api/weather/{city_name}", summary="查询天气（调试用）", response_model=WeatherResponse)
 async def query_weather(city_name: str):
     """手动查询指定城市天气，用于测试天气 API 是否正常"""
     weather = await get_weather(city_name)
