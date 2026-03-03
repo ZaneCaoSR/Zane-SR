@@ -85,6 +85,20 @@
           </view>
         </view>
 
+        <!-- 日出日落 -->
+        <view class="sun-section" wx:if="{{item.weatherData.forecast && item.weatherData.forecast[0]}}">
+          <view class="sun-item">
+            <text class="sun-icon">🌅</text>
+            <text class="sun-label">日出</text>
+            <text class="sun-value">{{item.weatherData.forecast[0].sunrise}}</text>
+          </view>
+          <view class="sun-item">
+            <text class="sun-icon">🌇</text>
+            <text class="sun-label">日落</text>
+            <text class="sun-value">{{item.weatherData.forecast[0].sunset}}</text>
+          </view>
+        </view>
+
         <!-- 3日预报 -->
         <view class="forecast-section" wx:if="{{item.weatherData.forecast && item.weatherData.forecast.length > 0}}">
           <view class="forecast-header">
