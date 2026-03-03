@@ -180,6 +180,28 @@ Page({
       return
     }
 
+    // 预设推送时间选项
+    const timeOptions = ['06:00', '07:00', '08:00', '09:00', '10:00', '12:00', '18:00', '20:00']
+    const timeLabels = ['早上 6点', '早上 7点', '早上 8点', '早上 9点', '上午 10点', '中午 12点', '傍晚 6点', '晚上 8点']
+
+    // 显示时间选择器
+    wx.showActionSheet({
+      itemList: timeLabels,
+      success: (res) => {
+        const selectedTime = timeOptions[res.tapIndex]
+        this.doSubscribeCity(cityName, selectedTime)
+      },
+      fail: () => {
+        // 用户取消，不做任何操作
+      }
+    })
+  },
+
+  /**
+   * 执行订阅城市
+   */
+  async doSubscribeCity(cityName, pushTime) {
+    const openid = app.globalData.openid
     wx.showLoading({ title: '订阅中...' })
     try {
       // 获取当前订阅的城市列表
@@ -193,7 +215,7 @@ Page({
       // 添加新城市
       currentCities.push({
         city: cityName,
-        pushTime: '08:00',
+        pushTime: pushTime,
         isActive: true
       })
 
