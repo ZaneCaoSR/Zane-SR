@@ -575,3 +575,63 @@ async def wechat_login(req: LoginRequest):
         raise HTTPException(status_code=400, detail=f'获取 openid 失败: {data}')
     
     return {'openid': data['openid']}
+
+
+# ===== GitHub Webhook 自动部署 =====
+import hmac
+import hashlib
+import subprocess
+
+GITHUB_WEBHOOK_SECRET = os.getenv("GITHUB_WEBHOOK_SECRET", "")
+
+@app.post("/webhook/github", summary="GitHub Webhook 自动部署")
+async def github_webhook(request: Request):
+    """接收 GitHub push 事件，自动 pull 最新代码并重启服务"""
+    # 验证签名
+    signature = request.headers.get("X-Hub-Signature-256", "")
+    body = await request.body()
+
+    if GITHUB_WEBHOOK_SECRET:
+        expected = "sha256=" + hmac.new(
+            GITHUB_WEBHOOK_SECRET.encode(),
+            body,
+            hashlib.sha256
+        ).hexdigest()
+        if not hmac.compare_digest(signature, expected):
+            raise HTTPException(status_code=403, detail="Invalid signature")
+
+    payload = await request.json() if not body else __import__("json").loads(body)
+    ref = payload.get("ref", "")
+    branch = ref.replace("refs/heads/", "")
+
+    logger.info(f"[Webhook] 收到 push 事件，分支: {branch}")
+
+    # 只响应目标分支
+    target_branch = "feat/cream-style-ui"
+    if branch != target_branch:
+        return {"status": "skipped", "reason": f"branch {branch} not watched"}
+
+    # 拉取最新代码并重启
+    project_dir = "/root/projects/weather-mini"
+    try:
+        pull = subprocess.run(
+            ["git", "pull", "origin", target_branch],
+            cwd=project_dir, capture_output=True, text=True, timeout=60
+        )
+        logger.info(f"[Webhook] git pull: {pull.stdout.strip()}")
+
+        restart = subprocess.run(
+            ["pm2", "restart", "weather-mini"],
+            capture_output=True, text=True, timeout=30
+        )
+        logger.info(f"[Webhook] pm2 restart: {restart.returncode}")
+
+        return {
+            "status": "ok",
+            "branch": branch,
+            "pull_output": pull.stdout.strip(),
+            "restarted": restart.returncode == 0
+        }
+    except Exception as e:
+        logger.error(f"[Webhook] 自动部署失败: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
