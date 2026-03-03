@@ -18,6 +18,7 @@ from weather import get_weather, get_weather_by_city_id, get_city_id
 from config import QWEATHER_GEO_URL
 from scheduler import start_scheduler, stop_scheduler, push_daily_weather
 from retry import get_retry_queue, clear_retry_queue, retry_failed_pushes
+from jwt_helper import get_jwt_token
 
 
 @asynccontextmanager
