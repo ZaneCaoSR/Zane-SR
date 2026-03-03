@@ -228,5 +228,16 @@ Page({
 
     this.loadWeatherForCity(cities[index].city, index);
     wx.stopPullDownRefresh();
+  },
+
+  // 分享天气
+  onShareAppMessage() {
+    const currentCity = this.data.cities[this.data.currentCityIndex];
+    const weather = currentCity.weatherData;
+
+    return {
+      title: `${currentCity.city}今日天气：${weather.weather || ''} ${weather.temp || ''}°`,
+      path: `/pages/weather/index`
+    };
   }
 });

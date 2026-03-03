@@ -204,5 +204,9 @@
       <text class="btn-icon">🔔</text>
       <text>订阅每日天气</text>
     </button>
+    <button class="btn btn-share" open-type="share">
+      <text class="btn-icon">📤</text>
+      <text>分享天气</text>
+    </button>
   </view>
 </view>

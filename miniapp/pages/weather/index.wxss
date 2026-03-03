@@ -581,6 +581,24 @@
   font-size: 32rpx;
 }
 
+/* 分享按钮 */
+.btn-share {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: 32rpx;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-xl);
+  font-size: 30rpx;
+  font-weight: 500;
+  box-shadow: var(--shadow-sm);
+  border: none;
+  margin-top: var(--spacing-md);
+}
+
 /* 城市加载中 */
 .city-loading {
   position: absolute;
