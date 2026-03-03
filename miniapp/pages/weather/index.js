@@ -272,6 +272,11 @@ Page({
               level: levelMap[alert.level] || 'other'
             }));
           }
+          // 转换空气质量 category 为英文类名
+          if (weatherData.air && weatherData.air.category) {
+            const airCategoryMap = { '优': 'excellent', '良': 'good', '轻度污染': 'light', '中度污染': 'moderate', '重度污染': 'heavy', '严重污染': 'severe' };
+            weatherData.air.categoryClass = airCategoryMap[weatherData.air.category] || 'good';
+          }
           cities[idx].weatherData = weatherData;
           cities[idx].weatherTheme = getWeatherTheme(res.data.weather);
           // 添加天气提示

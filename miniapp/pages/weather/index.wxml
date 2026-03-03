@@ -141,7 +141,7 @@
             <text class="air-aqi">AQI {{item.weatherData.air.aqi}}</text>
           </view>
           <view class="air-info">
-            <text class="air-category {{item.weatherData.air.category}}">{{item.weatherData.air.category}}</text>
+            <text class="air-category {{item.weatherData.air.categoryClass}}">{{item.weatherData.air.category}}</text>
             <view class="air-detail" wx:if="{{item.weatherData.air.pm25}}">
               <text>PM2.5: {{item.weatherData.air.pm25}}</text>
               <text>PM10: {{item.weatherData.air.pm10}}</text>

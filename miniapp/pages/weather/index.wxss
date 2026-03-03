@@ -616,32 +616,32 @@
   border-radius: var(--radius-md);
 }
 
-.air-category.优 {
+.air-category.excellent {
   background: #e6f7e6;
   color: #52c41a;
 }
 
-.air-category.良 {
+.air-category.good {
   background: #f6ffed;
   color: #1890ff;
 }
 
-.air-category.轻度 {
+.air-category.light {
   background: #fff7e6;
   color: #faad14;
 }
 
-.air-category.中度 {
+.air-category.moderate {
   background: #fff1f0;
   color: #fa541c;
 }
 
-.air-category.重度 {
+.air-category.heavy {
   background: #fff2f0;
   color: #f5222d;
 }
 
-.air-category.严重 {
+.air-category.severe {
   background: #fff0f0;
   color: #a8071a;
 }
