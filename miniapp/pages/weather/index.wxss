@@ -1,11 +1,73 @@
 /* 天气首页样式 - 奶油日记风格 */
 
+/* 页面进入动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
 .weather-container {
   min-height: 100vh;
   background: var(--color-bg);
   padding: var(--spacing-md);
   position: relative;
   overflow: hidden;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+/* 卡片渐入 */
+.weather-hero,
+.detail-grid,
+.forecast-section,
+.hourly-section,
+.air-section,
+.indices-section,
+.sun-section,
+.temp-chart-section,
+.tips-section {
+  animation: fadeInUp 0.5s ease-out;
+  animation-fill-mode: both;
+}
+
+.weather-hero { animation-delay: 0.1s; }
+.detail-grid { animation-delay: 0.2s; }
+.forecast-section { animation-delay: 0.3s; }
+.hourly-section { animation-delay: 0.35s; }
+.air-section { animation-delay: 0.4s; }
+.indices-section { animation-delay: 0.45s; }
+.sun-section { animation-delay: 0.5s; }
+.temp-chart-section { animation-delay: 0.55s; }
+.tips-section { animation-delay: 0.15s; }
+
+/* 加载骨架屏动画 */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* 天气提示 */
