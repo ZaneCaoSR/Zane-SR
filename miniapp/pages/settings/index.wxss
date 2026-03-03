@@ -1,0 +1,245 @@
+/* 宝宝信息设置页样式 */
+
+.settings-container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #FFF5F8 0%, #FFF0F5 100%);
+  padding-bottom: 200rpx;
+}
+
+/* 头部 */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60rpx 40rpx 40rpx;
+  background: linear-gradient(135deg, #FF9ECA 0%, #FF6B9D 100%);
+}
+
+.avatar-section {
+  position: relative;
+  width: 180rpx;
+  height: 180rpx;
+}
+
+.avatar {
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 50%;
+  border: 6rpx solid #fff;
+  box-shadow: 0 8rpx 30rpx rgba(255, 107, 157, 0.3);
+}
+
+.avatar-edit {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 20rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+.baby-age {
+  margin-top: 20rpx;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 10rpx 30rpx;
+  border-radius: 30rpx;
+}
+
+.baby-age text {
+  color: #fff;
+  font-size: 28rpx;
+}
+
+/* 表单区域 */
+.form-section {
+  background: #fff;
+  margin: 30rpx;
+  border-radius: 24rpx;
+  padding: 10rpx 0;
+}
+
+.form-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx 40rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.form-item:last-child {
+  border-bottom: none;
+}
+
+.form-label {
+  font-size: 30rpx;
+  color: #333;
+}
+
+.form-input {
+  flex: 1;
+  text-align: right;
+  font-size: 30rpx;
+  color: #333;
+  margin-left: 30rpx;
+}
+
+.form-picker {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.form-picker text {
+  font-size: 30rpx;
+  color: #333;
+}
+
+.form-picker .placeholder {
+  color: #999;
+}
+
+.form-picker .arrow {
+  color: #ccc;
+  font-size: 36rpx;
+}
+
+/* 性别选择 */
+.gender-select {
+  display: flex;
+  gap: 20rpx;
+}
+
+.gender-btn {
+  padding: 16rpx 30rpx;
+  border-radius: 50rpx;
+  background: #f5f5f5;
+  font-size: 28rpx;
+  color: #666;
+}
+
+.gender-btn.active {
+  background: linear-gradient(135deg, #FF9ECA 0%, #FF6B9D 100%);
+  color: #fff;
+}
+
+/* 隐私设置 */
+.privacy-section {
+  background: #fff;
+  margin: 30rpx;
+  border-radius: 24rpx;
+  padding: 30rpx 40rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.privacy-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+
+.privacy-item:last-child {
+  border-bottom: none;
+}
+
+.privacy-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.privacy-label {
+  font-size: 30rpx;
+  color: #333;
+}
+
+.privacy-desc {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 6rpx;
+}
+
+/* 底部保存按钮 */
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 30rpx;
+  background: #fff;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.05);
+}
+
+.save-btn {
+  width: 100%;
+  padding: 30rpx;
+  border-radius: 50rpx;
+  font-size: 32rpx;
+  background: linear-gradient(135deg, #FF9ECA 0%, #FF6B9D 100%);
+  color: #fff;
+  border: none;
+}
+
+/* 日期选择器 */
+.date-picker-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+
+.mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.picker-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-radius: 32rpx 32rpx 0 0;
+}
+
+.picker-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 30rpx 40rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.picker-header text {
+  font-size: 30rpx;
+}
+
+.picker-header .confirm {
+  color: #FF6B9D;
+  font-weight: bold;
+}
+
+picker-view {
+  height: 400rpx;
+}
+
+.picker-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  color: #333;
+}

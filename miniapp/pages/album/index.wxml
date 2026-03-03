@@ -1,0 +1,100 @@
+<!-- 相册首页 -->
+<view class="album-container">
+  <!-- 顶部导航 -->
+  <view class="header">
+    <view class="title">{{babyName}}的成长相册</view>
+    <view class="settings-btn" bindtap="onSettingsTap">
+      <text class="iconfont icon-settings">⚙️</text>
+    </view>
+  </view>
+
+  <!-- 月份时间线 -->
+  <scroll-view 
+    class="month-scroll" 
+    scroll-x 
+    enhanced 
+    show-scrollbar="{{false}}"
+  >
+    <view class="month-list">
+      <block wx:for="{{months}}" wx:key="key">
+        <view 
+          class="month-card {{currentMonthIndex === index ? 'active' : ''}}"
+          bindtap="onMonthTap"
+          data-index="{{index}}"
+        >
+          <view class="month-label">{{item.monthLabel}}</view>
+          <view class="photo-count">{{item.count}}张照片</view>
+          <image 
+            class="cover-img" 
+            src="{{item.coverPhoto}}" 
+            mode="aspectFill"
+            wx:if="{{item.coverPhoto}}"
+          />
+          <view class="empty-cover" wx:else>📷</view>
+        </view>
+      </block>
+    </view>
+  </scroll-view>
+
+  <!-- 当前月份照片网格 -->
+  <scroll-view 
+    class="photo-grid-scroll"
+    scroll-y
+    wx:if="{{months.length > 0}}"
+  >
+    <view class="section-title">{{months[currentMonthIndex].monthLabel}}</view>
+    <view class="photo-grid">
+      <block wx:for="{{months[currentMonthIndex].photos}}" wx:key="_id">
+        <view 
+          class="photo-item"
+          bindtap="onPhotoTap"
+          data-id="{{item._id}}"
+        >
+          <image 
+            src="{{item.fileID}}" 
+            mode="aspectFill" 
+            class="photo-img"
+          />
+          <view class="photo-tags" wx:if="{{item.aiResult}}">
+            <text wx:for="{{item.aiResult.expressions}}" wx:for-item="expr" wx:key="*this" class="tag expression">
+              {{expr}}
+            </text>
+          </view>
+        </view>
+      </block>
+    </view>
+    
+    <!-- 空状态 -->
+    <view class="empty-month" wx:if="{{months[currentMonthIndex].count === 0}}">
+      <text class="empty-icon">📸</text>
+      <text class="empty-text">这个月还没有照片</text>
+      <button class="upload-btn" bindtap="onCameraTap">拍照上传</button>
+    </view>
+  </scroll-view>
+
+  <!-- 全局空状态 -->
+  <view class="empty-global" wx:if="{{!isLoading && months.length === 0}}">
+    <text class="empty-icon">👶</text>
+    <text class="empty-text">记录宝宝成长的每一个瞬间</text>
+    <view class="empty-actions">
+      <button class="primary-btn" bindtap="onCameraTap">📷 拍照</button>
+      <button class="secondary-btn" bindtap="onAlbumTap">🖼️ 相册</button>
+    </view>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading" wx:if="{{isLoading}}">
+    <view class="loading-spinner"></view>
+    <text>加载中...</text>
+  </view>
+
+  <!-- 悬浮拍照按钮 -->
+  <view class="fab-container" wx:if="{{showCameraFab}}">
+    <view class="fab-btn camera" bindtap="onCameraTap">
+      <text>📷</text>
+    </view>
+    <view class="fab-btn album" bindtap="onAlbumTap">
+      <text>🖼️</text>
+    </view>
+  </view>
+</view>

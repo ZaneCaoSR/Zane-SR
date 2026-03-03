@@ -1,0 +1,141 @@
+<!-- 宝宝信息设置页 -->
+<view class="settings-container">
+  <!-- 头部区域 -->
+  <view class="header">
+    <view class="avatar-section" bindtap="chooseAvatar">
+      <image 
+        class="avatar" 
+        src="{{babyInfo.avatar || '/assets/icons/default-avatar.png'}}"
+        mode="aspectFill"
+      />
+      <view class="avatar-edit">
+        <text>编辑</text>
+      </view>
+    </view>
+    <view class="baby-age" wx:if="{{babyInfo.birthDate}}">
+      <text>{{getBabyAge()}}</text>
+    </view>
+  </view>
+
+  <!-- 表单区域 -->
+  <view class="form-section">
+    <!-- 宝宝名字 -->
+    <view class="form-item">
+      <view class="form-label">宝宝名字</view>
+      <input 
+        class="form-input" 
+        value="{{babyInfo.name}}"
+        placeholder="请输入宝宝名字"
+        bindinput="onNameInput"
+        maxlength="20"
+      />
+    </view>
+
+    <!-- 宝宝生日 -->
+    <view class="form-item">
+      <view class="form-label">出生日期</view>
+      <view class="form-picker" bindtap="showDatePicker">
+        <text class="{{babyInfo.birthDate ? '' : 'placeholder'}}">
+          {{babyInfo.birthDate || '请选择宝宝出生日期'}}
+        </text>
+        <text class="arrow">›</text>
+      </view>
+    </view>
+
+    <!-- 性别选择 -->
+    <view class="form-item">
+      <view class="form-label">性别</view>
+      <view class="gender-select">
+        <view 
+          class="gender-btn {{babyInfo.gender === 'boy' ? 'active' : ''}}"
+          data-gender="boy"
+          bindtap="onGenderChange"
+        >
+          <text>👦 男宝</text>
+        </view>
+        <view 
+          class="gender-btn {{babyInfo.gender === 'girl' ? 'active' : ''}}"
+          data-gender="girl"
+          bindtap="onGenderChange"
+        >
+          <text>👧 女宝</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 隐私设置 -->
+  <view class="privacy-section">
+    <view class="section-title">隐私设置</view>
+    
+    <view class="privacy-item">
+      <view class="privacy-info">
+        <text class="privacy-label">允许 AI 识别</text>
+        <text class="privacy-desc">自动识别宝宝表情和动作</text>
+      </view>
+      <switch 
+        checked="{{privacy.allowAI}}"
+        data-key="allowAI"
+        bindchange="onPrivacyChange"
+        color="#FF6B9D"
+      />
+    </view>
+    
+    <view class="privacy-item">
+      <view class="privacy-info">
+        <text class="privacy-label">允许分享</text>
+        <text class="privacy-desc">允许将照片分享给家人朋友</text>
+      </view>
+      <switch 
+        checked="{{privacy.allowShare}}"
+        data-key="allowShare"
+        bindchange="onPrivacyChange"
+        color="#FF6B9D"
+      />
+    </view>
+  </view>
+
+  <!-- 底部保存按钮 -->
+  <view class="bottom-bar">
+    <button 
+      class="save-btn" 
+      bindtap="saveBabyInfo"
+      loading="{{isSaving}}"
+    >
+      {{isSaving ? '保存中...' : '保存设置'}}
+    </button>
+  </view>
+
+  <!-- 日期选择器弹窗 -->
+  <view class="date-picker-modal" wx:if="{{showDatePicker}}">
+    <view class="mask" bindtap="onDateCancel"></view>
+    <view class="picker-content">
+      <view class="picker-header">
+        <text bindtap="onDateCancel">取消</text>
+        <text class="confirm" bindtap="onDateChange">确定</text>
+      </view>
+      <picker-view 
+        value="{{babyInfo.birthDate}}" 
+        bindchange="onDateChange"
+        mode="date"
+        fields="day"
+      >
+        <picker-view-column>
+          <view class="picker-item" wx:for="{{[2020,2021,2022,2023,2024,2025,2026]}}" wx:key="*this">
+            {{item}}年
+          </view>
+        </picker-view-column>
+        <picker-view-column>
+          <view class="picker-item" wx:for="{{12}}" wx:key="*this">
+            {{index + 1}}月
+          </view>
+        </picker-view-column>
+        <picker-view-column>
+          <view class="picker-item" wx:for="{{31}}" wx:key="*this">
+            {{index + 1}}日
+          </view>
+        </picker-view-column>
+      </picker-view>
+    </view>
+  </view>
+</view>

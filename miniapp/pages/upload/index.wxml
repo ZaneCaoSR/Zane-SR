@@ -1,0 +1,101 @@
+<!-- 上传页面 -->
+<view class="upload-container">
+  <!-- 步骤指示器 -->
+  <view class="steps">
+    <view class="step {{selectedPhotos.length > 0 ? 'active' : ''}}">
+      <view class="step-num">1</view>
+      <text>选择照片</text>
+    </view>
+    <view class="step-line {{uploadComplete ? 'active' : ''}}"></view>
+    <view class="step {{isUploading || uploadComplete ? 'active' : ''}}">
+      <view class="step-num">2</view>
+      <text>{{uploadComplete ? '已完成' : '上传中'}}</text>
+    </view>
+    <view class="step-line {{uploadComplete ? 'active' : ''}}"></view>
+    <view class="step {{uploadComplete ? 'active' : ''}}">
+      <view class="step-num">3</view>
+      <text>AI 识别</text>
+    </view>
+  </view>
+
+  <!-- 照片预览区 -->
+  <view class="preview-section" wx:if="{{!uploadComplete}}">
+    <view class="preview-title">已选择 {{selectedPhotos.length}} 张照片</view>
+    
+    <scroll-view class="preview-scroll" scroll-x wx:if="{{selectedPhotos.length > 0}}">
+      <view class="preview-list">
+        <block wx:for="{{selectedPhotos}}" wx:key="index">
+          <view class="preview-item">
+            <image 
+              src="{{item.path}}" 
+              mode="aspectFill"
+              bindtap="previewImage"
+              data-path="{{item.path}}"
+            />
+            <view class="preview-status" wx:if="{{isUploading && currentIndex === index}}">
+              <view class="uploading-icon">⏳</view>
+            </view>
+          </view>
+        </block>
+        
+        <!-- 添加更多按钮 -->
+        <view class="add-more" bindtap="reselect" wx:if="{{uploadType === 'album'}}">
+          <text>+</text>
+          <text>添加更多</text>
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- 空选择状态 -->
+    <view class="empty-select" wx:if="{{selectedPhotos.length === 0 && !isUploading}}">
+      <text class="empty-icon">📷</text>
+      <text>点击下方按钮选择照片</text>
+      <view class="select-btns">
+        <button bindtap="takePhoto">📷 拍照</button>
+        <button bindtap="chooseFromAlbum">🖼️ 相册</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 上传进度区 -->
+  <view class="progress-section" wx:if="{{isUploading}}">
+    <view class="progress-info">
+      <text>正在上传 {{currentIndex + 1}}/{{selectedPhotos.length}}</text>
+      <text>{{uploadProgress}}%</text>
+    </view>
+    <view class="progress-bar">
+      <view class="progress-fill" style="width: {{uploadProgress}}%"></view>
+    </view>
+  </view>
+
+  <!-- AI 分析进度 -->
+  <view class="progress-section" wx:if="{{isAnalyzing}}">
+    <view class="ai-icon">🤖</view>
+    <text class="analyze-text">AI 正在识别宝宝表情和动作...</text>
+    <view class="progress-bar">
+      <view class="progress-fill analyze" style="width: {{analyzeProgress}}%"></view>
+    </view>
+  </view>
+
+  <!-- 完成状态 -->
+  <view class="complete-section" wx:if="{{uploadComplete}}">
+    <view class="complete-icon">✅</view>
+    <text class="complete-title">上传完成！</text>
+    <text class="complete-desc">AI 已识别 {{uploadedIds.length}} 张照片</text>
+    <view class="complete-actions">
+      <button bindtap="goToAlbum">📸 查看相册</button>
+      <button bindtap="reselect" class="secondary">继续上传</button>
+    </view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom-bar" wx:if="{{!uploadComplete && !isUploading && !isAnalyzing}}">
+    <button 
+      class="upload-btn" 
+      bindtap="startUpload" 
+      disabled="{{selectedPhotos.length === 0}}"
+    >
+      开始上传
+    </button>
+  </view>
+</view>

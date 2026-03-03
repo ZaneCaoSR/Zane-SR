@@ -1,5 +1,9 @@
 {
   "pages": [
+    "pages/album/index",
+    "pages/upload/index",
+    "pages/photo/index",
+    "pages/settings/index",
     "pages/index/index",
     "pages/city-select/city-select",
     "pages/weather-detail/weather-detail",
@@ -7,10 +11,30 @@
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#4A90D9",
-    "navigationBarTitleText": "每日天气提醒",
+    "navigationBarBackgroundColor": "#FF9ECA",
+    "navigationBarTitleText": "宝宝成长相册",
     "navigationBarTextStyle": "white",
-    "backgroundColor": "#F0F6FF"
+    "backgroundColor": "#FFF5F8"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#FF6B9D",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/album/index",
+        "text": "相册",
+        "iconPath": "assets/icons/album.png",
+        "selectedIconPath": "assets/icons/album-active.png"
+      },
+      {
+        "pagePath": "pages/settings/index",
+        "text": "设置",
+        "iconPath": "assets/icons/settings.png",
+        "selectedIconPath": "assets/icons/settings-active.png"
+      }
+    ]
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"
