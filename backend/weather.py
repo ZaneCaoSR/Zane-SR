@@ -139,6 +139,22 @@ async def get_weather(city_name: str) -> dict | None:
     now = now_data["now"]
     today = daily_data["daily"][0]
 
+    # 构建3日预报数据
+    forecast = []
+    for day in daily_data["daily"][:3]:
+        forecast.append({
+            "date": day["fxDate"],
+            "temp_max": day["tempMax"],
+            "temp_min": day["tempMin"],
+            "weather_day": day["textDay"],
+            "weather_night": day["textNight"],
+            "wind_dir": day["windDirDay"],
+            "wind_scale": day["windScaleDay"],
+            "humidity": day["humidity"],
+            "sunrise": day["sunrise"],
+            "sunset": day["sunset"],
+        })
+
     weather_data = {
         "city": city_name,
         "weather": now["text"],
@@ -151,8 +167,9 @@ async def get_weather(city_name: str) -> dict | None:
         "max_temp": today["tempMax"],
         "day_weather": today["textDay"],
         "update_time": now_data["updateTime"],
+        "forecast": forecast,
     }
-    
+
     # 写入缓存
     _set_cached_weather(city_name, weather_data)
     return weather_data
@@ -220,6 +237,22 @@ async def get_weather_by_city_id(city_id: str, city_name: str = None) -> dict | 
     now = now_data["now"]
     today = daily_data["daily"][0]
 
+    # 构建3日预报数据
+    forecast = []
+    for day in daily_data["daily"][:3]:
+        forecast.append({
+            "date": day["fxDate"],
+            "temp_max": day["tempMax"],
+            "temp_min": day["tempMin"],
+            "weather_day": day["textDay"],
+            "weather_night": day["textNight"],
+            "wind_dir": day["windDirDay"],
+            "wind_scale": day["windScaleDay"],
+            "humidity": day["humidity"],
+            "sunrise": day["sunrise"],
+            "sunset": day["sunset"],
+        })
+
     weather_data = {
         "city": city_name or "未知",
         "cityId": city_id,
@@ -233,6 +266,7 @@ async def get_weather_by_city_id(city_id: str, city_name: str = None) -> dict | 
         "max_temp": today["tempMax"],
         "day_weather": today["textDay"],
         "update_time": now_data["updateTime"],
+        "forecast": forecast,
     }
 
     # 写入30分钟缓存

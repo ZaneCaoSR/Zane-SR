@@ -83,6 +83,20 @@
             <text class="detail-value">{{item.weatherData.pressure || '--'}} hPa</text>
           </view>
         </view>
+
+        <!-- 3日预报 -->
+        <view class="forecast-section" wx:if="{{item.weatherData.forecast && item.weatherData.forecast.length > 0}}">
+          <view class="forecast-header">
+            <text class="forecast-title">📅 3日预报</text>
+          </view>
+          <view class="forecast-list">
+            <view class="forecast-item" wx:for="{{item.weatherData.forecast}}" wx:key="date" wx:for-item="day">
+              <text class="forecast-date">{{index === 0 ? '今天' : index === 1 ? '明天' : '后天'}}</text>
+              <text class="forecast-weather">{{day.weather_day}}</text>
+              <text class="forecast-temp">{{day.temp_min}}° ~ {{day.temp_max}}°</text>
+            </view>
+          </view>
+        </view>
       </view>
     </swiper-item>
   </swiper>

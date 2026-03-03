@@ -355,3 +355,50 @@
     transform: rotate(360deg);
   }
 }
+
+/* 3日预报 */
+.forecast-section {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.forecast-header {
+  margin-bottom: var(--spacing-sm);
+}
+
+.forecast-title {
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.forecast-list {
+  display: flex;
+  justify-content: space-between;
+}
+
+.forecast-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex: 1;
+}
+
+.forecast-date {
+  font-size: 24rpx;
+  color: var(--color-text-tertiary);
+}
+
+.forecast-weather {
+  font-size: 26rpx;
+  color: var(--color-text-primary);
+}
+
+.forecast-temp {
+  font-size: 24rpx;
+  color: var(--color-accent);
+  font-weight: 500;
+}
