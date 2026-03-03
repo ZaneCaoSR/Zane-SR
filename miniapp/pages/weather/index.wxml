@@ -13,6 +13,17 @@
     </view>
   </view>
 
+  <!-- 天气预警 -->
+  <view class="alert-section" wx:if="{{cities[currentCityIndex].weatherData.alerts && cities[currentCityIndex].weatherData.alerts.length > 0}}">
+    <view class="alert-item {{item.level}}" wx:for="{{cities[currentCityIndex].weatherData.alerts}}" wx:key="id">
+      <text class="alert-icon">⚠️</text>
+      <view class="alert-content">
+        <text class="alert-title">{{item.title}}</text>
+        <text class="alert-text">{{item.text}}</text>
+      </view>
+    </view>
+  </view>
+
   <!-- Swiper 滑动区域 -->
   <swiper
     class="weather-swiper"

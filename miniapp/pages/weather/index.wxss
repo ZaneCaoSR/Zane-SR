@@ -8,6 +8,76 @@
   overflow: hidden;
 }
 
+/* 天气预警 */
+.alert-section {
+  margin-bottom: var(--spacing-md);
+}
+
+.alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-sm);
+}
+
+.alert-item.橙色 {
+  background: #fff7e6;
+  border-left: 6rpx solid #fa8c16;
+}
+
+.alert-item.红色 {
+  background: #fff1f0;
+  border-left: 6rpx solid #f5222d;
+}
+
+.alert-item.黄色 {
+  background: #fffff0;
+  border-left: 6rpx solid #fadb14;
+}
+
+.alert-item.蓝色 {
+  background: #e6f7ff;
+  border-left: 6rpx solid #1890ff;
+}
+
+.alert-item.其他 {
+  background: #fafafa;
+  border-left: 6rpx solid #8c8c8c;
+}
+
+.alert-icon {
+  font-size: 32rpx;
+}
+
+.alert-content {
+  flex: 1;
+}
+
+.alert-title {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #d46b08;
+  margin-bottom: var(--spacing-xs);
+}
+
+.alert-item.红色 .alert-title {
+  color: #cf1322;
+}
+
+.alert-item.蓝色 .alert-title {
+  color: #096dd9;
+}
+
+.alert-text {
+  display: block;
+  font-size: 22rpx;
+  color: #8c8c8c;
+  line-height: 1.5;
+}
+
 /* Swiper 容器 */
 .weather-swiper {
   height: 720rpx;

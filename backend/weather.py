@@ -180,6 +180,11 @@ async def get_weather(city_name: str) -> dict | None:
     if hourly:
         weather_data["hourly"] = hourly
 
+    # 获取天气预警
+    alerts = await get_weather_alerts(city_id)
+    if alerts:
+        weather_data["alerts"] = alerts
+
     # 写入缓存
     _set_cached_weather(city_name, weather_data)
     return weather_data
@@ -288,6 +293,11 @@ async def get_weather_by_city_id(city_id: str, city_name: str = None) -> dict | 
     hourly = await get_hourly_forecast(city_id)
     if hourly:
         weather_data["hourly"] = hourly
+
+    # 获取天气预警
+    alerts = await get_weather_alerts(city_id)
+    if alerts:
+        weather_data["alerts"] = alerts
 
     # 写入30分钟缓存
     _set_cached_weather_by_city_id(city_id, weather_data)
@@ -502,4 +512,74 @@ async def get_hourly_forecast(city_id: str) -> list | None:
 
     except Exception as e:
         logger.warning(f"[Weather] 获取逐小时预报失败: {e}")
+        return None
+
+
+# ===== 天气预警 =====
+
+_alert_cache = {}
+ALERT_CACHE_TTL = 30 * 60  # 30分钟
+
+
+def _get_cached_alerts(city_id: str) -> list | None:
+    """获取缓存的天气预警"""
+    if city_id in _alert_cache:
+        data, timestamp = _alert_cache[city_id]
+        if time.time() - timestamp < ALERT_CACHE_TTL:
+            return data
+    return None
+
+
+def _set_cached_alerts(city_id: str, data: list):
+    """设置天气预警缓存"""
+    _alert_cache[city_id] = (data, time.time())
+
+
+async def get_weather_alerts(city_id: str) -> list | None:
+    """
+    获取天气预警
+    """
+    # 先检查缓存
+    cached = _get_cached_alerts(city_id)
+    if cached:
+        return cached
+
+    token = get_jwt_token()
+    if not token:
+        return None
+
+    headers = {"Authorization": f"Bearer {token}"}
+
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.get(
+                f"{QWEATHER_BASE_URL}/warning/now",
+                params={"location": city_id, "lang": "zh"},
+                headers=headers
+            )
+            data = resp.json()
+
+        if data.get("code") != "200":
+            return None
+
+        # 提取预警数据
+        alerts = []
+        for alert in data.get("warning", []):
+            alerts.append({
+                "id": alert.get("id", ""),
+                "title": alert.get("title", ""),        # 预警标题
+                "type": alert.get("type", ""),          # 预警类型
+                "type_name": alert.get("typeName", ""), # 预警类型名称
+                "level": alert.get("level", ""),        # 预警级别
+                "level_name": alert.get("levelName", ""), # 预警级别名称
+                "text": alert.get("text", ""),          # 预警详情
+                "pub_time": alert.get("pubTime", ""),   # 发布时间
+            })
+
+        # 写入缓存
+        _set_cached_alerts(city_id, alerts)
+        return alerts
+
+    except Exception as e:
+        logger.warning(f"[Weather] 获取天气预警失败: {e}")
         return None
