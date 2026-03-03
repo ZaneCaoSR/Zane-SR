@@ -37,7 +37,7 @@
     class="weather-swiper"
     indicator-dots="{{cities.length > 1}}"
     indicator-color="rgba(255,255,255,0.5)"
-    indicator-active-color="#fff"
+    indicator-active-color="{{themeColor}}"
     autoplay="{{false}}"
     circular="{{false}}"
     bindchange="onSwiperChange"

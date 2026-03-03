@@ -25,6 +25,7 @@
   min-height: 100vh;
   background: var(--color-bg);
   padding: var(--spacing-md);
+  padding-bottom: calc(140rpx + env(safe-area-inset-bottom));
   position: relative;
   overflow: hidden;
   animation: fadeInUp 0.5s ease-out;
