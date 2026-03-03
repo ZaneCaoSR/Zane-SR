@@ -1,7 +1,7 @@
 <!-- 我的页面 -->
 <view class="my-container">
   <!-- 用户信息卡片 -->
-  <view class="user-card">
+  <view class="user-card" style="background: linear-gradient(135deg, {{themeColor}} 0%, {{themeColorDark}} 100%);">
     <image class="avatar" src="{{userInfo.avatarUrl || '/assets/icons/default-avatar.png'}}" mode="aspectFill"></image>
     <view class="user-info">
       <text class="nickname">{{userInfo.nickName || '未登录'}}</text>
@@ -15,8 +15,8 @@
   <view class="menu-list">
     <view class="menu-item" bindtap="onThemeChange">
       <text class="menu-icon">🎨</text>
-      <text class="menu-text">主题模式</text>
-      <text class="menu-value">{{theme === 'light' ? '浅色' : '深色'}}</text>
+      <text class="menu-text">主题颜色</text>
+      <view class="color-preview" style="background: {{themeColor}};"></view>
       <text class="arrow">></text>
     </view>
     
@@ -33,20 +33,28 @@
     </view>
   </view>
 
-  <!-- 主题选择弹窗 -->
+  <!-- 主题颜色选择弹窗 -->
   <view class="theme-modal" wx:if="{{showThemeModal}}">
     <view class="theme-mask" bindtap="onCloseTheme"></view>
     <view class="theme-content">
-      <view class="theme-title">选择主题</view>
-      <view class="theme-options">
-        <view class="theme-option {{theme==='light'?'active':''}}" bindtap="selectTheme" data-theme="light">
-          <view class="theme-preview light-preview"></view>
-          <text>浅色模式</text>
+      <view class="theme-title">选择主题颜色</view>
+      <view class="color-grid">
+        <view 
+          wx:for="{{colorOptions}}" 
+          wx:key="index" 
+          class="color-option {{themeColor === item.color ? 'active' : ''}}"
+          style="background: {{item.color}};"
+          bindtap="selectTheme" 
+          data-color="{{item.color}}"
+          data-colordark="{{item.colorDark}}"
+        >
+          <text wx:if="{{themeColor === item.color}}">✓</text>
         </view>
-        <view class="theme-option {{theme==='dark'?'active':''}}" bindtap="selectTheme" data-theme="dark">
-          <view class="theme-preview dark-preview"></view>
-          <text>深色模式</text>
-        </view>
+      </view>
+      <view class="custom-color">
+        <text>自定义颜色：</text>
+        <input type="text" placeholder="#FF6B9D" bindinput="onCustomColor" class="color-input"/>
+        <button size="mini" bindtap="applyCustomColor">应用</button>
       </view>
     </view>
   </view>
