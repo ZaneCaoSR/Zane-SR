@@ -21,12 +21,24 @@
   <view class="form-section">
     <!-- 宝宝名字 -->
     <view class="form-item">
-      <view class="form-label">宝宝名字</view>
-      <input 
-        class="form-input" 
+      <view class="form-label">宝宝大名</view>
+      <input
+        class="form-input"
         value="{{babyInfo.name}}"
         placeholder="请输入宝宝名字"
         bindinput="onNameInput"
+        maxlength="20"
+      />
+    </view>
+
+    <!-- 宝宝小名 -->
+    <view class="form-item">
+      <view class="form-label">宝宝小名</view>
+      <input
+        class="form-input"
+        value="{{babyInfo.nickname}}"
+        placeholder="请输入宝宝小名"
+        bindinput="onNicknameInput"
         maxlength="20"
       />
     </view>

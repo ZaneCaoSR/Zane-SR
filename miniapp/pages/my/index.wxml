@@ -30,6 +30,28 @@
     </view>
   </view>
 
+  <!-- 宝宝信息卡片 -->
+  <view class="baby-card" wx:if="{{babyInfo}}" bindtap="goToSettings">
+    <view class="baby-avatar-wrapper">
+      <image
+        class="baby-avatar"
+        src="{{babyInfo.avatar || '/assets/icons/default-avatar.png'}}"
+        mode="aspectFill"
+      />
+    </view>
+    <view class="baby-info">
+      <view class="baby-names">
+        <text class="baby-name">{{babyInfo.name}}</text>
+        <text class="baby-nickname" wx:if="{{babyInfo.nickname}}">({{babyInfo.nickname}})</text>
+      </view>
+      <text class="baby-age">{{babyInfo.birthDate ? getBabyAge(babyInfo.birthDate) : '设置宝宝信息'}}</text>
+    </view>
+    <view class="baby-action">
+      <text>编辑</text>
+      <text class="arrow">›</text>
+    </view>
+  </view>
+
   <!-- 功能菜单 -->
   <view class="menu-section">
     <view class="menu-card">

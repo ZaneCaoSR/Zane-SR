@@ -5,6 +5,7 @@ Page({
   data: {
     isLoggedIn: false,
     userInfo: {},
+    babyInfo: null,
     themeColor: '#E8A87C',
     themeColorDark: '#C38D6B',
     showThemeModal: false,
@@ -26,12 +27,32 @@ Page({
     const userInfo = wx.getStorageSync('userInfo') || {};
     const themeColor = wx.getStorageSync('themeColor') || '#E8A87C';
     const themeColorDark = wx.getStorageSync('themeColorDark') || '#C38D6B';
-    
+
     this.setData({
       userInfo,
       themeColor,
       themeColorDark,
       isLoggedIn: !!userInfo.openid
+    });
+
+    // 加载宝宝信息
+    this.loadBabyInfo();
+  },
+
+  onShow() {
+    // 每次显示时刷新宝宝信息
+    this.loadBabyInfo();
+  },
+
+  // 加载宝宝信息
+  loadBabyInfo() {
+    const db = wx.cloud.database();
+    db.collection('baby_info').limit(1).get().then(res => {
+      if (res.data.length > 0) {
+        this.setData({ babyInfo: res.data[0] });
+      }
+    }).catch(err => {
+      console.error('加载宝宝信息失败', err);
     });
   },
 
@@ -138,5 +159,31 @@ Page({
       content: 'Zane-SR 宝宝成长相册\n\n记录宝宝成长的美好瞬间',
       showCancel: false
     });
+  },
+
+  // 跳转到设置页面
+  goToSettings() {
+    wx.navigateTo({
+      url: '/pages/settings/index'
+    });
+  },
+
+  // 计算宝宝月龄
+  getBabyAge(birthDate) {
+    if (!birthDate) return '';
+
+    const birth = new Date(birthDate);
+    const now = new Date();
+    const months = (now.getFullYear() - birth.getFullYear()) * 12 + (now.getMonth() - birth.getMonth());
+
+    if (months < 0) return '还未出生';
+    if (months === 0) return '新生儿';
+    if (months === 1) return '1个月';
+    if (months < 12) return `${months}个月`;
+
+    const years = Math.floor(months / 12);
+    const remainingMonths = months % 12;
+    if (remainingMonths === 0) return `${years}岁`;
+    return `${years}岁${remainingMonths}个月`;
   }
 });

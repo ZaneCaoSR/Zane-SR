@@ -3,6 +3,7 @@ Page({
   data: {
     babyInfo: {
       name: '',
+      nickname: '',
       birthDate: '',
       gender: 'boy',
       avatar: ''
@@ -44,6 +45,7 @@ Page({
         this.setData({
           babyInfo: {
             name: info.name || '',
+            nickname: info.nickname || '',
             birthDate: info.birthDate || '',
             gender: info.gender || 'boy',
             avatar: info.avatar || ''
@@ -67,6 +69,11 @@ Page({
   // 名字输入
   onNameInput(e) {
     this.setData({ 'babyInfo.name': e.detail.value });
+  },
+
+  // 小名输入
+  onNicknameInput(e) {
+    this.setData({ 'babyInfo.nickname': e.detail.value });
   },
 
   // 性别选择
@@ -110,6 +117,7 @@ Page({
     const db = wx.cloud.database();
     const data = {
       name: babyInfo.name,
+      nickname: babyInfo.nickname,
       birthDate: babyInfo.birthDate,
       gender: babyInfo.gender,
       avatar: babyInfo.avatar,

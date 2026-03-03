@@ -120,6 +120,65 @@
   color: var(--color-text-secondary);
 }
 
+/* 宝宝信息卡片 */
+.baby-card {
+  display: flex;
+  align-items: center;
+  margin: 0 var(--spacing-md) var(--spacing-md);
+  padding: var(--spacing-md);
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.baby-avatar-wrapper {
+  margin-right: var(--spacing-md);
+}
+
+.baby-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: var(--color-bg-secondary);
+}
+
+.baby-info {
+  flex: 1;
+}
+
+.baby-names {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-xs);
+}
+
+.baby-name {
+  font-family: var(--font-family-display);
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.baby-nickname {
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+}
+
+.baby-age {
+  display: block;
+  font-size: 24rpx;
+  color: var(--color-text-tertiary);
+  margin-top: 4rpx;
+}
+
+.baby-action {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 24rpx;
+  color: var(--color-text-tertiary);
+}
+
 /* 功能菜单 */
 .menu-section {
   padding: var(--spacing-md);

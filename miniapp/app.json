@@ -5,6 +5,7 @@
     "pages/upload/index",
     "pages/photo/index",
     "pages/my/index",
+    "pages/settings/index",
     "pages/weather/index",
     "pages/city-select/city-select",
     "pages/weather-detail/weather-detail",
