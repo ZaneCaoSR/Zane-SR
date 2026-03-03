@@ -59,6 +59,14 @@ Page({
       animation: { duration: 300, timingFunc: 'easeInOut' }
     });
 
+    // 更新自定义 tabBar 颜色
+    if (typeof this.getTabBar === 'function') {
+      const tabBar = this.getTabBar();
+      if (tabBar) {
+        tabBar.setData({ selectedColor: themeColor });
+      }
+    }
+
     // 每次显示时刷新宝宝信息
     this.loadBabyInfo();
   },

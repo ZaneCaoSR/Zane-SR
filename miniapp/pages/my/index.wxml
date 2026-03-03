@@ -2,7 +2,7 @@
 <view class="my-container page-enter">
   <!-- 用户信息卡片 -->
   <view class="user-hero">
-    <view class="hero-bg">
+    <view class="hero-bg" style="background: linear-gradient(135deg, {{themeColor}} 0%, {{themeColorDark}} 100%);">
       <view class="bg-pattern"></view>
     </view>
 
