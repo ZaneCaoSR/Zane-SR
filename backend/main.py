@@ -251,45 +251,6 @@ async def query_weather(city_name: str):
     return weather
 
 
-@app.post("/api/login", summary="小程序登录")
-async def miniapp_login(request: Request):
-    """小程序登录接口 - 支持微信授权登录"""
-    import httpx
-    from config import WECHAT_APP_ID, WECHAT_APP_SECRET
-    
-    body = await request.json()
-    code = body.get("code")
-    
-    # 如果没有配置微信 AppID，使用模拟登录
-    if not WECHAT_APP_ID or WECHAT_APP_ID == "YOUR_WECHAT_APP_ID":
-        mock_openid = f"mock_openid_{code or 'test'}_{int(datetime.now().timestamp())}"
-        return {"openid": mock_openid, "session_key": "mock_session", "mock": True}
-    
-    # 调用微信 code2session 接口
-    try:
-        url = 'https://api.weixin.qq.com/sns/jscode2session'
-        params = {
-            'appid': WECHAT_APP_ID,
-            'secret': WECHAT_APP_SECRET,
-            'js_code': code,
-            'grant_type': 'authorization_code',
-        }
-        async with httpx.AsyncClient(timeout=10) as client:
-            resp = await client.get(url, params=params)
-            data = resp.json()
-        
-        if 'openid' in data:
-            return {"openid": data['openid'], "session_key": data.get('session_key', ''), "mock": False}
-        else:
-            # 微信 API 返回错误，使用模拟登录
-            mock_openid = f"mock_openid_{code}_{int(datetime.now().timestamp())}"
-            return {"openid": mock_openid, "session_key": "mock_session", "mock": True, "error": data}
-    except Exception as e:
-        # 网络错误，使用模拟登录
-        mock_openid = f"mock_openid_{code}_{int(datetime.now().timestamp())}"
-        return {"openid": mock_openid, "session_key": "mock_session", "mock": True, "error": str(e)}
-
-
 # ==================== 照片管理 API ====================
 
 import os
