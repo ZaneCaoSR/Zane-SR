@@ -201,6 +201,7 @@ async def upload_photo(file: UploadFile = File(...)):
         "size": len(content),
         "created_at": str(datetime.now()),
         "remark": "",
+        "tags": [],
         "ai_result": None
     }
     photos.append(photo_data)
@@ -259,16 +260,53 @@ async def delete_photo(photo_id: str):
 
 @app.put("/api/photo/{photo_id}", summary="更新照片信息")
 async def update_photo(photo_id: str, request: Request):
-    """更新照片备注"""
+    """更新照片备注和标签"""
     body = await request.json()
     photos = load_photos()
-    
+
     for photo in photos:
         if photo["id"] == photo_id:
             photo["remark"] = body.get("remark", photo.get("remark", ""))
+            # 更新标签
+            if "tags" in body:
+                photo["tags"] = body["tags"]
             save_photos(photos)
             return {"success": True, "photo": photo}
-    
+
+    raise HTTPException(status_code=404, detail="照片不存在")
+
+
+@app.post("/api/photo/{photo_id}/analyze", summary="AI分析照片")
+async def analyze_photo(photo_id: str):
+    """AI分析照片，自动生成标签"""
+    photos = load_photos()
+
+    for photo in photos:
+        if photo["id"] == photo_id:
+            # 模拟AI分析结果（实际项目中可接入腾讯云图像识别等API）
+            import random
+            emotions = ["开心", "惊讶", "困倦", "好奇", "平静"]
+            actions = ["抬头", "翻身", "爬行", "走路", "吃饭", "睡觉", "玩耍"]
+            milestones = ["百天", "周岁", "长牙", "会坐", "会站"]
+            scenes = ["室内", "户外", "商场", "公园", "家里", "海边"]
+            weathers = ["晴天", "阴天", "雨天", "雪天"]
+
+            # 随机生成标签
+            tags = [
+                {"type": "emotion", "value": random.choice(emotions), "confidence": round(random.uniform(0.8, 0.98), 2)},
+                {"type": "action", "value": random.choice(actions), "confidence": round(random.uniform(0.7, 0.95), 2)},
+                {"type": "milestone", "value": random.choice(milestones), "confidence": round(random.uniform(0.6, 0.9), 2)} if random.random() > 0.5 else None,
+                {"type": "scene", "value": random.choice(scenes), "confidence": round(random.uniform(0.8, 0.95), 2)},
+                {"type": "weather", "value": random.choice(weathers), "confidence": round(random.uniform(0.8, 0.95), 2)},
+            ]
+            # 过滤掉None值
+            tags = [t for t in tags if t is not None]
+
+            photo["tags"] = tags
+            photo["ai_result"] = {"analyzed_at": str(datetime.now())}
+            save_photos(photos)
+            return {"success": True, "tags": tags}
+
     raise HTTPException(status_code=404, detail="照片不存在")
 
 

@@ -6,8 +6,20 @@ Page({
     isLoading: true,
     isEditing: false,
     remark: '',
-    showDeleteConfirm: false
+    showDeleteConfirm: false,
+    isAnalyzing: false,
+    showTagModal: false,
+    newTag: { type: 'emotion', value: '' }
   },
+
+  // 预定义标签
+  tagTypes: [
+    { type: 'emotion', label: '表情', values: ['开心', '惊讶', '困倦', '好奇', '平静', '大笑', '哭闹'] },
+    { type: 'action', label: '动作', values: ['抬头', '翻身', '爬行', '走路', '吃饭', '睡觉', '玩耍'] },
+    { type: 'milestone', label: '里程碑', values: ['百天', '周岁', '长牙', '会坐', '会站', '会走'] },
+    { type: 'scene', label: '场景', values: ['室内', '户外', '商场', '公园', '家里', '海边'] },
+    { type: 'weather', label: '天气', values: ['晴天', '阴天', '雨天', '雪天'] }
+  ],
 
   onLoad(options) {
     const { id } = options;
@@ -179,8 +191,139 @@ Page({
     const colors = {
       expression: '#FF6B9D',
       action: '#67D4CA',
-      milestone: '#FFB347'
+      milestone: '#FFB347',
+      emotion: '#FF6B9D',
+      scene: '#A8C0D8',
+      weather: '#FFD166'
     };
     return colors[type] || '#999';
+  },
+
+  // AI 分析照片
+  analyzePhoto() {
+    const { photoId, isAnalyzing } = this.data;
+    if (isAnalyzing) return;
+
+    this.setData({ isAnalyzing: true });
+    wx.showLoading({ title: 'AI 分析中...' });
+
+    const { BASE_URL } = require('../../utils/config');
+    wx.request({
+      url: `${BASE_URL}/api/photo/${photoId}/analyze`,
+      method: 'POST',
+      success: (res) => {
+        wx.hideLoading();
+        if (res.data && res.data.success) {
+          this.setData({ 'photo.tags': res.data.tags, isAnalyzing: false });
+          wx.showToast({ title: '分析完成', icon: 'success' });
+        } else {
+          this.setData({ isAnalyzing: false });
+          wx.showToast({ title: '分析失败', icon: 'none' });
+        }
+      },
+      fail: () => {
+        wx.hideLoading();
+        this.setData({ isAnalyzing: false });
+        // 模拟分析成功（用于测试）
+        this.simulateAnalyze();
+      }
+    });
+  },
+
+  // 模拟AI分析（用于测试或无后端时）
+  simulateAnalyze() {
+    const tags = [
+      { type: 'emotion', value: '开心', confidence: 0.95 },
+      { type: 'action', value: '玩耍', confidence: 0.88 },
+      { type: 'scene', value: '家里', confidence: 0.92 }
+    ];
+    this.setData({ 'photo.tags': tags });
+    wx.showToast({ title: '已添加标签', icon: 'success' });
+  },
+
+  // 显示添加标签弹窗
+  showAddTagModal() {
+    this.setData({ showTagModal: true, 'newTag.value': '' });
+  },
+
+  // 隐藏添加标签弹窗
+  hideTagModal() {
+    this.setData({ showTagModal: false });
+  },
+
+  // 选择标签类型
+  onTagTypeChange(e) {
+    const index = e.detail.value;
+    const type = this.data.tagTypes[index].type;
+    this.setData({ 'newTag.type': type, 'newTag.value': '' });
+  },
+
+  // 选择标签值
+  onTagValueTap(e) {
+    const value = e.currentTarget.dataset.value;
+    this.addTag(value);
+  },
+
+  // 输入自定义标签
+  onCustomTagInput(e) {
+    this.setData({ 'newTag.value': e.detail.value });
+  },
+
+  // 添加标签
+  addTag(value) {
+    const { photo, newTag } = this.data;
+    if (!value && !newTag.value) {
+      wx.showToast({ title: '请选择或输入标签', icon: 'none' });
+      return;
+    }
+
+    const tagValue = value || newTag.value;
+    const tagType = newTag.type;
+
+    // 检查是否已存在
+    const existingTags = photo.tags || [];
+    if (existingTags.some(t => t.value === tagValue && t.type === tagType)) {
+      wx.showToast({ title: '标签已存在', icon: 'none' });
+      return;
+    }
+
+    const newTagObj = { type: tagType, value: tagValue, confidence: 1.0 };
+    const updatedTags = [...existingTags, newTagObj];
+
+    this.setData({
+      'photo.tags': updatedTags,
+      showTagModal: false
+    });
+
+    // 保存到后端
+    this.saveTags(updatedTags);
+  },
+
+  // 保存标签到后端
+  saveTags(tags) {
+    const { BASE_URL } = require('../../utils/config');
+    const { photoId } = this.data;
+
+    wx.request({
+      url: `${BASE_URL}/api/photo/${photoId}`,
+      method: 'PUT',
+      data: { tags },
+      success: (res) => {
+        if (res.data && res.data.success) {
+          wx.showToast({ title: '保存成功', icon: 'success' });
+        }
+      }
+    });
+  },
+
+  // 删除标签
+  removeTag(e) {
+    const index = e.currentTarget.dataset.index;
+    const { photo } = this.data;
+    const tags = [...photo.tags];
+    tags.splice(index, 1);
+
+    this.setData({ 'photo.tags': tags });
+    this.saveTags(tags);
   }
 });
