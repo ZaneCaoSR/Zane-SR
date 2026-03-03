@@ -401,6 +401,32 @@
   transition: width 0.3s ease;
 }
 
+/* 今日温度范围 */
+.temp-range {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+}
+
+.temp-low {
+  font-size: 28rpx;
+  color: #74b9ff;
+  font-weight: 500;
+}
+
+.temp-high {
+  font-size: 28rpx;
+  color: #ff6b6b;
+  font-weight: 500;
+}
+
+.temp-divider {
+  font-size: 24rpx;
+  color: var(--color-text-tertiary);
+}
+
 /* 详情网格 */
 .detail-grid {
   display: grid;

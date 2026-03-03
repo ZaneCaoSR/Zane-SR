@@ -86,6 +86,13 @@
                 <view class="comfort-fill" style="width: {{item.comfort.score}}%"></view>
               </view>
             </view>
+
+            <!-- 今日温度 -->
+            <view class="temp-range">
+              <text class="temp-low">{{item.weatherData.min_temp || '--'}}°</text>
+              <text class="temp-divider">/</text>
+              <text class="temp-high">{{item.weatherData.max_temp || '--'}}°</text>
+            </view>
           </view>
         </view>
 
