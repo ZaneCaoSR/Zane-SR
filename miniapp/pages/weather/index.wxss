@@ -74,6 +74,25 @@
   color: var(--color-text-tertiary);
 }
 
+.city-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.push-time {
+  font-size: 22rpx;
+  color: var(--color-accent);
+  background: rgba(232, 168, 124, 0.15);
+  padding: 4rpx 12rpx;
+  border-radius: var(--radius-lg);
+}
+
+.city-action-text {
+  font-size: 24rpx;
+  color: var(--color-text-tertiary);
+}
+
 .city-action .arrow {
   transition: transform var(--duration-normal);
 }

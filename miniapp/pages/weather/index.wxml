@@ -6,8 +6,9 @@
       <text class="city-icon">📍</text>
       <text class="city-name">{{cities[currentCityIndex].city}}</text>
     </view>
-    <view class="city-action">
-      <text>{{cities.length > 1 ? '滑动切换' : '切换'}}</text>
+    <view class="city-meta">
+      <text class="push-time" wx:if="{{cities[currentCityIndex].pushTime}}">🔔 {{cities[currentCityIndex].pushTime}}</text>
+      <text class="city-action-text">{{cities.length > 1 ? '滑动切换' : '切换'}}</text>
       <text class="arrow">→</text>
     </view>
   </view>
