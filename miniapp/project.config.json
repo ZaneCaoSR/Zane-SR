@@ -29,7 +29,8 @@
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
-      "outputPath": ""
+      "outputPath": "",
+      "include": ["**/node_modules/@babel/runtime/helpers/typeof"]
     },
     "enableEngineNative": false,
     "useIsolateContext": true,
