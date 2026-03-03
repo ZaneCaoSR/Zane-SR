@@ -79,6 +79,72 @@ const getWeatherTips = (weather, temp, humidity, air) => {
   return tips;
 };
 
+// 舒适度计算
+const getComfortLevel = (temp, humidity) => {
+  const t = parseInt(temp) || 20;
+  const h = parseInt(humidity) || 50;
+
+  let score = 100;
+  let level = '舒适';
+  let icon = '😊';
+
+  // 温度影响
+  if (t < 5) {
+    score -= (5 - t) * 5;
+    level = '寒冷';
+    icon = '🥶';
+  } else if (t < 10) {
+    score -= (10 - t) * 3;
+    level = '较冷';
+    icon = '😨';
+  } else if (t < 18) {
+    score -= Math.abs(18 - t) * 2;
+    level = '偏凉';
+    icon = '🙂';
+  } else if (t > 35) {
+    score -= (t - 35) * 5;
+    level = '炎热';
+    icon = '🥵';
+  } else if (t > 30) {
+    score -= (t - 30) * 3;
+    level = '较热';
+    icon = '😓';
+  } else if (t > 28) {
+    score -= Math.abs(28 - t) * 2;
+    level = '偏热';
+    icon = '🙂';
+  }
+
+  // 湿度影响
+  if (h > 80) {
+    score -= (h - 80) * 0.5;
+    level = h > 90 ? '闷热' : level;
+    icon = h > 90 ? '🥵' : icon;
+  } else if (h < 30) {
+    score -= (30 - h) * 0.3;
+    level = h < 20 ? '干燥' : level;
+    icon = h < 20 ? '😫' : icon;
+  }
+
+  score = Math.max(0, Math.min(100, score));
+
+  if (score >= 80) {
+    level = '舒适';
+    icon = '😊';
+  } else if (score >= 60) {
+    level = '较舒适';
+    icon = '🙂';
+  } else if (score >= 40) {
+    level = '较不舒适';
+    icon = '😐';
+  } else {
+    level = '不舒适';
+    icon = '😫';
+  }
+
+  return { score, level, icon };
+};
+
 Page({
   data: {
     city: '杭州',
@@ -206,6 +272,8 @@ Page({
             res.data.humidity,
             res.data.air
           );
+          // 添加舒适度
+          cities[idx].comfort = getComfortLevel(res.data.temp, res.data.humidity);
           cities[idx].loaded = true;
           cities[idx].loading = false;
           this.setData({ cities: cities });

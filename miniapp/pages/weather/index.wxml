@@ -77,6 +77,15 @@
               <text class="weather-desc">{{item.weatherData.weather || '加载中...'}}</text>
               <text class="feels-like">体感 {{item.weatherData.feels_like || '--'}}°</text>
             </view>
+
+            <!-- 舒适度 -->
+            <view class="comfort-level" wx:if="{{item.comfort}}">
+              <text class="comfort-icon">{{item.comfort.icon}}</text>
+              <text class="comfort-text">{{item.comfort.level}}</text>
+              <view class="comfort-bar">
+                <view class="comfort-fill" style="width: {{item.comfort.score}}%"></view>
+              </view>
+            </view>
           </view>
         </view>
 
