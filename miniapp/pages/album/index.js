@@ -1,5 +1,5 @@
 // 相册首页 - 使用自建后端 API
-const { BASE_URL } = require('../utils/config');
+const { BASE_URL } = require('../../utils/config');
 
 Page({
   data: {
