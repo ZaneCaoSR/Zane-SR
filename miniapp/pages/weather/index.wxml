@@ -114,6 +114,23 @@
           </view>
         </view>
 
+        <!-- 逐小时预报 -->
+        <view class="hourly-section" wx:if="{{item.weatherData.hourly && item.weatherData.hourly.length > 0}}">
+          <view class="hourly-header">
+            <text class="hourly-title">🕐 逐小时</text>
+          </view>
+          <scroll-view class="hourly-scroll" scroll-x="true">
+            <view class="hourly-list">
+              <view class="hourly-item" wx:for="{{item.weatherData.hourly}}" wx:key="time" wx:if="{{index < 24}}">
+                <text class="hourly-time">{{item.time.substring(11, 16)}}</text>
+                <text class="hourly-temp">{{item.temp}}°</text>
+                <text class="hourly-weather">{{item.weather}}</text>
+                <text class="hourly-pop" wx:if="{{item.pop > 0}}">{{item.pop}}%</text>
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+
         <!-- 3日预报 -->
         <view class="forecast-section" wx:if="{{item.weatherData.forecast && item.weatherData.forecast.length > 0}}">
           <view class="forecast-header">

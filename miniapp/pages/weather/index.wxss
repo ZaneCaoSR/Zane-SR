@@ -397,6 +397,66 @@
   color: var(--color-text-tertiary);
 }
 
+/* 逐小时预报 */
+.hourly-section {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.hourly-header {
+  margin-bottom: var(--spacing-sm);
+}
+
+.hourly-title {
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.hourly-scroll {
+  width: 100%;
+  white-space: nowrap;
+}
+
+.hourly-list {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.hourly-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  min-width: 100rpx;
+  padding: var(--spacing-sm);
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+}
+
+.hourly-time {
+  font-size: 22rpx;
+  color: var(--color-text-tertiary);
+}
+
+.hourly-temp {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.hourly-weather {
+  font-size: 22rpx;
+  color: var(--color-text-secondary);
+}
+
+.hourly-pop {
+  font-size: 20rpx;
+  color: #1890ff;
+}
+
 /* 更新时间 */
 .update-info {
   text-align: center;

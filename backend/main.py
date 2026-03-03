@@ -14,7 +14,7 @@ from database import init_db, add_subscriber
 from auth import verify_api_key
 from database import remove_subscriber, get_all_subscribers, get_subscriber
 from database import get_cities, set_cities, add_city_to_subscription, remove_city_from_subscription
-from weather import get_weather, get_weather_by_city_id, get_city_id, get_weather_indices
+from weather import get_weather, get_city_id, get_weather_by_city_id, get_weather_indices, get_hourly_forecast
 from config import QWEATHER_GEO_URL
 from scheduler import start_scheduler, stop_scheduler, push_daily_weather
 from retry import get_retry_queue, clear_retry_queue, retry_failed_pushes

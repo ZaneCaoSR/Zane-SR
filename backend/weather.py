@@ -175,6 +175,11 @@ async def get_weather(city_name: str) -> dict | None:
     if air:
         weather_data["air"] = air
 
+    # 获取逐小时预报
+    hourly = await get_hourly_forecast(city_id)
+    if hourly:
+        weather_data["hourly"] = hourly
+
     # 写入缓存
     _set_cached_weather(city_name, weather_data)
     return weather_data
@@ -278,6 +283,11 @@ async def get_weather_by_city_id(city_id: str, city_name: str = None) -> dict | 
     air = await get_air_quality(city_id)
     if air:
         weather_data["air"] = air
+
+    # 获取逐小时预报
+    hourly = await get_hourly_forecast(city_id)
+    if hourly:
+        weather_data["hourly"] = hourly
 
     # 写入30分钟缓存
     _set_cached_weather_by_city_id(city_id, weather_data)
@@ -422,4 +432,74 @@ async def get_air_quality(city_id: str) -> dict | None:
 
     except Exception as e:
         logger.warning(f"[Weather] 获取空气质量失败: {e}")
+        return None
+
+
+# ===== 逐小时预报 =====
+
+_hourly_cache = {}
+HOURLY_CACHE_TTL = 30 * 60  # 30分钟
+
+
+def _get_cached_hourly(city_id: str) -> list | None:
+    """获取缓存的逐小时预报"""
+    if city_id in _hourly_cache:
+        data, timestamp = _hourly_cache[city_id]
+        if time.time() - timestamp < HOURLY_CACHE_TTL:
+            return data
+    return None
+
+
+def _set_cached_hourly(city_id: str, data: list):
+    """设置逐小时预报缓存"""
+    _hourly_cache[city_id] = (data, time.time())
+
+
+async def get_hourly_forecast(city_id: str) -> list | None:
+    """
+    获取逐小时天气预报
+    """
+    # 先检查缓存
+    cached = _get_cached_hourly(city_id)
+    if cached:
+        return cached
+
+    token = get_jwt_token()
+    if not token:
+        return None
+
+    headers = {"Authorization": f"Bearer {token}"}
+
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.get(
+                f"{QWEATHER_BASE_URL}/weather/24h",
+                params={"location": city_id, "lang": "zh"},
+                headers=headers
+            )
+            data = resp.json()
+
+        if data.get("code") != "200":
+            return None
+
+        # 提取逐小时数据
+        hourly = []
+        for hour in data.get("hourly", [])[:24]:  # 取24小时
+            hourly.append({
+                "time": hour.get("fxTime", ""),  # 时间
+                "temp": hour.get("temp", ""),    # 温度
+                "weather": hour.get("text", ""), # 天气
+                "icon": hour.get("icon", ""),    # 图标代码
+                "wind_dir": hour.get("windDir", ""),
+                "wind_scale": hour.get("windScale", ""),
+                "humidity": hour.get("humidity", ""),
+                "pop": hour.get("pop", ""),       # 降水概率
+            })
+
+        # 写入缓存
+        _set_cached_hourly(city_id, hourly)
+        return hourly
+
+    except Exception as e:
+        logger.warning(f"[Weather] 获取逐小时预报失败: {e}")
         return None
