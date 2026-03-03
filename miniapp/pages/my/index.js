@@ -10,6 +10,13 @@ Page({
     themeColorDark: '#C38D6B',
     showThemeModal: false,
     customColor: '#FF6B9D',
+    aiModel: 'GPT-4o mini',
+    aiModelOptions: [
+      { id: 'gpt-4o-mini', name: 'GPT-4o mini', desc: '快速、免费' },
+      { id: 'gpt-4o', name: 'GPT-4o', desc: '更智能' },
+      { id: 'claude-3', name: 'Claude 3', desc: 'Claude 最新模型' },
+      { id: 'gemini', name: 'Gemini Pro', desc: 'Google 模型' }
+    ],
     colorOptions: [
       { color: '#E8A87C', colorDark: '#C38D6B', name: '杏色' },
       { color: '#FFCDB2', colorDark: '#FFB5A7', name: '蜜桃' },
@@ -27,11 +34,13 @@ Page({
     const userInfo = wx.getStorageSync('userInfo') || {};
     const themeColor = wx.getStorageSync('themeColor') || '#E8A87C';
     const themeColorDark = wx.getStorageSync('themeColorDark') || '#C38D6B';
+    const aiModel = wx.getStorageSync('aiModel') || 'GPT-4o mini';
 
     this.setData({
       userInfo,
       themeColor,
       themeColorDark,
+      aiModel,
       isLoggedIn: !!userInfo.openid
     });
 
@@ -125,6 +134,25 @@ Page({
   // 主题颜色切换
   onThemeChange() {
     this.setData({ showThemeModal: true });
+  },
+
+  // AI 模型选择
+  onAIModelChange() {
+    const { aiModelOptions, aiModel } = this.data;
+    const modelNames = aiModelOptions.map(m => m.name);
+
+    wx.showActionSheet({
+      itemList: modelNames,
+      success: (res) => {
+        const selectedModel = aiModelOptions[res.tapIndex];
+        this.setData({ aiModel: selectedModel.name });
+        wx.setStorageSync('aiModel', selectedModel.name);
+        wx.showToast({
+          title: `已切换到 ${selectedModel.name}`,
+          icon: 'success'
+        });
+      }
+    });
   },
 
   // 关闭主题弹窗
