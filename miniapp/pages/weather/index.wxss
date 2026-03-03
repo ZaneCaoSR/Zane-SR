@@ -229,6 +229,41 @@
   }
 }
 
+/* 天气主题背景 */
+.theme-sunny .weather-hero {
+  background: linear-gradient(165deg, #FFF8F0 0%, #FFEFDF 50%, #FFE8D6 100%);
+}
+
+.theme-cloudy .weather-hero {
+  background: linear-gradient(165deg, #F0F4F8 0%, #D9E2EC 50%, #BCCCDC 100%);
+}
+
+.theme-rainy .weather-hero {
+  background: linear-gradient(165deg, #E8F4F8 0%, #D0E8F0 50%, #B8D8E8 100%);
+}
+
+.theme-snowy .weather-hero {
+  background: linear-gradient(165deg, #F5F8FF 0%, #E8EEF8 50%, #D8E4F5 100%);
+}
+
+.theme-foggy .weather-hero {
+  background: linear-gradient(165deg, #F0F0F0 0%, #E8E8E8 50%, #D8D8D8 100%);
+}
+
+.theme-stormy .weather-hero {
+  background: linear-gradient(165deg, #4A4A5A 0%, #3A3A4A 50%, #2A2A3A 100%);
+}
+
+.theme-stormy .temp-value,
+.theme-stormy .weather-desc {
+  color: #fff;
+}
+
+.theme-stormy .feels-like,
+.theme-stormy .temp-unit {
+  color: rgba(255, 255, 255, 0.7);
+}
+
 .hero-content {
   position: relative;
   z-index: 2;

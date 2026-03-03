@@ -2,6 +2,20 @@
 const { BASE_URL } = require('../../utils/config');
 const app = getApp();
 
+// 天气主题映射
+const getWeatherTheme = (weather) => {
+  if (!weather) return 'theme-sunny';
+  const w = weather.toLowerCase();
+  if (w.includes('晴')) return 'theme-sunny';
+  if (w.includes('多云')) return 'theme-cloudy';
+  if (w.includes('阴')) return 'theme-cloudy';
+  if (w.includes('雨')) return 'theme-rainy';
+  if (w.includes('雪')) return 'theme-snowy';
+  if (w.includes('雾') || w.includes('霾')) return 'theme-foggy';
+  if (w.includes('雷')) return 'theme-stormy';
+  return 'theme-sunny';
+};
+
 Page({
   data: {
     city: '杭州',
@@ -11,6 +25,11 @@ Page({
     updateTime: '',
     userCity: '杭州',
     loading: false
+  },
+
+  // 天气主题过滤器
+  getWeatherTheme(weather) {
+    return getWeatherTheme(weather);
   },
 
   onLoad() {
@@ -116,6 +135,7 @@ Page({
         if (res.data && res.data.city) {
           // 更新对应城市的天气数据
           cities[idx].weatherData = res.data;
+          cities[idx].weatherTheme = getWeatherTheme(res.data.weather);
           cities[idx].loaded = true;
           cities[idx].loading = false;
           this.setData({ cities: cities });
