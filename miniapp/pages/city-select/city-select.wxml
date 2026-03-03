@@ -1,10 +1,10 @@
-<!--
-  city-select.wxml - 城市选择页面
-  功能：搜索并选择城市，可添加到订阅列表
--->
-<view class="container">
+<!-- 城市选择页面 - 奶油日记风格 -->
+<view class="container page-enter">
   <!-- 搜索框 -->
   <view class="search-box">
+    <view class="search-icon">
+      <text>🔍</text>
+    </view>
     <input
       class="search-input"
       value="{{searchKey}}"
@@ -13,86 +13,102 @@
       confirm-type="search"
       bindconfirm="onSearch"
     />
-    <icon type="search" size="18" color="#999" wx:if="{{!searchKey}}" />
-    <icon type="clear" size="18" color="#999" wx:else bindtap="onClearSearch" />
+    <view class="clear-icon" wx:if="{{searchKey}}" bindtap="onClearSearch">
+      <text>✕</text>
+    </view>
   </view>
 
   <!-- 搜索结果 -->
   <view class="search-result" wx:if="{{searchResult}}">
-    <view class="result-header">搜索结果</view>
-    <view 
-      class="result-item" 
-      wx:for="{{searchResult}}" 
+    <view class="result-header">
+      <text>搜索结果</text>
+      <text class="result-count">{{searchResult.length}} 个</text>
+    </view>
+    <view
+      class="result-item"
+      wx:for="{{searchResult}}"
       wx:key="id"
       bindtap="onSelectCity"
       data-city="{{item}}"
     >
-      <text class="city-name">{{item.name}}</text>
-      <text class="city-province">{{item.province}}</text>
-      <button 
-        class="add-btn" 
-        size="mini" 
+      <view class="result-info">
+        <text class="city-name">{{item.name}}</text>
+        <text class="city-province">{{item.province}}</text>
+      </view>
+      <view
+        class="add-btn"
         bindtap="onAddToSubscribe"
         data-city="{{item}}"
       >
-        + 订阅
-      </button>
+        <text>+ 订阅</text>
+      </view>
     </view>
   </view>
 
   <!-- 热门城市 -->
   <view class="section" wx:if="{{!searchKey && !searchResult}}">
-    <view class="section-title">🌡️ 热门城市</view>
+    <view class="section-header">
+      <text class="section-title">🌡️ 热门城市</text>
+    </view>
     <view class="city-grid">
-      <view 
-        class="city-tag" 
-        wx:for="{{hotCities}}" 
+      <view
+        class="city-tag"
+        wx:for="{{hotCities}}"
         wx:key="id"
         bindtap="onSelectCity"
         data-city="{{item}}"
       >
-        {{item.name}}
+        <text>{{item.name}}</text>
       </view>
     </view>
   </view>
 
   <!-- 常用城市 -->
   <view class="section" wx:if="{{!searchKey && !searchResult && commonCities.length > 0}}">
-    <view class="section-title">📌 最近使用</view>
+    <view class="section-header">
+      <text class="section-title">📌 最近使用</text>
+    </view>
     <view class="city-grid">
-      <view 
-        class="city-tag" 
-        wx:for="{{commonCities}}" 
+      <view
+        class="city-tag"
+        wx:for="{{commonCities}}"
         wx:key="id"
         bindtap="onSelectCity"
         data-city="{{item}}"
       >
-        {{item.name}}
+        <text>{{item.name}}</text>
       </view>
     </view>
   </view>
 
   <!-- 当前订阅的城市 -->
   <view class="section" wx:if="{{!searchKey && !searchResult && subscribedCities.length > 0}}">
-    <view class="section-title">🔔 我的订阅</view>
+    <view class="section-header">
+      <text class="section-title">🔔 我的订阅</text>
+    </view>
     <view class="subscribed-list">
-      <view 
-        class="subscribed-item" 
-        wx:for="{{subscribedCities}}" 
+      <view
+        class="subscribed-item"
+        wx:for="{{subscribedCities}}"
         wx:key="city"
         bindtap="onSelectCity"
         data-city="{{item}}"
       >
         <view class="subscribed-info">
-          <text class="subscribed-city">{{item.city}}</text>
-          <text class="subscribed-time">每天 8:00 推送</text>
+          <view class="subscribed-city-row">
+            <text class="subscribed-city">{{item.city}}</text>
+            <view class="subscribed-badge">
+              <text>每天 8:00</text>
+            </view>
+          </view>
+          <text class="subscribed-time">准时推送</text>
         </view>
-        <view 
-          class="remove-btn" 
+        <view
+          class="remove-btn"
           catchtap="onRemoveSubscribe"
           data-city="{{item.city}}"
         >
-          ✕
+          <text>✕</text>
         </view>
       </view>
     </view>
@@ -100,12 +116,14 @@
 
   <!-- 空状态 -->
   <view class="empty-tip" wx:if="{{searchKey && searchResult.length === 0 && !searchLoading}}">
-    <text>未找到匹配的城市 🏙️</text>
+    <view class="empty-illustration">🏙️</view>
+    <text class="empty-text">未找到匹配的城市</text>
     <text class="empty-hint">试试其他城市名</text>
   </view>
 
   <!-- 加载中 -->
   <view class="loading-tip" wx:if="{{searchLoading}}">
+    <view class="loading-spinner"></view>
     <text>搜索中...</text>
   </view>
 </view>

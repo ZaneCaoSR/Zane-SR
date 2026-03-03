@@ -5,31 +5,27 @@ Page({
   data: {
     isLoggedIn: false,
     userInfo: {},
-    themeColor: '#FF6B9D',
-    themeColorDark: '#FF9ECA',
+    themeColor: '#E8A87C',
+    themeColorDark: '#C38D6B',
     showThemeModal: false,
     customColor: '#FF6B9D',
     colorOptions: [
-      { color: '#FF6B9D', colorDark: '#FF9ECA', name: '粉红' },
-      { color: '#4A90E2', colorDark: '#67B8DE', name: '蓝色' },
-      { color: '#52C41A', colorDark: '#95DE64', name: '绿色' },
-      { color: '#FAAD14', colorDark: '#FFC53D', name: '橙色' },
-      { color: '#F5222D', colorDark: '#FF7875', name: '红色' },
-      { color: '#722ED1', colorDark: '#9254DE', name: '紫色' },
-      { color: '#13C2C2', colorDark: '#36CFC9', name: '青色' },
-      { color: '#2F54EB', colorDark: '#597EF7', name: '深蓝' },
-      { color: '#EB2F96', colorDark: '#FF85C0', name: '玫红' },
-      { color: '#FA541C', colorDark: '#FF7A45', name: '橘红' },
-      { color: '#435444', colorDark: '#738A76', name: '墨绿' },
-      { color: '#722ED1', colorDark: '#B37FEB', name: '淡紫' },
+      { color: '#E8A87C', colorDark: '#C38D6B', name: '杏色' },
+      { color: '#FFCDB2', colorDark: '#FFB5A7', name: '蜜桃' },
+      { color: '#95B8A0', colorDark: '#7BA085', name: '薄荷' },
+      { color: '#A8C0D8', colorDark: '#8FAABE', name: '雾蓝' },
+      { color: '#E8C07D', colorDark: '#D4A968', name: '奶油' },
+      { color: '#D4847C', colorDark: '#C06C6C', name: '玫瑰' },
+      { color: '#B8AFA4', colorDark: '#9E968B', name: '奶茶' },
+      { color: '#7BA3C9', colorDark: '#5E8AB4', name: '天蓝' },
     ]
   },
 
   onLoad() {
     // 读取本地存储的用户信息
     const userInfo = wx.getStorageSync('userInfo') || {};
-    const themeColor = wx.getStorageSync('themeColor') || '#FF6B9D';
-    const themeColorDark = wx.getStorageSync('themeColorDark') || '#FF9ECA';
+    const themeColor = wx.getStorageSync('themeColor') || '#E8A87C';
+    const themeColorDark = wx.getStorageSync('themeColorDark') || '#C38D6B';
     
     this.setData({
       userInfo,

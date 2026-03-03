@@ -10,15 +10,15 @@
     "pages/subscriptions/subscriptions"
   ],
   "window": {
-    "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#FF9ECA",
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#FFFDF7",
     "navigationBarTitleText": "Zane-SR",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#FFF5F8"
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FFFDF7"
   },
   "tabBar": {
-    "color": "#999999",
-    "selectedColor": "#FF6B9D",
+    "color": "#B8AFA4",
+    "selectedColor": "#E8A87C",
     "backgroundColor": "#FFFFFF",
     "borderStyle": "white",
     "list": [

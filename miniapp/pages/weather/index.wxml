@@ -1,40 +1,80 @@
-<!-- 天气首页 -->
-<view class="weather-container">
+<!-- 天气首页 - 奶油日记风格 -->
+<view class="weather-container page-enter">
   <!-- 顶部城市选择 -->
-  <view class="city-selector" bindtap="onCitySelect">
-    <text class="city-name">{{city}}</text>
-    <text class="city-change">切换城市</text>
+  <view class="city-bar" bindtap="onCitySelect">
+    <view class="city-info">
+      <text class="city-icon">📍</text>
+      <text class="city-name">{{city}}</text>
+    </view>
+    <view class="city-action">
+      <text>切换</text>
+      <text class="arrow">→</text>
+    </view>
   </view>
 
-  <!-- 天气卡片 -->
-  <view class="weather-card">
-    <view class="temp">{{weather.temp}}°</view>
-    <view class="weather-desc">{{weather.weather}}</view>
-    <view class="update-time">更新于 {{updateTime}}</view>
+  <!-- 天气主卡片 -->
+  <view class="weather-hero">
+    <!-- 背景装饰 -->
+    <view class="hero-bg">
+      <view class="bg-circle circle-1"></view>
+      <view class="bg-circle circle-2"></view>
+      <view class="bg-circle circle-3"></view>
+    </view>
+
+    <view class="hero-content">
+      <!-- 天气图标 -->
+      <view class="weather-icon-wrapper">
+        <text class="weather-icon-large">{{weather.icon || '☀️'}}</text>
+      </view>
+
+      <!-- 温度 -->
+      <view class="temp-display">
+        <text class="temp-value">{{weather.temp}}</text>
+        <text class="temp-unit">°</text>
+      </view>
+
+      <!-- 天气描述 -->
+      <view class="weather-text">
+        <text class="weather-desc">{{weather.weather || '加载中...'}}</text>
+        <text class="feels-like">体感 {{weather.feels_like}}°</text>
+      </view>
+    </view>
   </view>
 
-  <!-- 详细信息 -->
-  <view class="detail-list">
-    <view class="detail-item">
-      <text class="label">体感温度</text>
-      <text class="value">{{weather.feels_like}}°</text>
+  <!-- 天气详情网格 -->
+  <view class="detail-grid">
+    <view class="detail-card">
+      <text class="detail-icon">💧</text>
+      <text class="detail-label">湿度</text>
+      <text class="detail-value">{{weather.humidity}}%</text>
     </view>
-    <view class="detail-item">
-      <text class="label">湿度</text>
-      <text class="value">{{weather.humidity}}%</text>
+    <view class="detail-card">
+      <text class="detail-icon">💨</text>
+      <text class="detail-label">风力</text>
+      <text class="detail-value">{{weather.wind_scale}}级</text>
     </view>
-    <view class="detail-item">
-      <text class="label">风向</text>
-      <text class="value">{{weather.wind_dir}}</text>
+    <view class="detail-card">
+      <text class="detail-icon">🧭</text>
+      <text class="detail-label">风向</text>
+      <text class="detail-value">{{weather.wind_dir}}</text>
     </view>
-    <view class="detail-item">
-      <text class="label">风力</text>
-      <text class="value">{{weather.wind_scale}}级</text>
+    <view class="detail-card">
+      <text class="detail-icon">🌡️</text>
+      <text class="detail-label">气压</text>
+      <text class="detail-value">{{weather.pressure}} hPa</text>
     </view>
+  </view>
+
+  <!-- 更新时间 -->
+  <view class="update-info">
+    <text class="update-text">最后更新 · {{updateTime || '--:--'}}</text>
   </view>
 
   <!-- 订阅按钮 -->
-  <button class="subscribe-btn" bindtap="onSubscribe">
-    订阅该城市天气
-  </button>
+  <view class="action-area">
+    <button class="btn btn-subscribe" bindtap="onSubscribe">
+      <text class="btn-icon">🔔</text>
+      <text>订阅每日天气</text>
+    </button>
+  </view>
 </view>
