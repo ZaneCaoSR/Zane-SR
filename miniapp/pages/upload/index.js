@@ -1,4 +1,6 @@
-// 上传页面
+// 上传页面 - 使用自建后端 API
+const { BASE_URL } = require('../utils/config');
+
 Page({
   data: {
     uploadType: 'camera', // camera | album
@@ -48,15 +50,9 @@ Page({
       mediaType: ['image'],
       sourceType: ['album'],
       success: (res) => {
-        const photos = res.tempFiles.map(item => ({
-          path: item.tempFilePath,
-          size: item.size,
-          status: 'pending'
-        }));
-        this.setData({ 
-          selectedPhotos: photos,
-          uploadType: 'album'
-        });
+        const photos = res.tempFiles.map(item => item.tempFilePath);
+        this.setData({ selectedPhotos: photos });
+        this.startUpload();
       },
       fail: (err) => {
         console.log('选择取消', err);
@@ -65,163 +61,99 @@ Page({
     });
   },
 
-  // 处理图片（压缩）
-  async processImage(filePath) {
-    wx.showLoading({ title: '处理中...' });
-    
-    try {
-      // 压缩图片
-      const compressedPath = await this.compressImage(filePath);
-      
-      this.setData({
-        selectedPhotos: [{
-          path: compressedPath,
-          size: 0,
-          status: 'ready'
-        }]
-      });
-      
-      wx.hideLoading();
-    } catch (err) {
-      wx.hideLoading();
-      wx.showToast({ title: '图片处理失败', icon: 'none' });
-      console.error(err);
-    }
-  },
-
-  // 图片压缩
-  compressImage(filePath) {
-    return new Promise((resolve, reject) => {
-      wx.compressImage({
-        src: filePath,
-        quality: 80,
-        success: (res) => {
-          resolve(res.tempFilePath);
-        },
-        fail: (err) => {
-          // 压缩失败则使用原图
-          resolve(filePath);
-        }
-      });
-    });
+  // 处理拍照返回的图片
+  processImage(filePath) {
+    this.setData({ selectedPhotos: [filePath] });
+    this.startUpload();
   },
 
   // 开始上传
-  async startUpload() {
+  startUpload() {
     const { selectedPhotos } = this.data;
     if (selectedPhotos.length === 0) return;
 
-    this.setData({ isUploading: true, uploadProgress: 0 });
-
-    const uploadedIds = [];
-    const total = selectedPhotos.length;
-
-    for (let i = 0; i < total; i++) {
-      this.setData({ currentIndex: i });
-      
-      try {
-        const fileId = await this.uploadSinglePhoto(selectedPhotos[i].path, i);
-        uploadedIds.push(fileId);
-        
-        this.setData({
-          uploadProgress: Math.round(((i + 1) / total) * 100)
-        });
-      } catch (err) {
-        console.error(`第${i + 1}张上传失败`, err);
-        wx.showToast({ title: `第${i + 1}张上传失败`, icon: 'none' });
-      }
-    }
-
     this.setData({ 
-      uploadedIds: uploadedIds,
-      isUploading: false 
+      isUploading: true, 
+      uploadProgress: 0,
+      currentIndex: 0,
+      uploadedIds: []
     });
 
-    // 开始 AI 分析
-    this.analyzePhotos();
+    this.uploadNext();
   },
 
-  // 上传单张照片到云存储
-  uploadSinglePhoto(filePath, index) {
-    return new Promise((resolve, reject) => {
-      const cloudPath = `photos/${Date.now()}-${index}.jpg`;
-      
-      wx.cloud.uploadFile({
-        cloudPath,
-        filePath,
-        success: (res) => {
-          resolve(res.fileID);
-        },
-        fail: reject
-      });
-    });
-  },
-
-  // AI 分析照片
-  async analyzePhotos() {
-    this.setData({ isAnalyzing: true, analyzeProgress: 0 });
+  // 上传下一张
+  uploadNext() {
+    const { selectedPhotos, currentIndex, uploadedIds } = this.data;
     
-    const { uploadedIds } = this.data;
-    const total = uploadedIds.length;
-    const db = wx.cloud.database();
-
-    for (let i = 0; i < total; i++) {
-      try {
-        // 调用云函数进行 AI 分析
-        const result = await wx.cloud.callFunction({
-          name: 'ai-analyze',
-          data: { fileID: uploadedIds[i] }
-        });
-
-        // 保存到数据库
-        await db.collection('photos').add({
-          data: {
-            fileID: uploadedIds[i],
-            shotDate: new Date(),
-            month: new Date().getMonth() + 1,
-            year: new Date().getFullYear(),
-            aiResult: result.result || {},
-            remark: '',
-            isMilestone: false,
-            _createTime: db.serverDate(),
-            _updateTime: db.serverDate()
-          }
-        });
-
-        this.setData({
-          analyzeProgress: Math.round(((i + 1) / total) * 100)
-        });
-      } catch (err) {
-        console.error(`第${i + 1}张AI分析失败`, err);
-      }
+    if (currentIndex >= selectedPhotos.length) {
+      // 上传完成
+      this.setData({ 
+        isUploading: false, 
+        uploadComplete: true 
+      });
+      wx.showToast({ title: '上传成功', icon: 'success' });
+      return;
     }
 
-    this.setData({ 
-      isAnalyzing: false,
-      uploadComplete: true 
+    const filePath = selectedPhotos[currentIndex];
+    this.uploadSinglePhoto(filePath, currentIndex);
+  },
+
+  // 上传单张照片到自建后端
+  uploadSinglePhoto(filePath, index) {
+    const that = this;
+    
+    wx.uploadFile({
+      url: `${BASE_URL}/api/photo/upload`,
+      filePath: filePath,
+      name: 'file',
+      success: (res) => {
+        try {
+          const data = JSON.parse(res.data);
+          if (data.success) {
+            const { uploadedIds } = that.data;
+            uploadedIds.push(data.photo_id);
+            that.setData({ 
+              uploadedIds,
+              currentIndex: that.data.currentIndex + 1,
+              uploadProgress: Math.round((that.data.currentIndex + 1) / that.data.selectedPhotos.length * 100)
+            });
+            
+            // 上传下一张
+            that.uploadNext();
+          } else {
+            wx.showToast({ title: '上传失败', icon: 'error' });
+          }
+        } catch (e) {
+          console.error('解析响应失败', e);
+          wx.showToast({ title: '上传失败', icon: 'error' });
+        }
+      },
+      fail: (err) => {
+        console.error('上传失败', err);
+        wx.showToast({ title: '上传失败', icon: 'error' });
+      }
     });
   },
 
-  // 重新选择
-  reselect() {
-    if (this.data.uploadType === 'camera') {
-      this.takePhoto();
-    } else {
-      this.chooseFromAlbum();
-    }
-  },
-
-  // 返回相册
-  goToAlbum() {
+  // 查看全部照片
+  viewAllPhotos() {
     wx.switchTab({ url: '/pages/album/index' });
   },
 
-  // 预览图片
-  previewImage(e) {
-    const { path } = e.currentTarget.dataset;
-    wx.previewImage({
-      current: path,
-      urls: this.data.selectedPhotos.map(p => p.path)
+  // 继续上传
+  continueUpload() {
+    this.setData({ 
+      uploadComplete: false,
+      selectedPhotos: [],
+      uploadedIds: []
     });
+    this.chooseFromAlbum();
+  },
+
+  // 返回首页
+  goHome() {
+    wx.switchTab({ url: '/pages/album/index' });
   }
 });

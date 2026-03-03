@@ -124,6 +124,125 @@ async def miniapp_login(request: Request):
     return {"openid": f"mock_openid_{code}", "session_key": "mock_session"}
 
 
+# ==================== 照片管理 API ====================
+
+import os
+import uuid
+from pathlib import Path
+from fastapi import UploadFile, File
+from fastapi.responses import FileResponse
+
+# 照片存储目录
+PHOTOS_DIR = Path("/root/projects/weather-mini/photos")
+PHOTOS_DIR.mkdir(exist_ok=True)
+
+# 照片元数据存储文件
+PHOTOS_DB = Path("/root/projects/weather-mini/data/photos.json")
+if not PHOTOS_DB.exists():
+    PHOTOS_DB.write_text("[]")
+
+def load_photos():
+    import json
+    return json.loads(PHOTOS_DB.read_text())
+
+def save_photos(photos):
+    import json
+    PHOTOS_DB.write_text(json.dumps(photos, ensure_ascii=False, indent=2))
+
+
+@app.post("/api/photo/upload", summary="上传照片")
+async def upload_photo(file: UploadFile = File(...)):
+    """上传照片到服务器"""
+    # 生成唯一文件名
+    ext = file.filename.split('.')[-1] if '.' in file.filename else 'jpg'
+    filename = f"{uuid.uuid4()}.{ext}"
+    filepath = PHOTOS_DIR / filename
+    
+    # 保存文件
+    content = await file.read()
+    filepath.write_bytes(content)
+    
+    # 保存元数据
+    photos = load_photos()
+    photo_id = str(uuid.uuid4())
+    photo_data = {
+        "id": photo_id,
+        "filename": filename,
+        "original_name": file.filename,
+        "size": len(content),
+        "created_at": str(datetime.now()),
+        "remark": "",
+        "ai_result": None
+    }
+    photos.append(photo_data)
+    save_photos(photos)
+    
+    return {
+        "success": True,
+        "photo_id": photo_id,
+        "filename": filename,
+        "url": f"/api/photo/{filename}"
+    }
+
+
+@app.get("/api/photo/{filename}", summary="获取照片")
+async def get_photo(filename: str):
+    """获取照片文件"""
+    filepath = PHOTOS_DIR / filename
+    if not filepath.exists():
+        raise HTTPException(status_code=404, detail="照片不存在")
+    return FileResponse(filepath)
+
+
+@app.get("/api/photos", summary="获取照片列表")
+async def get_photos():
+    """获取所有照片列表"""
+    photos = load_photos()
+    # 返回倒序排列（最新的在前）
+    photos.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    return {"photos": photos}
+
+
+@app.delete("/api/photo/{photo_id}", summary="删除照片")
+async def delete_photo(photo_id: str):
+    """删除照片"""
+    photos = load_photos()
+    photo_to_delete = None
+    for photo in photos:
+        if photo["id"] == photo_id:
+            photo_to_delete = photo
+            break
+    
+    if not photo_to_delete:
+        raise HTTPException(status_code=404, detail="照片不存在")
+    
+    # 删除文件
+    filepath = PHOTOS_DIR / photo_to_delete["filename"]
+    if filepath.exists():
+        filepath.unlink()
+    
+    # 删除元数据
+    photos = [p for p in photos if p["id"] != photo_id]
+    save_photos(photos)
+    
+    return {"success": True}
+
+
+@app.put("/api/photo/{photo_id}", summary="更新照片信息")
+async def update_photo(photo_id: str, request: Request):
+    """更新照片备注"""
+    body = await request.json()
+    photos = load_photos()
+    
+    for photo in photos:
+        if photo["id"] == photo_id:
+            photo["remark"] = body.get("remark", photo.get("remark", ""))
+            save_photos(photos)
+            return {"success": True, "photo": photo}
+    
+    raise HTTPException(status_code=404, detail="照片不存在")
+
+
 @app.post("/api/push/now", dependencies=[Security(verify_api_key)], summary="立即触发推送（测试用）")
 @limiter.limit("30/minute")
 async def trigger_push(request: Request):

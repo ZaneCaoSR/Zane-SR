@@ -1,4 +1,6 @@
-// 相册首页
+// 相册首页 - 使用自建后端 API
+const { BASE_URL } = require('../utils/config');
+
 Page({
   data: {
     babyName: '佑佑',
@@ -9,7 +11,6 @@ Page({
   },
 
   onLoad() {
-    this.initCloud();
     this.loadBabyInfo();
     this.loadPhotos();
   },
@@ -19,45 +20,40 @@ Page({
     this.loadPhotos();
   },
 
-  // 初始化云开发
-  initCloud() {
-    if (!wx.cloud) {
-      console.error('请使用 2.2.3 或以上的基础库以使用云能力');
-    } else {
-      wx.cloud.init({
-        env: 'your-env-id', // TODO: 替换为云开发环境ID
-        traceUser: true,
-      });
-    }
-  },
-
-  // 加载宝宝信息
+  // 加载宝宝信息（简化版）
   loadBabyInfo() {
-    const db = wx.cloud.database();
-    db.collection('baby_info').limit(1).get().then(res => {
-      if (res.data.length > 0) {
-        this.setData({ babyName: res.data[0].name });
-      }
-    }).catch(err => {
-      console.log('暂无宝宝信息', err);
-    });
+    // TODO: 后续添加宝宝信息 API 后再完善
+    this.setData({ babyName: '佑佑' });
   },
 
-  // 加载照片数据
+  // 加载照片数据 - 调用自建后端 API
   loadPhotos() {
     this.setData({ isLoading: true });
-    const db = wx.cloud.database();
     
-    db.collection('photos').orderBy('shotDate', 'desc').get().then(res => {
-      const photos = res.data;
-      const months = this.groupByMonth(photos);
-      this.setData({
-        months,
-        isLoading: false
-      });
-    }).catch(err => {
-      console.error('加载照片失败', err);
-      this.setData({ isLoading: false });
+    const that = this;
+    wx.request({
+      url: `${BASE_URL}/api/photos`,
+      method: 'GET',
+      success: (res) => {
+        if (res.data && res.data.photos) {
+          const photos = res.data.photos;
+          // 添加完整的 URL
+          photos.forEach(p => {
+            p.url = `${BASE_URL}/api/photo/${p.filename}`;
+          });
+          const months = that.groupByMonth(photos);
+          that.setData({
+            months,
+            isLoading: false
+          });
+        } else {
+          that.setData({ isLoading: false });
+        }
+      },
+      fail: (err) => {
+        console.error('加载照片失败', err);
+        that.setData({ isLoading: false });
+      }
     });
   },
 
@@ -66,7 +62,7 @@ Page({
     const monthMap = new Map();
     
     photos.forEach(photo => {
-      const date = new Date(photo.shotDate || photo._createTime);
+      const date = new Date(photo.created_at || Date.now());
       const year = date.getFullYear();
       const month = date.getMonth() + 1;
       const key = `${year}-${month}`;
@@ -82,14 +78,17 @@ Page({
         });
       }
       
-      const group = monthMap.get(key);
-      group.photos.push(photo);
-      group.count = group.photos.length;
-      if (!group.coverPhoto) {
-        group.coverPhoto = photo.fileID;
+      const monthData = monthMap.get(key);
+      monthData.photos.push(photo);
+      monthData.count++;
+      
+      // 设置封面为第一张照片
+      if (!monthData.coverPhoto && photo.url) {
+        monthData.coverPhoto = photo.url;
       }
     });
-
+    
+    // 转换为数组并按月份倒序
     return Array.from(monthMap.values()).sort((a, b) => {
       if (a.year !== b.year) return b.year - a.year;
       return b.month - a.month;
@@ -102,25 +101,11 @@ Page({
     this.setData({ currentMonthIndex: index });
   },
 
-  // 跳转拍照上传
-  onCameraTap() {
-    wx.navigateTo({
-      url: '/pages/upload/index?type=camera'
-    });
-  },
-
-  // 跳转相册选择
-  onAlbumTap() {
-    wx.navigateTo({
-      url: '/pages/upload/index?type=album'
-    });
-  },
-
-  // 跳转照片详情
+  // 点击照片
   onPhotoTap(e) {
-    const id = e.currentTarget.dataset.id;
+    const photoId = e.currentTarget.dataset.id;
     wx.navigateTo({
-      url: `/pages/photo/index?id=${id}`
+      url: `/pages/photo/index?id=${photoId}`
     });
   },
 
@@ -135,6 +120,13 @@ Page({
   onSettingsTap() {
     wx.navigateTo({
       url: '/pages/settings/index'
+    });
+  },
+
+  // 点击上传按钮
+  onAddTap() {
+    wx.navigateTo({
+      url: '/pages/upload/index?type=album'
     });
   },
 

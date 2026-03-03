@@ -49,3 +49,104 @@
 2026-03-03 15:04:06 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
 2026-03-03 15:04:07 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
 2026-03-03 15:04:13 | INFO     | jwt_helper:get_jwt_token - [JWT] Token 生成成功
+2026-03-03 15:05:19 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 15:26:23 | INFO     | jwt_helper:get_jwt_token - [JWT] Token 生成成功
+2026-03-03 15:26:35 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 15:42:39 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:09 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:09 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:10 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:10 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:11 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:11 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:12 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:12 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:13 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:13 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:13 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:13 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:14 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:14 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:15 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:15 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:15 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:15 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:16 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:16 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:17 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:17 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:18 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:18 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:19 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:19 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:20 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:20 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:21 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:21 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:22 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:22 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:23 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:23 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:25 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:25 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:26 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:26 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:27 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:27 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:28 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:28 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:29 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:29 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:30 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:30 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:31 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:31 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:31 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:31 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:32 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:32 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:33 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:33 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:34 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:34 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:35 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:35 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:36 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:36 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:37 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:37 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:38 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:38 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:39 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:39 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:40 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:40 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:41 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:41 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:42 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:42 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:43 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:43 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:44 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:44 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:45 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:45 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:46 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:46 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:47 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:47 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:48 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:48 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:49 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:49 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:50 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:50 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:51 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:51 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:52 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:52 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:53 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:53 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 15:43:54 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:56 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 15:43:56 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
