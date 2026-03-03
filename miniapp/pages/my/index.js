@@ -86,15 +86,18 @@ Page({
     this.setData({ babyInfo });
   },
 
-  // 登录
+  // 登录 - 获取微信用户信息
   onLogin() {
     const that = this;
-    
+
+    // 先检查是否授权
     wx.getUserProfile({
       desc: '用于完善用户资料',
       success: (res) => {
         const userInfo = res.userInfo;
-        
+        console.log('[My] 获取用户信息成功:', userInfo);
+
+        // 获取 openid
         wx.login({
           success: (loginRes) => {
             wx.request({
@@ -102,32 +105,42 @@ Page({
               method: 'POST',
               data: { code: loginRes.code },
               success: (apiRes) => {
+                console.log('[My] 登录API返回:', apiRes.data);
                 if (apiRes.data && apiRes.data.openid) {
                   userInfo.openid = apiRes.data.openid;
                   wx.setStorageSync('userInfo', userInfo);
-                  
+
                   const app = getApp();
                   app.globalData.openid = userInfo.openid;
-                  
+                  app.globalData.userInfo = userInfo;
+
                   that.setData({ userInfo, isLoggedIn: true });
                   wx.showToast({ title: '登录成功', icon: 'success' });
                 }
               },
-              fail: () => {
-                const mockUserInfo = { nickName: '测试用户', avatarUrl: '', openid: 'mock_' + Date.now() };
-                wx.setStorageSync('userInfo', mockUserInfo);
-                that.setData({ userInfo: mockUserInfo, isLoggedIn: true });
-                wx.showToast({ title: '登录成功', icon: 'success' });
+              fail: (err) => {
+                console.error('[My] 登录API失败:', err);
+                // API 失败也保存用户信息，openid 后面再获取
+                userInfo.openid = 'temp_' + Date.now();
+                wx.setStorageSync('userInfo', userInfo);
+                that.setData({ userInfo, isLoggedIn: true });
+                wx.showToast({ title: '已获取用户信息', icon: 'success' });
               }
             });
+          },
+          fail: (err) => {
+            console.error('[My] wx.login失败:', err);
+            wx.showToast({ title: '登录失败', icon: 'none' });
           }
         });
       },
-      fail: () => {
-        const mockUserInfo = { nickName: '测试用户', avatarUrl: '', openid: 'mock_' + Date.now() };
-        wx.setStorageSync('userInfo', mockUserInfo);
-        this.setData({ userInfo: mockUserInfo, isLoggedIn: true });
-        wx.showToast({ title: '登录成功', icon: 'success' });
+      fail: (err) => {
+        console.log('[My] 用户拒绝授权:', err);
+        wx.showModal({
+          title: '提示',
+          content: '需要授权才能使用完整功能',
+          showCancel: false
+        });
       }
     });
   },
