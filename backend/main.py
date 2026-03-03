@@ -114,6 +114,16 @@ async def query_weather(city_name: str):
     return weather
 
 
+@app.post("/api/login", summary="小程序登录")
+async def miniapp_login(request: Request):
+    """小程序登录接口，返回 mock openid（实际应调用微信 code2session）"""
+    body = await request.json()
+    code = body.get("code")
+    # TODO: 实际应调用微信 code2session 接口换取 openid
+    # 这里返回 mock 数据供测试
+    return {"openid": f"mock_openid_{code}", "session_key": "mock_session"}
+
+
 @app.post("/api/push/now", dependencies=[Security(verify_api_key)], summary="立即触发推送（测试用）")
 @limiter.limit("30/minute")
 async def trigger_push(request: Request):
