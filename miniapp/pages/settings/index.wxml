@@ -5,7 +5,7 @@
     <view class="avatar-section" bindtap="chooseAvatar">
       <image 
         class="avatar" 
-        src="{{babyInfo.avatar || '/assets/icons/default-avatar.png'}}"
+        src="{{babyInfo.avatar || '/assets/icons/my.png'}}"
         mode="aspectFill"
       />
       <view class="avatar-edit">

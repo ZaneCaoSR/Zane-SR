@@ -10,7 +10,7 @@
       <view class="avatar-wrapper">
         <image
           class="avatar"
-          src="{{userInfo.avatarUrl || '/assets/icons/default-avatar.png'}}"
+          src="{{userInfo.avatarUrl || '/assets/icons/my.png'}}"
           mode="aspectFill"
         />
         <view class="avatar-ring"></view>
@@ -35,7 +35,7 @@
     <view class="baby-avatar-wrapper">
       <image
         class="baby-avatar"
-        src="{{babyInfo.avatar || '/assets/icons/default-avatar.png'}}"
+        src="{{babyInfo.avatar || '/assets/icons/my.png'}}"
         mode="aspectFill"
       />
     </view>

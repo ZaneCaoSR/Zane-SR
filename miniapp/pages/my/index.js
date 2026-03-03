@@ -44,16 +44,19 @@ Page({
     this.loadBabyInfo();
   },
 
-  // 加载宝宝信息
+  // 加载宝宝信息（从本地存储）
   loadBabyInfo() {
-    const db = wx.cloud.database();
-    db.collection('baby_info').limit(1).get().then(res => {
-      if (res.data.length > 0) {
-        this.setData({ babyInfo: res.data[0] });
-      }
-    }).catch(err => {
-      console.error('加载宝宝信息失败', err);
-    });
+    // 从本地存储获取宝宝信息
+    const babyInfo = wx.getStorageSync('babyInfo');
+    if (babyInfo) {
+      this.setData({ babyInfo });
+    }
+  },
+
+  // 保存宝宝信息（到本地存储）
+  saveBabyInfo(babyInfo) {
+    wx.setStorageSync('babyInfo', babyInfo);
+    this.setData({ babyInfo });
   },
 
   // 登录
