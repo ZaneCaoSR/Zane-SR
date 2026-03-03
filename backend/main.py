@@ -14,7 +14,7 @@ from database import init_db, add_subscriber
 from auth import verify_api_key
 from database import remove_subscriber, get_all_subscribers, get_subscriber
 from database import get_cities, set_cities, add_city_to_subscription, remove_city_from_subscription
-from weather import get_weather, get_weather_by_city_id, get_city_id
+from weather import get_weather, get_weather_by_city_id, get_city_id, get_weather_indices
 from config import QWEATHER_GEO_URL
 from scheduler import start_scheduler, stop_scheduler, push_daily_weather
 from retry import get_retry_queue, clear_retry_queue, retry_failed_pushes
@@ -164,6 +164,17 @@ async def query_weather_by_id(city_id: str):
     if not weather:
         raise HTTPException(status_code=404, detail=f"无法获取城市ID {city_id} 的天气数据")
     return weather
+
+
+@app.get("/api/weather-indices/{city_id}", summary="获取生活指数")
+async def get_indices(city_id: str):
+    """
+    获取生活指数（紫外线、穿衣、洗车等）
+    """
+    indices = await get_weather_indices(city_id)
+    if not indices:
+        raise HTTPException(status_code=404, detail=f"无法获取城市ID {city_id} 的生活指数")
+    return indices
 
 
 @app.get("/api/cities/search", summary="搜索城市")

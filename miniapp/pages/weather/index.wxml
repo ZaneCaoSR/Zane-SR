@@ -98,6 +98,35 @@
             </view>
           </view>
         </view>
+
+        <!-- 生活指数 -->
+        <view class="indices-section" wx:if="{{item.indices}}">
+          <view class="indices-header">
+            <text class="indices-title">💡 生活指数</text>
+          </view>
+          <view class="indices-grid">
+            <view class="indices-item" wx:if="{{item.indices.uv}}">
+              <text class="indices-icon">☀️</text>
+              <text class="indices-label">紫外线</text>
+              <text class="indices-value">{{item.indices.uv.category}}</text>
+            </view>
+            <view class="indices-item" wx:if="{{item.indices.dressing}}">
+              <text class="indices-icon">👔</text>
+              <text class="indices-label">穿衣</text>
+              <text class="indices-value">{{item.indices.dressing.category}}</text>
+            </view>
+            <view class="indices-item" wx:if="{{item.indices.car_wash}}">
+              <text class="indices-icon">🚗</text>
+              <text class="indices-label">洗车</text>
+              <text class="indices-value">{{item.indices.car_wash.category}}</text>
+            </view>
+            <view class="indices-item" wx:if="{{item.indices.sport}}">
+              <text class="indices-icon">⚽</text>
+              <text class="indices-label">运动</text>
+              <text class="indices-value">{{item.indices.sport.category}}</text>
+            </view>
+          </view>
+        </view>
       </view>
     </swiper-item>
   </swiper>

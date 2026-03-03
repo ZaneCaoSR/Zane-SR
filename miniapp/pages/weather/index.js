@@ -124,12 +124,39 @@ Page({
           const now = new Date();
           const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
           this.setData({ updateTime: timeStr, loading: false });
+
+          // 加载生活指数
+          this.loadWeatherIndices(city, idx);
         }
       },
       fail: (err) => {
         console.error(`[Weather] 获取 ${city} 天气失败:`, err);
         cities[idx].loading = false;
         this.setData({ cities: cities, loading: false });
+      }
+    });
+  },
+
+  // 加载生活指数
+  loadWeatherIndices(city, index) {
+    const cities = this.data.cities;
+
+    wx.request({
+      url: `${BASE_URL}/api/cities/search?keyword=${encodeURIComponent(city)}`,
+      success: (res) => {
+        if (res.data && res.data.cities && res.data.cities.length > 0) {
+          const cityId = res.data.cities[0].id;
+          // 获取生活指数
+          wx.request({
+            url: `${BASE_URL}/api/weather-indices/${cityId}`,
+            success: (indicesRes) => {
+              if (indicesRes.data) {
+                cities[index].indices = indicesRes.data;
+                this.setData({ cities: cities });
+              }
+            }
+          });
+        }
       }
     });
   },

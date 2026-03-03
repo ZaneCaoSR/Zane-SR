@@ -272,3 +272,76 @@ async def get_weather_by_city_id(city_id: str, city_name: str = None) -> dict | 
     # 写入30分钟缓存
     _set_cached_weather_by_city_id(city_id, weather_data)
     return weather_data
+
+
+# ===== 生活指数 =====
+
+# 生活指数缓存
+_indices_cache = {}
+INDICES_CACHE_TTL = 30 * 60  # 30分钟
+
+
+def _get_cached_indices(city_id: str) -> dict | None:
+    """获取缓存的生活指数"""
+    if city_id in _indices_cache:
+        data, timestamp = _indices_cache[city_id]
+        if time.time() - timestamp < INDICES_CACHE_TTL:
+            return data
+    return None
+
+
+def _set_cached_indices(city_id: str, data: dict):
+    """设置生活指数缓存"""
+    _indices_cache[city_id] = (data, time.time())
+
+
+async def get_weather_indices(city_id: str) -> dict | None:
+    """
+    获取生活指数（紫外线、穿衣、洗车等）
+    """
+    # 先检查缓存
+    cached = _get_cached_indices(city_id)
+    if cached:
+        return cached
+
+    token = get_jwt_token()
+    if not token:
+        return None
+
+    headers = {"Authorization": f"Bearer {token}"}
+
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.get(
+                f"{QWEATHER_BASE_URL}/indices/now",
+                params={"location": city_id, "lang": "zh"},
+                headers=headers
+            )
+            data = resp.json()
+
+        if data.get("code") != "200":
+            return None
+
+        # 提取生活指数
+        daily = data.get("daily", [])
+        indices = {}
+        for item in daily:
+            type_id = item.get("type")
+            if type_id == "1":  # 紫外线
+                indices["uv"] = {"level": item.get("level"), "category": item.get("category")}
+            elif type_id == "3":  # 穿衣
+                indices["dressing"] = {"level": item.get("level"), "category": item.get("category")}
+            elif type_id == "5":  # 洗车
+                indices["car_wash"] = {"level": item.get("level"), "category": item.get("category")}
+            elif type_id == "8":  # 运动
+                indices["sport"] = {"level": item.get("level"), "category": item.get("category")}
+            elif type_id == "9":  # 出行
+                indices["travel"] = {"level": item.get("level"), "category": item.get("category")}
+
+        # 写入缓存
+        _set_cached_indices(city_id, indices)
+        return indices
+
+    except Exception as e:
+        logger.warning(f"[Weather] 获取生活指数失败: {e}")
+        return None
