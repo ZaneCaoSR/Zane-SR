@@ -1,6 +1,6 @@
 /**
  * city-select.js - 城市选择页面逻辑
- * 功能：搜索城市、选择城市、添加到订阅列表
+ * 功能：搜索城市、选择城市、添加到订阅列表（支持多城市）
  */
 const { request } = require('../../utils/request')
 const app = getApp()
@@ -70,16 +70,13 @@ Page({
       return
     }
     try {
-      // 调用后端获取订阅状态（兼容：单个订阅）
-      const res = await request(`/api/subscriber/${openid}`)
-      const cities = []
-      if (res.subscribed && res.city) {
-        cities.push({
-          city: res.city,
-          push_time: '08:00'
-        })
+      // 调用后端获取订阅状态
+      const res = await request(`/api/subscribed-cities?openid=${openid}`)
+      if (res.subscribed && res.cities) {
+        this.setData({ subscribedCities: res.cities })
+      } else {
+        this.setData({ subscribedCities: [] })
       }
-      this.setData({ subscribedCities: cities })
     } catch (err) {
       console.error('[CitySelect] 加载订阅列表失败:', err)
       this.setData({ subscribedCities: [] })
@@ -92,7 +89,7 @@ Page({
   onSearchInput(e) {
     const value = e.detail.value
     this.setData({ searchKey: value })
-    
+
     if (value) {
       this.doSearch(value)
     } else {
@@ -112,7 +109,7 @@ Page({
    */
   async doSearch(key) {
     if (!key.trim()) return
-    
+
     this.setData({ searchLoading: true })
     try {
       // 调用后端城市搜索接口
@@ -120,7 +117,7 @@ Page({
       this.setData({ searchResult: res.cities || [] })
     } catch (err) {
       // 搜索失败时使用本地过滤
-      const filtered = hotCities.filter(c => 
+      const filtered = hotCities.filter(c =>
         c.name.includes(key) || c.province.includes(key)
       )
       this.setData({ searchResult: filtered })
@@ -130,22 +127,21 @@ Page({
   },
 
   /**
-   * 选择城市 - 跳转到天气详情页
+   * 选择城市 - 跳转到天气首页并切换城市
    */
   onSelectCity(e) {
     const city = e.currentTarget.dataset.city
     const cityName = city.name || city.city
-    
+
     // 保存到常用城市缓存
     this.saveCommonCity(cityName)
-    
+
     // 保存到全局数据
-    const app = getApp();
     app.globalData.userCity = cityName;
-    
-    // 跳转到天气详情页
-    wx.navigateTo({
-      url: `/pages/weather-detail/weather-detail?city=${encodeURIComponent(cityName)}`
+
+    // 跳转到天气首页
+    wx.switchTab({
+      url: '/pages/weather/index'
     })
   },
 
@@ -165,12 +161,12 @@ Page({
   },
 
   /**
-   * 添加到订阅列表
+   * 添加到订阅列表（多城市）
    */
   async onAddToSubscribe(e) {
     const city = e.currentTarget.dataset.city
     const cityName = city.name || city.city
-    
+
     const openid = app.globalData.openid
     if (!openid) {
       wx.showToast({ title: '请先登录', icon: 'none' })
@@ -186,14 +182,33 @@ Page({
 
     wx.showLoading({ title: '订阅中...' })
     try {
-      const res = await request('/api/subscribe', 'POST', {
-        openid,
+      // 获取当前订阅的城市列表
+      const currentCities = this.data.subscribedCities.map(c => ({
+        city: c.city,
+        cityId: c.cityId || null,
+        pushTime: c.pushTime || '08:00',
+        isActive: true
+      }))
+
+      // 添加新城市
+      currentCities.push({
         city: cityName,
+        pushTime: '08:00',
+        isActive: true
       })
-      wx.showToast({ title: '订阅成功', icon: 'success' })
-      
-      // 更新订阅列表
-      this.loadSubscribedCities()
+
+      const res = await request('/api/subscribe-multiple', 'POST', {
+        openid,
+        cities: currentCities
+      })
+
+      if (res.success) {
+        wx.showToast({ title: '订阅成功', icon: 'success' })
+        // 更新订阅列表
+        this.loadSubscribedCities()
+      } else {
+        wx.showToast({ title: res.message || '订阅失败', icon: 'error' })
+      }
     } catch (err) {
       wx.showToast({ title: '订阅失败', icon: 'error' })
     } finally {
@@ -202,11 +217,11 @@ Page({
   },
 
   /**
-   * 取消订阅
+   * 取消订阅（单个城市）
    */
   async onRemoveSubscribe(e) {
     const cityName = e.currentTarget.dataset.city
-    
+
     const confirmed = await new Promise((resolve) => {
       wx.showModal({
         title: '确认取消',
@@ -220,9 +235,9 @@ Page({
     if (!openid) return
 
     try {
-      await request('/api/unsubscribe', 'POST', { 
+      await request('/api/unsubscribe-city', 'POST', {
         openid,
-        city: cityName 
+        city: cityName
       })
       wx.showToast({ title: '已取消订阅', icon: 'success' })
       this.loadSubscribedCities()

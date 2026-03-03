@@ -85,6 +85,7 @@
   <view class="section" wx:if="{{!searchKey && !searchResult && subscribedCities.length > 0}}">
     <view class="section-header">
       <text class="section-title">🔔 我的订阅</text>
+      <text class="section-hint">左右滑动切换查看</text>
     </view>
     <view class="subscribed-list">
       <view
@@ -98,10 +99,10 @@
           <view class="subscribed-city-row">
             <text class="subscribed-city">{{item.city}}</text>
             <view class="subscribed-badge">
-              <text>每天 8:00</text>
+              <text>每天 {{item.pushTime || '08:00'}}</text>
             </view>
           </view>
-          <text class="subscribed-time">准时推送</text>
+          <text class="subscribed-time">点击查看天气</text>
         </view>
         <view
           class="remove-btn"

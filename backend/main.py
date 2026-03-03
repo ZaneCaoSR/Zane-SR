@@ -13,7 +13,9 @@ from slowapi.errors import RateLimitExceeded
 from database import init_db, add_subscriber
 from auth import verify_api_key
 from database import remove_subscriber, get_all_subscribers, get_subscriber
-from weather import get_weather
+from database import get_cities, set_cities, add_city_to_subscription, remove_city_from_subscription
+from weather import get_weather, get_weather_by_city_id, get_city_id
+from config import QWEATHER_GEO_URL
 from scheduler import start_scheduler, stop_scheduler, push_daily_weather
 from retry import get_retry_queue, clear_retry_queue, retry_failed_pushes
 
@@ -60,6 +62,16 @@ class UnsubscribeRequest(BaseModel):
     openid: str
 
 
+class SubscribeMultipleRequest(BaseModel):
+    openid: str
+    cities: list[dict]  # [{"city": "杭州", "cityId": "101210101", "pushTime": "08:00"}]
+
+
+class UnsubscribeCityRequest(BaseModel):
+    openid: str
+    city: str
+
+
 # ===== 路由 =====
 
 @app.post("/api/subscribe", summary="订阅天气提醒")
@@ -88,6 +100,113 @@ async def unsubscribe(req: UnsubscribeRequest):
     return {"success": True, "message": "已取消订阅"}
 
 
+# ===== 多城市订阅 API =====
+
+@app.post("/api/subscribe-multiple", summary="订阅多城市")
+async def subscribe_multiple(req: SubscribeMultipleRequest):
+    """
+    用户订阅多个城市的天气提醒
+    """
+    if not req.openid:
+        raise HTTPException(status_code=400, detail="openid 不能为空")
+    if not req.cities:
+        raise HTTPException(status_code=400, detail="cities 不能为空")
+
+    # 保存多城市订阅
+    set_cities(req.openid, req.cities)
+    return {
+        "success": True,
+        "message": f"已成功订阅 {len(req.cities)} 个城市的每日天气提醒",
+        "cities": req.cities
+    }
+
+
+@app.post("/api/unsubscribe-city", summary="取消单个城市订阅")
+async def unsubscribe_city(req: UnsubscribeCityRequest):
+    """
+    取消指定城市的订阅，保留其他城市
+    """
+    if not req.openid:
+        raise HTTPException(status_code=400, detail="openid 不能为空")
+    if not req.city:
+        raise HTTPException(status_code=400, detail="city 不能为空")
+
+    cities = remove_city_from_subscription(req.openid, req.city)
+    return {
+        "success": True,
+        "message": f"已取消 {req.city} 的订阅",
+        "cities": cities
+    }
+
+
+@app.get("/api/subscribed-cities", summary="获取已订阅城市列表")
+async def get_subscribed_cities(openid: str):
+    """
+    获取用户已订阅的城市列表
+    """
+    if not openid:
+        raise HTTPException(status_code=400, detail="openid 不能为空")
+
+    cities = get_cities(openid)
+    return {
+        "subscribed": len(cities) > 0,
+        "cities": cities
+    }
+
+
+@app.get("/api/weather-by-id/{city_id}", summary="通过城市ID查询天气")
+async def query_weather_by_id(city_id: str):
+    """
+    通过城市ID查询天气（使用30分钟缓存）
+    """
+    weather = await get_weather_by_city_id(city_id)
+    if not weather:
+        raise HTTPException(status_code=404, detail=f"无法获取城市ID {city_id} 的天气数据")
+    return weather
+
+
+@app.get("/api/cities/search", summary="搜索城市")
+async def search_cities(keyword: str):
+    """
+    搜索城市（和风天气 GeoAPI）
+    """
+    if not keyword or len(keyword) < 1:
+        return {"cities": []}
+
+    token = get_jwt_token()
+    if not token:
+        return {"cities": []}
+
+    headers = {"Authorization": f"Bearer {token}"}
+
+    try:
+        import httpx
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.get(
+                QWEATHER_GEO_URL,
+                params={"location": keyword, "lang": "zh", "number": 20},
+                headers=headers
+            )
+            data = resp.json()
+
+        if data.get("code") == "200" and data.get("location"):
+            cities = [
+                {
+                    "id": loc["id"],
+                    "name": loc["name"],
+                    "province": loc.get("adm1", ""),
+                    "city": loc["name"],
+                    "cityId": loc["id"]
+                }
+                for loc in data["location"]
+            ]
+            return {"cities": cities}
+        return {"cities": []}
+    except Exception as e:
+        logger.warning(f"[CitySearch] 搜索失败: {e}")
+        return {"cities": []}
+
+
 @app.get("/api/subscribers", dependencies=[Security(verify_api_key)], summary="获取所有订阅者（管理用）")
 @limiter.limit("30/minute")
 async def list_subscribers(request: Request):
@@ -102,7 +221,13 @@ async def get_subscriber_status(openid: str):
     user = get_subscriber(openid)
     if not user:
         return {"subscribed": False}
-    return {"subscribed": user["is_active"] == 1, "city": user["city"]}
+    # 返回多城市订阅信息
+    cities = get_cities(openid)
+    return {
+        "subscribed": user["is_active"] == 1,
+        "city": user["city"],
+        "cities": cities
+    }
 
 
 @app.get("/api/weather/{city_name}", summary="查询天气（调试用）")

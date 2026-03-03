@@ -8,6 +8,33 @@
   overflow: hidden;
 }
 
+/* Swiper 容器 */
+.weather-swiper {
+  height: 720rpx;
+}
+
+.weather-slide {
+  height: 100%;
+  padding: 0 var(--spacing-xs);
+}
+
+/* 城市指示器 */
+.city-indicator {
+  position: absolute;
+  top: 180rpx;
+  right: var(--spacing-lg);
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 8rpx 16rpx;
+  border-radius: var(--radius-lg);
+}
+
+.indicator-text {
+  font-size: 22rpx;
+  color: #fff;
+  font-weight: 500;
+}
+
 /* 顶部城市栏 */
 .city-bar {
   display: flex;

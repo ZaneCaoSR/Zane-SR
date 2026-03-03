@@ -4,65 +4,86 @@
   <view class="city-bar" bindtap="onCitySelect">
     <view class="city-info">
       <text class="city-icon">📍</text>
-      <text class="city-name">{{city}}</text>
+      <text class="city-name">{{cities[currentCityIndex].city}}</text>
     </view>
     <view class="city-action">
-      <text>切换</text>
+      <text>{{cities.length > 1 ? '滑动切换' : '切换'}}</text>
       <text class="arrow">→</text>
     </view>
   </view>
 
-  <!-- 天气主卡片 -->
-  <view class="weather-hero">
-    <!-- 背景装饰 -->
-    <view class="hero-bg">
-      <view class="bg-circle circle-1"></view>
-      <view class="bg-circle circle-2"></view>
-      <view class="bg-circle circle-3"></view>
-    </view>
+  <!-- Swiper 滑动区域 -->
+  <swiper
+    class="weather-swiper"
+    indicator-dots="{{cities.length > 1}}"
+    indicator-color="rgba(255,255,255,0.5)"
+    indicator-active-color="#fff"
+    autoplay="{{false}}"
+    circular="{{false}}"
+    bindchange="onSwiperChange"
+    current="{{currentCityIndex}}"
+  >
+    <swiper-item wx:for="{{cities}}" wx:key="city">
+      <view class="weather-slide">
+        <!-- 天气主卡片 -->
+        <view class="weather-hero">
+          <!-- 背景装饰 -->
+          <view class="hero-bg">
+            <view class="bg-circle circle-1"></view>
+            <view class="bg-circle circle-2"></view>
+            <view class="bg-circle circle-3"></view>
+          </view>
 
-    <view class="hero-content">
-      <!-- 天气图标 -->
-      <view class="weather-icon-wrapper">
-        <text class="weather-icon-large">{{weather.icon || '☀️'}}</text>
+          <view class="hero-content">
+            <!-- 天气图标 -->
+            <view class="weather-icon-wrapper">
+              <text class="weather-icon-large">{{item.weatherData.icon || '☀️'}}</text>
+            </view>
+
+            <!-- 温度 -->
+            <view class="temp-display">
+              <text class="temp-value">{{item.weatherData.temp || '--'}}</text>
+              <text class="temp-unit">°</text>
+            </view>
+
+            <!-- 天气描述 -->
+            <view class="weather-text">
+              <text class="weather-desc">{{item.weatherData.weather || '加载中...'}}</text>
+              <text class="feels-like">体感 {{item.weatherData.feels_like || '--'}}°</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 天气详情网格 -->
+        <view class="detail-grid">
+          <view class="detail-card">
+            <text class="detail-icon">💧</text>
+            <text class="detail-label">湿度</text>
+            <text class="detail-value">{{item.weatherData.humidity || '--'}}%</text>
+          </view>
+          <view class="detail-card">
+            <text class="detail-icon">💨</text>
+            <text class="detail-label">风力</text>
+            <text class="detail-value">{{item.weatherData.wind_scale || '--'}}级</text>
+          </view>
+          <view class="detail-card">
+            <text class="detail-icon">🧭</text>
+            <text class="detail-label">风向</text>
+            <text class="detail-value">{{item.weatherData.wind_dir || '--'}}</text>
+          </view>
+          <view class="detail-card">
+            <text class="detail-icon">🌡️</text>
+            <text class="detail-label">气压</text>
+            <text class="detail-value">{{item.weatherData.pressure || '--'}} hPa</text>
+          </view>
+        </view>
       </view>
+    </swiper-item>
+  </swiper>
 
-      <!-- 温度 -->
-      <view class="temp-display">
-        <text class="temp-value">{{weather.temp}}</text>
-        <text class="temp-unit">°</text>
-      </view>
-
-      <!-- 天气描述 -->
-      <view class="weather-text">
-        <text class="weather-desc">{{weather.weather || '加载中...'}}</text>
-        <text class="feels-like">体感 {{weather.feels_like}}°</text>
-      </view>
-    </view>
-  </view>
-
-  <!-- 天气详情网格 -->
-  <view class="detail-grid">
-    <view class="detail-card">
-      <text class="detail-icon">💧</text>
-      <text class="detail-label">湿度</text>
-      <text class="detail-value">{{weather.humidity}}%</text>
-    </view>
-    <view class="detail-card">
-      <text class="detail-icon">💨</text>
-      <text class="detail-label">风力</text>
-      <text class="detail-value">{{weather.wind_scale}}级</text>
-    </view>
-    <view class="detail-card">
-      <text class="detail-icon">🧭</text>
-      <text class="detail-label">风向</text>
-      <text class="detail-value">{{weather.wind_dir}}</text>
-    </view>
-    <view class="detail-card">
-      <text class="detail-icon">🌡️</text>
-      <text class="detail-label">气压</text>
-      <text class="detail-value">{{weather.pressure}} hPa</text>
-    </view>
+  <!-- 城市指示器 -->
+  <view class="city-indicator" wx:if="{{cities.length > 1}}">
+    <text class="indicator-text">{{currentCityIndex + 1}} / {{cities.length}}</text>
   </view>
 
   <!-- 更新时间 -->

@@ -12,8 +12,11 @@ from logger import logger
 # 本地缓存：key=(城市名, 类型), value=(数据, 时间戳)
 # 缓存时间 10 分钟 (600 秒)
 _weather_cache = {}
+# 新增：基于城市ID的30分钟天气缓存
+_weather_cache_by_id = {}
 CITY_ID_CACHE_TTL = 600  # 城市ID缓存 10 分钟
 WEATHER_CACHE_TTL = 600  # 天气数据缓存 10 分钟
+WEATHER_CACHE_TTL_30 = 30 * 60  # 30分钟缓存（新功能）
 
 
 def _get_cached_weather(city_name: str) -> dict | None:
@@ -152,4 +155,86 @@ async def get_weather(city_name: str) -> dict | None:
     
     # 写入缓存
     _set_cached_weather(city_name, weather_data)
+    return weather_data
+
+
+# ===== 30分钟缓存功能（多城市订阅使用） =====
+
+def _get_cached_weather_by_city_id(city_id: str) -> dict | None:
+    """从缓存获取天气数据（基于城市ID，30分钟缓存）"""
+    if city_id in _weather_cache_by_id:
+        data, timestamp = _weather_cache_by_id[city_id]
+        if time.time() - timestamp < WEATHER_CACHE_TTL_30:
+            logger.info(f"[Weather] 30分钟缓存命中: {city_id}")
+            return data
+        else:
+            del _weather_cache_by_id[city_id]
+    return None
+
+
+def _set_cached_weather_by_city_id(city_id: str, data: dict):
+    """设置天气数据缓存（基于城市ID，30分钟）"""
+    _weather_cache_by_id[city_id] = (data, time.time())
+
+
+async def get_weather_by_city_id(city_id: str, city_name: str = None) -> dict | None:
+    """
+    获取指定城市的天气信息（基于城市ID，30分钟缓存）
+    :param city_id: 和风天气城市ID
+    :param city_name: 城市名称（可选，用于返回数据）
+    :return: 天气数据字典
+    """
+    # 先检查30分钟缓存
+    cached_weather = _get_cached_weather_by_city_id(city_id)
+    if cached_weather:
+        return cached_weather
+
+    token = get_jwt_token()
+    if not token:
+        logger.warning("[Weather] 获取 JWT 失败")
+        return None
+
+    headers = {"Authorization": f"Bearer {token}"}
+
+    async with httpx.AsyncClient(timeout=10) as client:
+        # 获取实时天气
+        now_resp = await client.get(
+            f"{QWEATHER_BASE_URL}/weather/now",
+            params={"location": city_id, "lang": "zh"},
+            headers=headers
+        )
+        now_data = now_resp.json()
+
+        # 获取3日预报
+        daily_resp = await client.get(
+            f"{QWEATHER_BASE_URL}/weather/3d",
+            params={"location": city_id, "lang": "zh"},
+            headers=headers
+        )
+        daily_data = daily_resp.json()
+
+    if now_data.get("code") != "200" or daily_data.get("code") != "200":
+        logger.warning(f"[Weather] API 返回错误: now={now_data.get('code')}, daily={daily_data.get('code')}")
+        return None
+
+    now = now_data["now"]
+    today = daily_data["daily"][0]
+
+    weather_data = {
+        "city": city_name or "未知",
+        "cityId": city_id,
+        "weather": now["text"],
+        "temp": now["temp"],
+        "feels_like": now["feelsLike"],
+        "humidity": now["humidity"],
+        "wind_dir": now["windDir"],
+        "wind_scale": now["windScale"],
+        "min_temp": today["tempMin"],
+        "max_temp": today["tempMax"],
+        "day_weather": today["textDay"],
+        "update_time": now_data["updateTime"],
+    }
+
+    # 写入30分钟缓存
+    _set_cached_weather_by_city_id(city_id, weather_data)
     return weather_data
