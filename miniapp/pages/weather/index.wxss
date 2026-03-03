@@ -111,27 +111,27 @@
   margin-bottom: var(--spacing-sm);
 }
 
-.alert-item.橙色 {
+.alert-item.orange {
   background: #fff7e6;
   border-left: 6rpx solid #fa8c16;
 }
 
-.alert-item.红色 {
+.alert-item.red {
   background: #fff1f0;
   border-left: 6rpx solid #f5222d;
 }
 
-.alert-item.黄色 {
+.alert-item.yellow {
   background: #fffff0;
   border-left: 6rpx solid #fadb14;
 }
 
-.alert-item.蓝色 {
+.alert-item.blue {
   background: #e6f7ff;
   border-left: 6rpx solid #1890ff;
 }
 
-.alert-item.其他 {
+.alert-item.other {
   background: #fafafa;
   border-left: 6rpx solid #8c8c8c;
 }
@@ -152,11 +152,11 @@
   margin-bottom: var(--spacing-xs);
 }
 
-.alert-item.红色 .alert-title {
+.alert-item.red .alert-title {
   color: #cf1322;
 }
 
-.alert-item.蓝色 .alert-title {
+.alert-item.blue .alert-title {
   color: #096dd9;
 }
 

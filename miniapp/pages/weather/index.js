@@ -263,7 +263,16 @@ Page({
       success: (res) => {
         if (res.data && res.data.city) {
           // 更新对应城市的天气数据
-          cities[idx].weatherData = res.data;
+          const weatherData = res.data;
+          // 转换 alerts 的 level 为英文类名
+          if (weatherData.alerts && weatherData.alerts.length > 0) {
+            const levelMap = { '橙色': 'orange', '红色': 'red', '黄色': 'yellow', '蓝色': 'blue', '其他': 'other' };
+            weatherData.alerts = weatherData.alerts.map(alert => ({
+              ...alert,
+              level: levelMap[alert.level] || 'other'
+            }));
+          }
+          cities[idx].weatherData = weatherData;
           cities[idx].weatherTheme = getWeatherTheme(res.data.weather);
           // 添加天气提示
           cities[idx].weatherTips = getWeatherTips(
