@@ -247,7 +247,6 @@
   left: var(--spacing-xs);
   right: var(--spacing-xs);
 }
-}
 
 .tag {
   display: inline-block;
