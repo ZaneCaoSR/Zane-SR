@@ -1,0 +1,15 @@
+<!-- custom-tab-bar/index.wxml -->
+<view class="tab-bar">
+  <view class="tab-bar-item" data-path="/pages/album/index" data-index="0" bindtap="switchTab">
+    <image class="tab-icon" src="{{selected === 0 ? '/assets/icons/album-active.png' : '/assets/icons/album.png'}}" />
+    <text class="tab-text" style="color: {{selected === 0 ? selectedColor : color}}">相册</text>
+  </view>
+  <view class="tab-bar-item" data-path="/pages/weather/index" data-index="1" bindtap="switchTab">
+    <image class="tab-icon" src="{{selected === 1 ? '/assets/icons/weather-active.png' : '/assets/icons/weather.png'}}" />
+    <text class="tab-text" style="color: {{selected === 1 ? selectedColor : color}}">天气</text>
+  </view>
+  <view class="tab-bar-item" data-path="/pages/my/index" data-index="2" bindtap="switchTab">
+    <image class="tab-icon" src="{{selected === 2 ? '/assets/icons/my-active.png' : '/assets/icons/my.png'}}" />
+    <text class="tab-text" style="color: {{selected === 2 ? selectedColor : color}}">我的</text>
+  </view>
+</view>

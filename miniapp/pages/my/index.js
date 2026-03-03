@@ -59,11 +59,11 @@ Page({
       animation: { duration: 300, timingFunc: 'easeInOut' }
     });
 
-    // 更新自定义 tabBar 颜色
+    // 更新自定义 tabBar 颜色和选中态
     if (typeof this.getTabBar === 'function') {
       const tabBar = this.getTabBar();
       if (tabBar) {
-        tabBar.setData({ selectedColor: themeColor });
+        tabBar.setData({ selectedColor: themeColor, selected: 2 });
       }
     }
 
