@@ -125,6 +125,21 @@
           </view>
         </view>
 
+        <!-- 温度曲线 -->
+        <view class="temp-chart-section" wx:if="{{item.weatherData.hourly && item.weatherData.hourly.length > 0}}">
+          <view class="temp-chart-header">
+            <text class="temp-chart-title">🌡️ 温度趋势</text>
+          </view>
+          <view class="temp-chart">
+            <view class="temp-chart-bars">
+              <view class="temp-bar-wrap" wx:for="{{item.weatherData.hourly}}" wx:key="time" wx:if="{{index < 24 && index % 2 === 0}}">
+                <view class="temp-bar {{item.temp > 20 ? 'warm' : 'cool'}}" style="height: {{(item.temp + 10) * 3}}rpx"></view>
+                <text class="temp-bar-label">{{item.temp}}°</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
         <!-- 逐小时预报 -->
         <view class="hourly-section" wx:if="{{item.weatherData.hourly && item.weatherData.hourly.length > 0}}">
           <view class="hourly-header">

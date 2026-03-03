@@ -502,6 +502,63 @@
   color: var(--color-text-tertiary);
 }
 
+/* 温度曲线 */
+.temp-chart-section {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.temp-chart-header {
+  margin-bottom: var(--spacing-md);
+}
+
+.temp-chart-title {
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.temp-chart {
+  height: 200rpx;
+}
+
+.temp-chart-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 160rpx;
+  padding: 0 var(--spacing-sm);
+}
+
+.temp-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.temp-bar {
+  width: 16rpx;
+  border-radius: 8rpx 8rpx 0 0;
+  min-height: 10rpx;
+}
+
+.temp-bar.warm {
+  background: linear-gradient(to top, #ff9a56, #ff6b6b);
+}
+
+.temp-bar.cool {
+  background: linear-gradient(to top, #74b9ff, #0984e3);
+}
+
+.temp-bar-label {
+  font-size: 18rpx;
+  color: var(--color-text-tertiary);
+  margin-top: 4rpx;
+}
+
 /* 逐小时预报 */
 .hourly-section {
   background: var(--color-surface);
