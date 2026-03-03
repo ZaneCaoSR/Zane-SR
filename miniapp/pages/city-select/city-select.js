@@ -239,6 +239,80 @@ Page({
   },
 
   /**
+   * 长按城市显示操作菜单
+   */
+  onCityLongPress(e) {
+    const index = e.currentTarget.dataset.index
+    const city = this.data.subscribedCities[index]
+
+    const options = ['修改推送时间', '删除该城市']
+
+    wx.showActionSheet({
+      itemList: options,
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          // 修改推送时间
+          this.onEditPushTime(index, city)
+        } else if (res.tapIndex === 1) {
+          // 删除城市
+          this.onRemoveSubscribe({ currentTarget: { dataset: { city: city.city } } })
+        }
+      }
+    })
+  },
+
+  /**
+   * 修改推送时间
+   */
+  onEditPushTime(index, city) {
+    const timeOptions = ['06:00', '07:00', '08:00', '09:00', '10:00', '12:00', '18:00', '20:00']
+    const timeLabels = ['早上 6点', '早上 7点', '早上 8点', '早上 9点', '上午 10点', '中午 12点', '傍晚 6点', '晚上 8点']
+
+    wx.showActionSheet({
+      itemList: timeLabels,
+      success: (res) => {
+        const selectedTime = timeOptions[res.tapIndex]
+        this.doUpdatePushTime(index, city.city, selectedTime)
+      }
+    })
+  },
+
+  /**
+   * 执行修改推送时间
+   */
+  async doUpdatePushTime(index, cityName, pushTime) {
+    const openid = app.globalData.openid
+    if (!openid) return
+
+    wx.showLoading({ title: '更新中...' })
+
+    try {
+      const currentCities = this.data.subscribedCities.map((c, i) => ({
+        city: c.city,
+        cityId: c.cityId || null,
+        pushTime: i === index ? pushTime : (c.pushTime || '08:00'),
+        isActive: true
+      }))
+
+      const res = await request('/api/subscribe-multiple', 'POST', {
+        openid,
+        cities: currentCities
+      })
+
+      if (res.success) {
+        wx.showToast({ title: '更新时间成功', icon: 'success' })
+        this.loadSubscribedCities()
+      } else {
+        wx.showToast({ title: res.message || '更新失败', icon: 'error' })
+      }
+    } catch (err) {
+      wx.showToast({ title: '更新失败', icon: 'error' })
+    } finally {
+      wx.hideLoading()
+    }
+  },
+
+  /**
    * 取消订阅（单个城市）
    */
   async onRemoveSubscribe(e) {

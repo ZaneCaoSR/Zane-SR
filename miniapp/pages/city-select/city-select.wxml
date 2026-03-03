@@ -85,7 +85,7 @@
   <view class="section" wx:if="{{!searchKey && !searchResult && subscribedCities.length > 0}}">
     <view class="section-header">
       <text class="section-title">🔔 我的订阅</text>
-      <text class="section-hint">左右滑动切换查看</text>
+      <text class="section-hint">长按编辑推送时间</text>
     </view>
     <view class="subscribed-list">
       <view
@@ -94,6 +94,8 @@
         wx:key="city"
         bindtap="onSelectCity"
         data-city="{{item}}"
+        bindlongpress="onCityLongPress"
+        data-index="{{index}}"
       >
         <view class="subscribed-info">
           <view class="subscribed-city-row">
