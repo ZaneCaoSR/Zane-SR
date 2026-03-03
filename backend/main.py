@@ -1,8 +1,8 @@
 """
-from logger import logger
 main.py - FastAPI 后端入口
 提供微信小程序天气提醒的后端接口：订阅管理、天气查询、手动触发推送
 """
+from logger import logger
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException, Security, Request
 from fastapi.responses import JSONResponse
@@ -653,18 +653,40 @@ async def github_webhook(request: Request):
 
 
 def _parse_tasks(commit_message: str) -> list:
-    """从 commit message 中解析 [task] 指令块"""
+    """从 commit message 中解析 [task] 指令块，支持三种格式：
+    1. [task:type] content [/task]   — 标准多行块
+    2. [task:type] content           — 无结束标签（到消息末尾）
+    3. [task] type: content          — 单行简写
+    """
     import re
     tasks = []
-    # 匹配 [task:类型] 内容 [/task] 或单行 [task] type: content
+    seen = set()
+
+    # 格式1：有结束标签的多行块
     block_pattern = re.findall(r'\[task:(\w+)\](.*?)\[/task\]', commit_message, re.DOTALL)
     for task_type, content in block_pattern:
-        tasks.append({"type": task_type.strip(), "content": content.strip()})
+        key = (task_type.strip(), content.strip())
+        if key not in seen:
+            seen.add(key)
+            tasks.append({"type": task_type.strip(), "content": content.strip()})
 
-    # 单行格式: [task] db_migrate: SQL语句
+    # 格式2：无结束标签，内容到消息末尾（如果格式1已匹配则跳过）
+    if not block_pattern:
+        open_pattern = re.findall(r'\[task:(\w+)\](.*?)(?=\[task:|\Z)', commit_message, re.DOTALL)
+        for task_type, content in open_pattern:
+            content = content.replace('[/task]', '').strip()
+            key = (task_type.strip(), content)
+            if key not in seen:
+                seen.add(key)
+                tasks.append({"type": task_type.strip(), "content": content})
+
+    # 格式3：单行简写 [task] type: content
     line_pattern = re.findall(r'\[task\]\s+(\w+):\s+(.+)', commit_message)
     for task_type, content in line_pattern:
-        tasks.append({"type": task_type.strip(), "content": content.strip()})
+        key = (task_type.strip(), content.strip())
+        if key not in seen:
+            seen.add(key)
+            tasks.append({"type": task_type.strip(), "content": content.strip()})
 
     return tasks
 
