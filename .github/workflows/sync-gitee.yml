@@ -1,0 +1,27 @@
+name: Sync to Gitee
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Add Gitee remote
+        run: |
+          git remote add gitee https://gitee.com/zane-cao/zane-sr.git
+          git remote set-url --push gitee https://gitee.com/zane-cao/zane-sr.git
+
+      - name: Push to Gitee
+        env:
+          GITEE_USERNAME: ${{ secrets.GITEE_USERNAME }}
+          GITEE_PASSWORD: ${{ secrets.GITEE_PASSWORD }}
+        run: |
+          git push gitee master --force
