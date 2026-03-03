@@ -37,6 +37,7 @@
       </view>
       <view
         class="add-btn"
+        style="background: {{themeColor}};"
         bindtap="onAddToSubscribe"
         data-city="{{item}}"
       >

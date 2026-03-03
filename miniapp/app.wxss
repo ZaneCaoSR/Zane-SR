@@ -7,10 +7,14 @@ page {
   --color-surface: #FFFFFF;
   --color-surface-elevated: #FFFFFF;
 
-  /* 强调色 - 温暖杏色 */
+  /* 强调色 - 温暖杏色（可动态修改） */
   --color-accent: #E8A87C;
   --color-accent-light: #FFCDB2;
   --color-accent-dark: #C38D6B;
+
+  /* 主题色 - 通过 JS 动态设置 */
+  --theme-color: #FF6B9D;
+  --theme-color-dark: #FF9ECA;
 
   /* 文字色 */
   --color-text-primary: #4A403A;

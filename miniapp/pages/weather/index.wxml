@@ -239,7 +239,7 @@
 
   <!-- 订阅按钮 -->
   <view class="action-area">
-    <button class="btn btn-subscribe" bindtap="onSubscribe">
+    <button class="btn btn-subscribe" style="background: {{themeColor}};" bindtap="onSubscribe">
       <text class="btn-icon">🔔</text>
       <text>订阅每日天气</text>
     </button>

@@ -125,7 +125,7 @@
     <text class="empty-title">开始记录成长</text>
     <text class="empty-description">用照片留存每一个珍贵时刻</text>
     <view class="empty-actions">
-      <button class="btn btn-primary btn-large" bindtap="onAddTap">
+      <button class="btn btn-primary btn-large" style="background: linear-gradient(135deg, {{themeColor}} 0%, {{themeColor}} 100%);" bindtap="onAddTap">
         <text class="btn-icon">📷</text>
         <text>拍照</text>
       </button>
@@ -140,7 +140,7 @@
 
   <!-- 悬浮添加按钮 -->
   <view class="fab-container" wx:if="{{showCameraFab && months.length > 0}}">
-    <view class="fab-btn" bindtap="onAddTap">
+    <view class="fab-btn" style="background: {{themeColor}};" bindtap="onAddTap">
       <text class="fab-icon">+</text>
     </view>
   </view>

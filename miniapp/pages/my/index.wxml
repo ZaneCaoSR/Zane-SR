@@ -23,6 +23,7 @@
 
       <button
         class="login-btn {{isLoggedIn ? 'logout' : ''}}"
+        style="background: linear-gradient(135deg, {{themeColor}} 0%, {{themeColorDark}} 100%);"
         bindtap="{{isLoggedIn ? 'onLogout' : 'onLogin'}}"
       >
         <text class="btn-text">{{isLoggedIn ? '退出' : '登录'}}</text>
@@ -147,7 +148,7 @@
             class="color-input"
             value="{{customColor}}"
           />
-          <button class="apply-btn" bindtap="applyCustomColor">
+          <button class="apply-btn" style="background: {{themeColor}};" bindtap="applyCustomColor">
             <text>应用</text>
           </button>
         </view>

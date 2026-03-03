@@ -109,8 +109,9 @@
 
   <!-- 底部保存按钮 -->
   <view class="bottom-bar">
-    <button 
-      class="save-btn" 
+    <button
+      class="save-btn"
+      style="background: {{themeColor}};"
       bindtap="saveBabyInfo"
       loading="{{isSaving}}"
     >
