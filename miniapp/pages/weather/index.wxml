@@ -25,8 +25,14 @@
   >
     <swiper-item wx:for="{{cities}}" wx:key="city">
       <view class="weather-slide">
+        <!-- 加载中提示 -->
+        <view class="city-loading" wx:if="{{item.loading}}">
+          <view class="loading-spinner"></view>
+          <text>加载天气中...</text>
+        </view>
+
         <!-- 天气主卡片 -->
-        <view class="weather-hero">
+        <view class="weather-hero" wx:if="{{!item.loading || item.weatherData.temp}}">
           <!-- 背景装饰 -->
           <view class="hero-bg">
             <view class="bg-circle circle-1"></view>
