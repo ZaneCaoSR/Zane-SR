@@ -151,3 +151,7 @@
 2026-03-03 15:43:56 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
 2026-03-03 15:43:56 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
 2026-03-03 15:50:55 | INFO     | jwt_helper:get_jwt_token - [JWT] Token 生成成功
+2026-03-03 16:04:34 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 16:04:35 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 16:04:40 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 16:04:40 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止

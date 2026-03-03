@@ -2,43 +2,94 @@
  * app.js - 小程序入口
  * 负责全局登录，获取用户 openid（通过后端 code2session 或直接云调用）
  */
+const { BASE_URL } = require('./utils/config');
+
 App({
   globalData: {
-    openid: null,    // 用户 openid，登录后存储
-    userCity: '杭州', // 用户订阅的城市
+    openid: null,        // 用户 openid，登录后存储
+    userInfo: null,      // 用户基本信息
+    userCity: '杭州',     // 用户订阅的城市
+    themeColor: '#FF6B9D', // 主题颜色
+    themeColorDark: '#FF9ECA', // 主题深色
   },
 
   onLaunch() {
-    // 小程序启动时获取登录凭证
-    this.login()
+    // 读取本地存储的用户信息
+    const userInfo = wx.getStorageSync('userInfo');
+    const userCity = wx.getStorageSync('userCity') || '杭州';
+    const themeColor = wx.getStorageSync('themeColor') || '#FF6B9D';
+    const themeColorDark = wx.getStorageSync('themeColorDark') || '#FF9ECA';
+    
+    if (userInfo) {
+      this.globalData.userInfo = userInfo;
+      this.globalData.openid = userInfo.openid;
+    }
+    this.globalData.userCity = userCity;
+    this.globalData.themeColor = themeColor;
+    this.globalData.themeColorDark = themeColorDark;
+    
+    // 小程序启动时自动登录
+    this.login();
   },
 
   /**
    * 微信登录，获取 code，换取 openid
-   * 注意：openid 应由后端通过 code2session 换取，前端不直接获取
-   * 此处简化：直接调用后端换取接口（需后端实现 /api/login 接口）
    */
   login() {
+    const that = this;
+    
     wx.login({
       success: (res) => {
         if (res.code) {
-          // 调用后端接口，用 code 换 openid
           wx.request({
-            url: require('./utils/config').BASE_URL + '/api/login',
+            url: BASE_URL + '/api/login',
             method: 'POST',
             data: { code: res.code },
             success: (loginRes) => {
               if (loginRes.data && loginRes.data.openid) {
-                this.globalData.openid = loginRes.data.openid
-                console.log('[App] 登录成功，openid:', this.globalData.openid)
+                that.globalData.openid = loginRes.data.openid;
+                console.log('[App] 登录成功，openid:', that.globalData.openid);
+                
+                // 如果已经有用户信息，更新 openid
+                if (that.globalData.userInfo) {
+                  that.globalData.userInfo.openid = loginRes.data.openid;
+                  wx.setStorageSync('userInfo', that.globalData.userInfo);
+                }
               }
             },
             fail: (err) => {
-              console.error('[App] 登录失败:', err)
+              console.error('[App] 登录失败:', err);
             }
-          })
+          });
         }
+      },
+      fail: (err) => {
+        console.error('[App] wx.login 失败:', err);
       }
-    })
+    });
+  },
+
+  /**
+   * 更新用户信息
+   */
+  updateUserInfo(userInfo) {
+    this.globalData.userInfo = userInfo;
+    wx.setStorageSync('userInfo', userInfo);
+  },
+
+  /**
+   * 更新主题颜色
+   */
+  updateThemeColor(color, colorDark) {
+    this.globalData.themeColor = color;
+    this.globalData.themeColorDark = colorDark;
+  },
+
+  /**
+   * 更新用户城市
+   */
+  updateUserCity(city) {
+    this.globalData.userCity = city;
+    wx.setStorageSync('userCity', city);
   }
-})
+});
