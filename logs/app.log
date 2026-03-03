@@ -1,0 +1,3 @@
+2026-03-03 08:00:00 | INFO     | scheduler:push_daily_weather - [Scheduler] 开始推送，共 1 名用户
+2026-03-03 08:00:00 | INFO     | jwt_helper:get_jwt_token - [JWT] Token 生成成功
+2026-03-03 08:00:01 | INFO     | wechat:send_weather_message - [WeChat] 推送失败 test：{'errcode': 40003, 'errmsg': 'invalid openid rid: 69a62480-38fd5e61-24346861'}

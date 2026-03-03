@@ -1,11 +1,11 @@
-# Weather Mini - 微信小程序天气提醒
+# Zane-SR - 微信小程序
 
 每天早上 8 点，自动推送天气信息到微信。
 
 ## 项目结构
 
 ```
-weather-mini/
+Zane-SR/
 ├── backend/           # Python 后端（FastAPI）
 │   ├── main.py        # API 入口
 │   ├── config.py      # 配置管理

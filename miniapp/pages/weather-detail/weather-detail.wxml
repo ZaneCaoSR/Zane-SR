@@ -1,0 +1,126 @@
+<!--
+  weather-detail.wxml - 天气详情页面
+  功能：展示详细天气信息、空气质量、逐小时预报、生活指数
+-->
+<view class="container">
+  <!-- 顶部天气卡片 -->
+  <view class="weather-header">
+    <view class="city-name">{{weather.city}}</view>
+    <view class="weather-temp">{{weather.temp}}°</view>
+    <view class="weather-desc">{{weather.weather}}</view>
+    <view class="weather-range">{{weather.min_temp}}° ~ {{weather.max_temp}}°</view>
+    <view class="update-time">更新于 {{weather.update_time}}</view>
+  </view>
+
+  <!-- 详细数据卡片 -->
+  <view class="detail-card">
+    <view class="detail-title">📊 实时数据</view>
+    <view class="detail-grid">
+      <view class="detail-item">
+        <text class="detail-icon">💧</text>
+        <text class="detail-label">湿度</text>
+        <text class="detail-value">{{weather.humidity}}%</text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-icon">🌬️</text>
+        <text class="detail-label">风力</text>
+        <text class="detail-value">{{weather.wind_scale}}级</text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-icon">🧭</text>
+        <text class="detail-label">风向</text>
+        <text class="detail-value">{{weather.wind_dir}}</text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-icon">🌡️</text>
+        <text class="detail-label">体感</text>
+        <text class="detail-value">{{weather.feels_like}}°</text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-icon">👁️</text>
+        <text class="detail-label">能见度</text>
+        <text class="detail-value">{{weather.vis}}km</text>
+      </view>
+      <view class="detail-item">
+        <text class="detail-icon">🌡️</text>
+        <text class="detail-label">气压</text>
+        <text class="detail-value">{{weather.pressure}}hPa</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空气质量 -->
+  <view class="aqi-card" wx:if="{{weather.aqi}}">
+    <view class="aqi-header">
+      <text class="aqi-title">🌬️ 空气质量</text>
+      <text class="aqi-level {{weather.aqi.level}}">{{weather.aqi.level_text}}</text>
+    </view>
+    <view class="aqi-values">
+      <view class="aqi-item">
+        <text class="aqi-label">AQI</text>
+        <text class="aqi-num">{{weather.aqi.aqi}}</text>
+      </view>
+      <view class="aqi-item">
+        <text class="aqi-label">PM2.5</text>
+        <text class="aqi-num">{{weather.aqi.pm25}}</text>
+      </view>
+      <view class="aqi-item">
+        <text class="aqi-label">PM10</text>
+        <text class="aqi-num">{{weather.aqi.pm10}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 逐小时预报 -->
+  <view class="hourly-card" wx:if="{{hourlyForecast.length > 0}}">
+    <view class="hourly-title">🕐 每小时预报</view>
+    <scroll-view class="hourly-scroll" scroll-x="true">
+      <view class="hourly-list">
+        <view class="hourly-item" wx:for="{{hourlyForecast}}" wx:key="time">
+          <text class="hourly-time">{{item.time}}</text>
+          <text class="hourly-icon">{{item.icon}}</text>
+          <text class="hourly-temp">{{item.temp}}°</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 未来几天预报 -->
+  <view class="forecast-card" wx:if="{{dailyForecast.length > 0}}">
+    <view class="forecast-title">📅 未来预报</view>
+    <view class="forecast-list">
+      <view class="forecast-item" wx:for="{{dailyForecast}}" wx:key="date">
+        <text class="forecast-date">{{item.date}}</text>
+        <text class="forecast-icon">{{item.icon}}</text>
+        <text class="forecast-desc">{{item.weather}}</text>
+        <text class="forecast-temp">{{item.min_temp}}° ~ {{item.max_temp}}°</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 生活指数 -->
+  <view class="life-card" wx:if="{{lifeIndex.length > 0}}">
+    <view class="life-title">🌿 生活指数</view>
+    <view class="life-grid">
+      <view class="life-item" wx:for="{{lifeIndex}}" wx:key="type">
+        <text class="life-icon">{{item.icon}}</text>
+        <text class="life-type">{{item.type}}</text>
+        <text class="life-value">{{item.value}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 订阅按钮 -->
+  <view class="subscribe-bar">
+    <view wx:if="{{isSubscribed}}" class="subscribed-status">
+      <text class="subscribed-text">✓ 已订阅 {{subscribedCity}}</text>
+      <button class="unsub-btn" bindtap="onUnsubscribe" size="mini">取消</button>
+    </view>
+    <button wx:else class="subscribe-btn" bindtap="onSubscribe">订阅该城市天气</button>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading-box" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+</view>

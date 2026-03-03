@@ -1,0 +1,83 @@
+<!--
+  subscriptions.wxml - 订阅管理页面
+  功能：管理已订阅的城市列表、设置推送时间
+-->
+<view class="container">
+  <!-- 头部说明 -->
+  <view class="header">
+    <text class="header-title">🔔 订阅管理</text>
+    <text class="header-desc">管理您订阅的城市，每天早上自动推送天气</text>
+  </view>
+
+  <!-- 订阅列表 -->
+  <view class="subs-list" wx:if="{{subscriptions.length > 0}}">
+    <view 
+      class="subs-item" 
+      wx:for="{{subscriptions}}" 
+      wx:key="city"
+      bindtap="onViewWeather"
+      data-city="{{item.city}}"
+    >
+      <view class="subs-info">
+        <text class="subs-city">{{item.city}}</text>
+        <text class="subs-time">每天 {{item.push_time || '8:00'}} 推送</text>
+      </view>
+      <view class="subs-weather" wx:if="{{item.weather}}">
+        <text class="weather-temp">{{item.weather.temp}}°</text>
+        <text class="weather-desc">{{item.weather.weather}}</text>
+      </view>
+      <view class="subs-actions">
+        <button 
+          class="action-btn edit" 
+          size="mini"
+          catchtap="onEditPushTime"
+          data-city="{{item.city}}"
+        >
+          🕐
+        </button>
+        <button 
+          class="action-btn delete" 
+          size="mini"
+          catchtap="onDeleteSubscribe"
+          data-city="{{item.city}}"
+        >
+          ✕
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-box" wx:if="{{!loading && subscriptions.length === 0}}">
+    <text class="empty-icon">☁️</text>
+    <text class="empty-title">还没有订阅</text>
+    <text class="empty-desc">添加城市，订阅每日天气推送</text>
+    <button class="add-btn" bindtap="onAddCity">+ 添加城市</button>
+  </view>
+
+  <!-- 加载中 -->
+  <view class="loading-box" wx:if="{{loading}}">
+    <text>加载中...</text>
+  </view>
+
+  <!-- 底部添加按钮 -->
+  <view class="bottom-bar" wx:if="{{subscriptions.length > 0}}">
+    <button class="add-city-btn" bindtap="onAddCity">+ 添加订阅城市</button>
+  </view>
+
+  <!-- 时间选择器弹窗 -->
+  <view class="time-picker-mask" wx:if="{{showTimePicker}}" bindtap="onCloseTimePicker"></view>
+  <view class="time-picker-popup" wx:if="{{showTimePicker}}">
+    <view class="picker-header">
+      <text class="picker-title">设置推送时间</text>
+      <text class="picker-close" bindtap="onCloseTimePicker">✕</text>
+    </view>
+    <picker mode="time" value="{{pushTime}}" bindchange="onTimeChange">
+      <view class="time-display">
+        <text class="time-label">推送时间：</text>
+        <text class="time-value">{{pushTime}}</text>
+      </view>
+    </picker>
+    <button class="confirm-btn" bindtap="onConfirmTime">确定</button>
+  </view>
+</view>

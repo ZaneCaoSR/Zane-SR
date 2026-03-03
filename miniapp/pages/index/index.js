@@ -96,7 +96,7 @@ Page({
    * 点击订阅：先请求订阅消息权限，再调用后端
    */
   onSubscribe() {
-    const templateId = 'YOUR_TEMPLATE_ID'  // 替换为实际模板ID
+    const templateId = 'qQ59V186shsA-W4OBRtY5Mwsa7djNzrD95lNqraYklk'  // 替换为实际模板ID
 
     wx.requestSubscribeMessage({
       tmplIds: [templateId],
@@ -160,5 +160,33 @@ Page({
     } finally {
       this.setData({ unsubLoading: false })
     }
+  },
+
+  /**
+   * 跳转到城市选择页面
+   */
+  onGoToCitySelect() {
+    wx.navigateTo({
+      url: '/pages/city-select/city-select'
+    })
+  },
+
+  /**
+   * 跳转到订阅管理页面
+   */
+  onGoToSubscriptions() {
+    wx.navigateTo({
+      url: '/pages/subscriptions/subscriptions'
+    })
+  },
+
+  /**
+   * 查看天气详情
+   */
+  onViewDetail(e) {
+    const city = e.currentTarget.dataset.city
+    wx.navigateTo({
+      url: `/pages/weather-detail/weather-detail?city=${encodeURIComponent(city)}`
+    })
   },
 })

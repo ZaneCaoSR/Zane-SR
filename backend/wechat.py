@@ -4,6 +4,7 @@ wechat.py - 微信接口封装
 微信订阅消息文档：https://developers.weixin.qq.com/miniprogram/dev/api-backend/open-api/subscribe-message/subscribeMessage.send.html
 """
 import httpx
+from logger import logger
 import time
 from datetime import datetime
 from config import WECHAT_APP_ID, WECHAT_APP_SECRET, WECHAT_TEMPLATE_ID
@@ -59,7 +60,7 @@ async def send_weather_message(openid: str, weather: dict) -> bool:
     """
     token = await get_access_token()
     if not token:
-        print(f"[WeChat] 获取 access_token 失败，跳过用户 {openid}")
+        logger.info(f"[WeChat] 获取 access_token 失败，跳过用户 {openid}")
         return False
 
     today = datetime.now().strftime("%Y年%m月%d日")
@@ -87,10 +88,10 @@ async def send_weather_message(openid: str, weather: dict) -> bool:
         result = resp.json()
 
     if result.get("errcode") == 0:
-        print(f"[WeChat] 成功推送给 {openid}：{weather['city']} {today}")
+        logger.info(f"[WeChat] 成功推送给 {openid}：{weather['city']} {today}")
         return True
     else:
-        print(f"[WeChat] 推送失败 {openid}：{result}")
+        logger.info(f"[WeChat] 推送失败 {openid}：{result}")
         return False
 
 

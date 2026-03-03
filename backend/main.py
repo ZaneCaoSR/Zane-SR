@@ -1,13 +1,21 @@
 """
+from logger import logger
 main.py - FastAPI 后端入口
 提供微信小程序天气提醒的后端接口：订阅管理、天气查询、手动触发推送
 """
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Security, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from database import init_db, add_subscriber, remove_subscriber, get_all_subscribers, get_subscriber
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from database import init_db, add_subscriber
+from auth import verify_api_key
+from database import remove_subscriber, get_all_subscribers, get_subscriber
 from weather import get_weather
 from scheduler import start_scheduler, stop_scheduler, push_daily_weather
+from retry import get_retry_queue, clear_retry_queue, retry_failed_pushes
 
 
 @asynccontextmanager
@@ -20,11 +28,25 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Weather Mini 后端",
+    title="Zane-SR 后端",
     description="微信小程序天气提醒服务",
     version="1.0.0",
     lifespan=lifespan,
 )
+
+# 限流配置：使用客户端 IP 作为 key
+limiter = Limiter(key_func=get_remote_address)
+
+# 将限流器添加到 app 状态
+app.state.limiter = limiter
+
+# 限流异常处理器
+@app.exception_handler(RateLimitExceeded)
+async def rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "请求过于频繁，请稍后再试"}
+    )
 
 
 # ===== 请求/响应模型 =====
@@ -66,8 +88,9 @@ async def unsubscribe(req: UnsubscribeRequest):
     return {"success": True, "message": "已取消订阅"}
 
 
-@app.get("/api/subscribers", summary="获取所有订阅者（管理用）")
-async def list_subscribers():
+@app.get("/api/subscribers", dependencies=[Security(verify_api_key)], summary="获取所有订阅者（管理用）")
+@limiter.limit("30/minute")
+async def list_subscribers(request: Request):
     """查看所有激活的订阅用户（仅供管理调试）"""
     subscribers = get_all_subscribers()
     return {"total": len(subscribers), "subscribers": subscribers}
@@ -91,16 +114,104 @@ async def query_weather(city_name: str):
     return weather
 
 
-@app.post("/api/push/now", summary="立即触发推送（测试用）")
-async def trigger_push():
+@app.post("/api/push/now", dependencies=[Security(verify_api_key)], summary="立即触发推送（测试用）")
+@limiter.limit("30/minute")
+async def trigger_push(request: Request):
     """手动触发一次天气推送，用于测试推送链路"""
     await push_daily_weather()
     return {"success": True, "message": "推送任务已触发"}
 
 
+
+@app.get("/api/retry/queue", summary="获取重试队列")
+@limiter.limit("30/minute")
+async def get_queue(request: Request, dependencies=[Security(verify_api_key)]):
+    """查看当前重试队列"""
+    return {"queue": get_retry_queue()}
+
+
+@app.post("/api/retry/now", summary="立即重试")
+@limiter.limit("30/minute")
+async def do_retry(request: Request, dependencies=[Security(verify_api_key)]):
+    """手动触发重试"""
+    count = await retry_failed_pushes()
+    return {"success": True, "retry_success": count}
+
+
+@app.delete("/api/retry/queue", summary="清空重试队列")
+@limiter.limit("30/minute")
+async def clear_queue(request: Request, dependencies=[Security(verify_api_key)]):
+    """清空重试队列"""
+    clear_retry_queue()
+    return {"success": True, "message": "重试队列已清空"}
+
 @app.get("/", summary="健康检查")
 async def health():
-    return {"status": "ok", "service": "Weather Mini Backend"}
+    """增强健康检查：检查数据库、配置和外部API连通性"""
+    status = {"status": "ok", "service": "Zane-SR Backend"}
+    
+    # 检查数据库
+    try:
+        from database import get_connection
+        conn = get_connection()
+        conn.execute("SELECT 1").fetchone()
+        conn.close()
+        status["database"] = "ok"
+    except Exception as e:
+        status["database"] = "error"
+        status["error"] = str(e)
+        status["status"] = "degraded"
+    
+    # 检查配置
+    from config import WECHAT_APP_ID, WECHAT_APP_SECRET, QWEATHER_API_KEY
+    status["config"] = {
+        "wechat": "configured" if WECHAT_APP_ID != "YOUR_WECHAT_APP_ID" else "missing",
+        "qweather": "configured" if QWEATHER_API_KEY != "YOUR_QWEATHER_API_KEY" else "missing",
+    }
+    
+    # 检查微信 API 连通性
+    try:
+        import httpx
+        from config import WECHAT_APP_ID, WECHAT_APP_SECRET
+        if WECHAT_APP_ID != "YOUR_WECHAT_APP_ID" and WECHAT_APP_SECRET != "YOUR_WECHAT_APP_SECRET":
+            # 尝试获取微信 access_token
+            token_url = f"https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={WECHAT_APP_ID}&secret={WECHAT_APP_SECRET}"
+            async with httpx.AsyncClient(timeout=5) as client:
+                resp = await client.get(token_url)
+                data = resp.json()
+                if "access_token" in data:
+                    status["wechat_api"] = "ok"
+                else:
+                    status["wechat_api"] = f"error: {data.get('errmsg', 'unknown')}"
+        else:
+            status["wechat_api"] = "not_configured"
+    except Exception as e:
+        status["wechat_api"] = f"error: {str(e)}"
+        status["status"] = "degraded"
+    
+    # 检查和风天气 API 连通性
+    try:
+        import httpx
+        from config import QWEATHER_API_KEY
+        if QWEATHER_API_KEY != "YOUR_QWEATHER_API_KEY":
+            weather_url = f"https://devapi.qweather.com/v7/weather/now?location=101010100&key={QWEATHER_API_KEY}"
+            async with httpx.AsyncClient(timeout=5) as client:
+                resp = await client.get(weather_url)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    if data.get("code") == "200":
+                        status["qweather_api"] = "ok"
+                    else:
+                        status["qweather_api"] = f"error: API code {data.get('code')}"
+                else:
+                    status["qweather_api"] = f"error: HTTP {resp.status_code}"
+        else:
+            status["qweather_api"] = "not_configured"
+    except Exception as e:
+        status["qweather_api"] = f"error: {str(e)}"
+        status["status"] = "degraded"
+    
+    return status
 
 
 # ===== 微信登录：code 换 openid =====

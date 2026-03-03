@@ -1,0 +1,239 @@
+/* subscriptions.wxss - 订阅管理页面样式 */
+
+.container {
+  min-height: 100vh;
+  background: #F0F6FF;
+  padding-bottom: 180rpx;
+}
+
+/* 头部 */
+.header {
+  padding: 40rpx 30rpx;
+}
+
+.header-title {
+  font-size: 36rpx;
+  font-weight: 500;
+  color: #333;
+  display: block;
+  margin-bottom: 10rpx;
+}
+
+.header-desc {
+  font-size: 26rpx;
+  color: #999;
+}
+
+/* 订阅列表 */
+.subs-list {
+  padding: 0 30rpx;
+}
+
+.subs-item {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+}
+
+.subs-info {
+  flex: 1;
+}
+
+.subs-city {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333;
+  display: block;
+}
+
+.subs-time {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 6rpx;
+}
+
+.subs-weather {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 20rpx;
+}
+
+.weather-temp {
+  font-size: 36rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+.weather-desc {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.subs-actions {
+  display: flex;
+  gap: 12rpx;
+}
+
+.action-btn {
+  width: 60rpx;
+  height: 60rpx;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 28rpx;
+}
+
+.action-btn.edit {
+  background: #e6f7e6;
+  color: #52c41a;
+}
+
+.action-btn.delete {
+  background: #fff1f0;
+  color: #ff4d4f;
+}
+
+/* 空状态 */
+.empty-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 120rpx 0;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 30rpx;
+}
+
+.empty-title {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.empty-desc {
+  font-size: 26rpx;
+  color: #999;
+  margin-top: 10rpx;
+  margin-bottom: 40rpx;
+}
+
+.add-btn {
+  background: linear-gradient(135deg, #4A90D9, #7EC8E3);
+  color: #fff;
+  border-radius: 50rpx;
+  font-size: 30rpx;
+  padding: 0 60rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+}
+
+/* 底部添加按钮 */
+.bottom-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 20rpx 30rpx;
+  background: #fff;
+  box-shadow: 0 -4rpx 16rpx rgba(0,0,0,0.06);
+}
+
+.add-city-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #4A90D9, #7EC8E3);
+  color: #fff;
+  border-radius: 50rpx;
+  font-size: 32rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+}
+
+/* 加载中 */
+.loading-box {
+  text-align: center;
+  padding: 60rpx;
+  color: #999;
+  font-size: 28rpx;
+}
+
+/* 时间选择器弹窗 */
+.time-picker-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 100;
+}
+
+.time-picker-popup {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-radius: 32rpx 32rpx 0 0;
+  padding: 40rpx;
+  z-index: 101;
+}
+
+.picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40rpx;
+}
+
+.picker-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+.picker-close {
+  font-size: 36rpx;
+  color: #999;
+  padding: 10rpx;
+}
+
+.time-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40rpx 0;
+  background: #f9f9f9;
+  border-radius: 16rpx;
+  margin-bottom: 30rpx;
+}
+
+.time-label {
+  font-size: 30rpx;
+  color: #666;
+}
+
+.time-value {
+  font-size: 48rpx;
+  font-weight: 500;
+  color: #4A90D9;
+  margin-left: 16rpx;
+}
+
+.confirm-btn {
+  width: 100%;
+  background: #4A90D9;
+  color: #fff;
+  border-radius: 50rpx;
+  font-size: 32rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+}

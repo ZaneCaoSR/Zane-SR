@@ -156,3 +156,43 @@
   font-size: 26rpx;
   padding: 0 30rpx;
 }
+
+/* 快捷入口 */
+.quick-entry {
+  display: flex;
+  gap: 20rpx;
+  margin-bottom: 30rpx;
+}
+
+.entry-item {
+  flex: 1;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+}
+
+.entry-icon {
+  font-size: 48rpx;
+  margin-bottom: 10rpx;
+}
+
+.entry-text {
+  font-size: 26rpx;
+  color: #666;
+}
+
+/* 查看详情按钮 */
+.detail-btn {
+  margin-top: 20rpx;
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  border-radius: 30rpx;
+  font-size: 26rpx;
+  padding: 0 30rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+}

@@ -1,6 +1,9 @@
 {
   "pages": [
-    "pages/index/index"
+    "pages/index/index",
+    "pages/city-select/city-select",
+    "pages/weather-detail/weather-detail",
+    "pages/subscriptions/subscriptions"
   ],
   "window": {
     "backgroundTextStyle": "light",

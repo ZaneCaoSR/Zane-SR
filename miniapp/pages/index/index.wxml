@@ -1,6 +1,6 @@
 <!--
   index.wxml - 首页
-  功能：展示当前天气 + 订阅/取消订阅天气提醒
+  功能：展示当前天气 + 订阅/取消订阅天气提醒 + 跳转入口
 -->
 <view class="container">
   
@@ -31,6 +31,7 @@
       <text>🌬️ {{ weather.wind_dir }} {{ weather.wind_scale }}级</text>
     </view>
     <view class="weather-update">更新于 {{ weather.update_time }}</view>
+    <button class="detail-btn" bindtap="onViewDetail" data-city="{{weather.city}}">查看详情 →</button>
   </view>
 
   <!-- 加载中 -->
@@ -41,6 +42,18 @@
   <!-- 无数据提示 -->
   <view class="empty-box" wx:if="{{!weather && !loading}}">
     <text>请输入城市名查询天气 ☁️</text>
+  </view>
+
+  <!-- 快捷入口 -->
+  <view class="quick-entry">
+    <view class="entry-item" bindtap="onGoToCitySelect">
+      <text class="entry-icon">🏙️</text>
+      <text class="entry-text">选择城市</text>
+    </view>
+    <view class="entry-item" bindtap="onGoToSubscriptions">
+      <text class="entry-icon">🔔</text>
+      <text class="entry-text">我的订阅</text>
+    </view>
   </view>
 
   <!-- 分割线 -->

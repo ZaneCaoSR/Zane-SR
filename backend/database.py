@@ -15,7 +15,7 @@ def get_connection():
 
 
 def init_db():
-    """初始化数据库，创建 subscribers 表"""
+    """初始化数据库，创建 subscribers 表和 retry_queue 表"""
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("""
@@ -33,6 +33,10 @@ def init_db():
     """)
     conn.commit()
     conn.close()
+    
+    # 初始化重试队列表
+    from retry import init_retry_db
+    init_retry_db()
 
 
 def add_subscriber(openid: str, city: str = "杭州") -> bool:
