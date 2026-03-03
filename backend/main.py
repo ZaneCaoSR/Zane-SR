@@ -583,7 +583,7 @@ async def github_webhook(request: Request):
         logger.info(f"[Webhook] git pull: {pull.stdout.strip()}")
 
         restart = subprocess.run(
-            ["pm2", "restart", "weather-mini"],
+            ["pm2", "restart", "weather-mini", "--kill-timeout", "5000"],
             capture_output=True, text=True, timeout=30
         )
         logger.info(f"[Webhook] pm2 restart: {restart.returncode}")
