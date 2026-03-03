@@ -8,6 +8,33 @@
   overflow: hidden;
 }
 
+/* 天气提示 */
+.tips-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.tip-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.tip-icon {
+  font-size: 28rpx;
+}
+
+.tip-text {
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+}
+
 /* 天气预警 */
 .alert-section {
   margin-bottom: var(--spacing-md);

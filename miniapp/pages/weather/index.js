@@ -16,6 +16,69 @@ const getWeatherTheme = (weather) => {
   return 'theme-sunny';
 };
 
+// 天气提示生成
+const getWeatherTips = (weather, temp, humidity, air) => {
+  const tips = [];
+
+  if (!weather) return tips;
+
+  const w = weather.toLowerCase();
+  const t = parseInt(temp) || 0;
+  const h = parseInt(humidity) || 0;
+
+  // 天气相关
+  if (w.includes('雨') || w.includes('暴雨') || w.includes('大雨')) {
+    tips.push({ icon: '☔', text: '记得带伞哦，开车慢行' });
+  }
+  if (w.includes('雪')) {
+    tips.push({ icon: '⛄', text: '注意防寒保暖，路面湿滑' });
+  }
+  if (w.includes('雾') || w.includes('霾')) {
+    tips.push({ icon: '😷', text: '能见度低，出行注意安全' });
+  }
+  if (w.includes('晴') && t > 30) {
+    tips.push({ icon: '☀️', text: '高温预警，注意防暑' });
+  }
+  if (w.includes('晴') && t < 5) {
+    tips.push({ icon: '🧥', text: '天气寒冷，注意保暖' });
+  }
+  if (w.includes('雷')) {
+    tips.push({ icon: '⛈️', text: '雷电天气，避免户外活动' });
+  }
+  if (w.includes('晴') && t >= 15 && t <= 28) {
+    tips.push({ icon: '🌸', text: '天气宜人，适合外出' });
+  }
+
+  // 温度相关
+  if (t > 35) {
+    tips.push({ icon: '🥵', text: '高温预警，多补充水分' });
+  }
+  if (t < 0) {
+    tips.push({ icon: '🥶', text: '寒冷天气，注意防冻' });
+  }
+
+  // 湿度相关
+  if (h > 80) {
+    tips.push({ icon: '💧', text: '空气潮湿，注意除湿' });
+  }
+
+  // 空气质量
+  if (air && air.category) {
+    if (air.category === '优') {
+      tips.push({ icon: '🍃', text: '空气优秀，宜户外运动' });
+    } else if (air.category.includes('重度') || air.category.includes('严重')) {
+      tips.push({ icon: '😷', text: '空气污染，建议戴口罩' });
+    }
+  }
+
+  // 默认提示
+  if (tips.length === 0) {
+    tips.push({ icon: '💡', text: '关注天气，享受生活' });
+  }
+
+  return tips;
+};
+
 Page({
   data: {
     city: '杭州',
@@ -136,6 +199,13 @@ Page({
           // 更新对应城市的天气数据
           cities[idx].weatherData = res.data;
           cities[idx].weatherTheme = getWeatherTheme(res.data.weather);
+          // 添加天气提示
+          cities[idx].weatherTips = getWeatherTips(
+            res.data.weather,
+            res.data.temp,
+            res.data.humidity,
+            res.data.air
+          );
           cities[idx].loaded = true;
           cities[idx].loading = false;
           this.setData({ cities: cities });
