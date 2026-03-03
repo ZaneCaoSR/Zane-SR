@@ -613,6 +613,7 @@ async def github_webhook(request: Request):
 
     # 拉取最新代码并重启
     project_dir = "/root/projects/weather-mini"
+    task_results = []
     try:
         pull = subprocess.run(
             ["git", "pull", "origin", target_branch],
@@ -626,12 +627,122 @@ async def github_webhook(request: Request):
         )
         logger.info(f"[Webhook] pm2 restart: {restart.returncode}")
 
+        # 解析 commit message 中的 [task] 指令
+        commits = payload.get("commits", [])
+        for commit in commits:
+            msg = commit.get("message", "")
+            tasks = _parse_tasks(msg)
+            for task in tasks:
+                result = _execute_task(task, project_dir)
+                task_results.append(result)
+                logger.info(f"[Webhook] 执行任务: {task['type']} → {result['status']}")
+
+        # 发送 Telegram 通知
+        _notify_telegram(branch, commits, task_results)
+
         return {
             "status": "ok",
             "branch": branch,
             "pull_output": pull.stdout.strip(),
-            "restarted": restart.returncode == 0
+            "restarted": restart.returncode == 0,
+            "tasks": task_results
         }
     except Exception as e:
         logger.error(f"[Webhook] 自动部署失败: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+def _parse_tasks(commit_message: str) -> list:
+    """从 commit message 中解析 [task] 指令块"""
+    import re
+    tasks = []
+    # 匹配 [task:类型] 内容 [/task] 或单行 [task] type: content
+    block_pattern = re.findall(r'\[task:(\w+)\](.*?)\[/task\]', commit_message, re.DOTALL)
+    for task_type, content in block_pattern:
+        tasks.append({"type": task_type.strip(), "content": content.strip()})
+
+    # 单行格式: [task] db_migrate: SQL语句
+    line_pattern = re.findall(r'\[task\]\s+(\w+):\s+(.+)', commit_message)
+    for task_type, content in line_pattern:
+        tasks.append({"type": task_type.strip(), "content": content.strip()})
+
+    return tasks
+
+
+def _execute_task(task: dict, project_dir: str) -> dict:
+    """执行任务指令，返回执行结果"""
+    import sqlite3 as _sqlite3
+    task_type = task["type"]
+    content = task["content"]
+
+    try:
+        if task_type == "db_migrate":
+            # 执行 SQLite SQL 语句
+            db_path = f"{project_dir}/data/weather.db"
+            conn = _sqlite3.connect(db_path)
+            cursor = conn.cursor()
+            for sql in content.split(";"):
+                sql = sql.strip()
+                if sql:
+                    cursor.execute(sql)
+            conn.commit()
+            conn.close()
+            return {"type": task_type, "status": "success", "detail": content}
+
+        elif task_type == "shell":
+            # 执行 shell 命令（仅限白名单）
+            allowed = ["pip install", "python3", "pm2"]
+            if not any(content.startswith(a) for a in allowed):
+                return {"type": task_type, "status": "rejected", "detail": "命令不在白名单"}
+            result = subprocess.run(content, shell=True, cwd=project_dir,
+                                    capture_output=True, text=True, timeout=60)
+            return {"type": task_type, "status": "success", "detail": result.stdout.strip()}
+
+        elif task_type == "note":
+            # 纯文字备注，记录日志即可
+            logger.info(f"[Task:note] {content}")
+            return {"type": task_type, "status": "noted", "detail": content}
+
+        else:
+            return {"type": task_type, "status": "unknown", "detail": f"未知任务类型: {task_type}"}
+
+    except Exception as e:
+        return {"type": task_type, "status": "error", "detail": str(e)}
+
+
+def _notify_telegram(branch: str, commits: list, task_results: list):
+    """通过 Telegram Bot API 发送部署通知"""
+    import httpx as _httpx
+
+    bot_token = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    chat_id = os.getenv("TELEGRAM_CHAT_ID", "8715713825")
+    if not bot_token:
+        logger.warning("[Webhook] TELEGRAM_BOT_TOKEN 未配置，跳过通知")
+        return
+
+    commit_lines = "\n".join(
+        f"  • {c.get('message', '').splitlines()[0][:60]}" for c in commits[:5]
+    )
+    task_lines = ""
+    if task_results:
+        task_lines = "\n\n📋 *任务执行结果：*\n" + "\n".join(
+            f"  {'✅' if r['status'] in ('success', 'noted') else '❌'} `[{r['type']}]` {r['detail'][:80]}"
+            for r in task_results
+        )
+
+    msg = (
+        f"🚀 *自动部署完成*\n"
+        f"分支：`{branch}`\n\n"
+        f"📝 *提交记录：*\n{commit_lines}"
+        f"{task_lines}"
+    )
+
+    try:
+        resp = _httpx.post(
+            f"https://api.telegram.org/bot{bot_token}/sendMessage",
+            json={"chat_id": chat_id, "text": msg, "parse_mode": "Markdown"},
+            timeout=10
+        )
+        logger.info(f"[Webhook] Telegram 通知已发送: {resp.status_code}")
+    except Exception as e:
+        logger.warning(f"[Webhook] Telegram 通知发送失败: {e}")
