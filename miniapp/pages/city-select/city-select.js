@@ -139,6 +139,10 @@ Page({
     // 保存到常用城市缓存
     this.saveCommonCity(cityName)
     
+    // 保存到全局数据
+    const app = getApp();
+    app.globalData.userCity = cityName;
+    
     // 跳转到天气详情页
     wx.navigateTo({
       url: `/pages/weather-detail/weather-detail?city=${encodeURIComponent(cityName)}`

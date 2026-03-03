@@ -1,0 +1,53 @@
+<!-- 我的页面 -->
+<view class="my-container">
+  <!-- 用户信息卡片 -->
+  <view class="user-card">
+    <image class="avatar" src="{{userInfo.avatarUrl || '/assets/icons/default-avatar.png'}}" mode="aspectFill"></image>
+    <view class="user-info">
+      <text class="nickname">{{userInfo.nickName || '未登录'}}</text>
+      <text class="status">{{isLoggedIn ? '已登录' : '点击登录'}}</text>
+    </view>
+    <button class="login-btn" bindtap="onLogin" wx:if="{{!isLoggedIn}}">登录</button>
+    <button class="login-btn logout" bindtap="onLogout" wx:if="{{isLoggedIn}}">退出</button>
+  </view>
+
+  <!-- 功能列表 -->
+  <view class="menu-list">
+    <view class="menu-item" bindtap="onThemeChange">
+      <text class="menu-icon">🎨</text>
+      <text class="menu-text">主题模式</text>
+      <text class="menu-value">{{theme === 'light' ? '浅色' : '深色'}}</text>
+      <text class="arrow">></text>
+    </view>
+    
+    <view class="menu-item" bindtap="onAbout">
+      <text class="menu-icon">ℹ️</text>
+      <text class="menu-text">关于我们</text>
+      <text class="arrow">></text>
+    </view>
+    
+    <view class="menu-item">
+      <text class="menu-icon">📋</text>
+      <text class="menu-text">版本信息</text>
+      <text class="menu-value">v1.0.0</text>
+    </view>
+  </view>
+
+  <!-- 主题选择弹窗 -->
+  <view class="theme-modal" wx:if="{{showThemeModal}}">
+    <view class="theme-mask" bindtap="onCloseTheme"></view>
+    <view class="theme-content">
+      <view class="theme-title">选择主题</view>
+      <view class="theme-options">
+        <view class="theme-option {{theme==='light'?'active':''}}" bindtap="selectTheme" data-theme="light">
+          <view class="theme-preview light-preview"></view>
+          <text>浅色模式</text>
+        </view>
+        <view class="theme-option {{theme==='dark'?'active':''}}" bindtap="selectTheme" data-theme="dark">
+          <view class="theme-preview dark-preview"></view>
+          <text>深色模式</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

@@ -3,8 +3,8 @@
     "pages/album/index",
     "pages/upload/index",
     "pages/photo/index",
-    "pages/settings/index",
-    "pages/index/index",
+    "pages/my/index",
+    "pages/weather/index",
     "pages/city-select/city-select",
     "pages/weather-detail/weather-detail",
     "pages/subscriptions/subscriptions"
@@ -12,7 +12,7 @@
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#FF9ECA",
-    "navigationBarTitleText": "宝宝成长相册",
+    "navigationBarTitleText": "Zane-SR",
     "navigationBarTextStyle": "white",
     "backgroundColor": "#FFF5F8"
   },
@@ -29,10 +29,16 @@
         "selectedIconPath": "assets/icons/album-active.png"
       },
       {
-        "pagePath": "pages/settings/index",
-        "text": "设置",
-        "iconPath": "assets/icons/settings.png",
-        "selectedIconPath": "assets/icons/settings-active.png"
+        "pagePath": "pages/weather/index",
+        "text": "天气",
+        "iconPath": "assets/icons/weather.png",
+        "selectedIconPath": "assets/icons/weather-active.png"
+      },
+      {
+        "pagePath": "pages/my/index",
+        "text": "我的",
+        "iconPath": "assets/icons/my.png",
+        "selectedIconPath": "assets/icons/my-active.png"
       }
     ]
   },

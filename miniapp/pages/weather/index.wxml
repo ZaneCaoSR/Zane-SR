@@ -1,0 +1,40 @@
+<!-- 天气首页 -->
+<view class="weather-container">
+  <!-- 顶部城市选择 -->
+  <view class="city-selector" bindtap="onCitySelect">
+    <text class="city-name">{{city}}</text>
+    <text class="city-change">切换城市</text>
+  </view>
+
+  <!-- 天气卡片 -->
+  <view class="weather-card">
+    <view class="temp">{{weather.temp}}°</view>
+    <view class="weather-desc">{{weather.weather}}</view>
+    <view class="update-time">更新于 {{updateTime}}</view>
+  </view>
+
+  <!-- 详细信息 -->
+  <view class="detail-list">
+    <view class="detail-item">
+      <text class="label">体感温度</text>
+      <text class="value">{{weather.feels_like}}°</text>
+    </view>
+    <view class="detail-item">
+      <text class="label">湿度</text>
+      <text class="value">{{weather.humidity}}%</text>
+    </view>
+    <view class="detail-item">
+      <text class="label">风向</text>
+      <text class="value">{{weather.wind_dir}}</text>
+    </view>
+    <view class="detail-item">
+      <text class="label">风力</text>
+      <text class="value">{{weather.wind_scale}}级</text>
+    </view>
+  </view>
+
+  <!-- 订阅按钮 -->
+  <button class="subscribe-btn" bindtap="onSubscribe">
+    订阅该城市天气
+  </button>
+</view>

@@ -1,0 +1,157 @@
+/* 我的页面样式 */
+.my-container {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  padding: 30px 20px;
+  background: linear-gradient(135deg, #FF9ECA 0%, #FF6B9D 100%);
+}
+
+.avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+}
+
+.user-info {
+  flex: 1;
+  margin-left: 15px;
+}
+
+.nickname {
+  display: block;
+  font-size: 18px;
+  color: #fff;
+  font-weight: bold;
+}
+
+.status {
+  display: block;
+  font-size: 12px;
+  color: rgba(255,255,255,0.8);
+  margin-top: 5px;
+}
+
+.login-btn {
+  padding: 8px 20px;
+  background: #fff;
+  color: #FF6B9D;
+  border-radius: 20px;
+  font-size: 14px;
+  border: none;
+}
+
+.login-btn.logout {
+  background: rgba(255,255,255,0.3);
+  color: #fff;
+}
+
+.menu-list {
+  background: #fff;
+  margin-top: 10px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-icon {
+  font-size: 20px;
+  margin-right: 15px;
+}
+
+.menu-text {
+  flex: 1;
+  font-size: 15px;
+  color: #333;
+}
+
+.menu-value {
+  font-size: 14px;
+  color: #999;
+  margin-right: 10px;
+}
+
+.arrow {
+  color: #ccc;
+  font-size: 14px;
+}
+
+/* 主题弹窗 */
+.theme-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+}
+
+.theme-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+}
+
+.theme-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  padding: 30px 20px;
+}
+
+.theme-title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.theme-options {
+  display: flex;
+  justify-content: space-around;
+}
+
+.theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.theme-option.active .theme-preview {
+  border: 3px solid #FF6B9D;
+}
+
+.theme-preview {
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.light-preview {
+  background: #fff;
+  border: 1px solid #ddd;
+}
+
+.dark-preview {
+  background: #333;
+}
