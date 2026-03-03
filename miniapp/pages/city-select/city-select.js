@@ -37,6 +37,7 @@ Page({
     hotCities: hotCities,   // 热门城市
     commonCities: [],       // 最近使用的城市
     subscribedCities: [],   // 已订阅的城市
+    themeColor: '#FF6B9D'
   },
 
   onLoad() {
@@ -47,6 +48,15 @@ Page({
   },
 
   onShow() {
+    // 应用主题颜色
+    const themeColor = wx.getStorageSync('themeColor') || '#FF6B9D';
+    this.setData({ themeColor });
+    wx.setNavigationBarColor({
+      frontColor: '#ffffff',
+      backgroundColor: themeColor,
+      animation: { duration: 300, timingFunc: 'easeInOut' }
+    });
+
     // 每次显示时刷新订阅状态
     this.loadSubscribedCities()
   },

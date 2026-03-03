@@ -40,6 +40,16 @@ Page({
   },
 
   onShow() {
+    // 应用主题颜色
+    const themeColor = wx.getStorageSync('themeColor') || this.data.themeColor;
+    const themeColorDark = wx.getStorageSync('themeColorDark') || this.data.themeColorDark;
+    this.setData({ themeColor, themeColorDark });
+    wx.setNavigationBarColor({
+      frontColor: '#ffffff',
+      backgroundColor: themeColor,
+      animation: { duration: 300, timingFunc: 'easeInOut' }
+    });
+
     // 每次显示时刷新宝宝信息
     this.loadBabyInfo();
   },

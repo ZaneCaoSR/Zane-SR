@@ -153,7 +153,8 @@ Page({
     weather: {},
     updateTime: '',
     userCity: '杭州',
-    loading: false
+    loading: false,
+    themeColor: '#FF6B9D'
   },
 
   // 天气主题过滤器
@@ -166,10 +167,20 @@ Page({
   },
 
   onShow() {
+    const app = getApp();
+
+    // 应用主题颜色
+    const themeColor = wx.getStorageSync('themeColor') || '#FF6B9D';
+    this.setData({ themeColor });
+    wx.setNavigationBarColor({
+      frontColor: '#ffffff',
+      backgroundColor: themeColor,
+      animation: { duration: 300, timingFunc: 'easeInOut' }
+    });
+
     // 每次显示时刷新订阅状态
     this.loadSubscribedCities();
 
-    const app = getApp();
     if (app.globalData.userCity) {
       // 切换到对应的城市索引
       const cities = this.data.cities;

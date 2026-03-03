@@ -15,24 +15,23 @@ Page({
     isLoading: true,
     isSaving: false,
     showDatePicker: false,
-    babyId: ''
+    babyId: '',
+    themeColor: '#FF6B9D'
   },
 
   onLoad() {
-    this.initCloud();
     this.loadBabyInfo();
   },
 
-  // 初始化云开发
-  initCloud() {
-    if (!wx.cloud) {
-      console.error('请使用 2.2.3 或以上的基础库以使用云能力');
-    } else {
-      wx.cloud.init({
-        env: 'your-env-id',
-        traceUser: true,
-      });
-    }
+  onShow() {
+    // 应用主题颜色
+    const themeColor = wx.getStorageSync('themeColor') || '#FF6B9D';
+    this.setData({ themeColor });
+    wx.setNavigationBarColor({
+      frontColor: '#ffffff',
+      backgroundColor: themeColor,
+      animation: { duration: 300, timingFunc: 'easeInOut' }
+    });
   },
 
   // 加载宝宝信息
