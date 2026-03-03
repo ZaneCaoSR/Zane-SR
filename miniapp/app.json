@@ -19,23 +19,28 @@
     "backgroundColor": "#FFFDF7"
   },
   "tabBar": {
-    "custom": true,
     "color": "#B8AFA4",
-    "selectedColor": "#E8A87C",
+    "selectedColor": "#FF6B9D",
     "backgroundColor": "#FFFFFF",
     "borderStyle": "white",
     "list": [
       {
         "pagePath": "pages/album/index",
-        "text": "相册"
+        "text": "相册",
+        "iconPath": "assets/icons/album.png",
+        "selectedIconPath": "assets/icons/album-active.png"
       },
       {
         "pagePath": "pages/weather/index",
-        "text": "天气"
+        "text": "天气",
+        "iconPath": "assets/icons/weather.png",
+        "selectedIconPath": "assets/icons/weather-active.png"
       },
       {
         "pagePath": "pages/my/index",
-        "text": "我的"
+        "text": "我的",
+        "iconPath": "assets/icons/my.png",
+        "selectedIconPath": "assets/icons/my-active.png"
       }
     ]
   },
