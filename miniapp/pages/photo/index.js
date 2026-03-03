@@ -1,4 +1,6 @@
 // 照片详情页
+const { BASE_URL } = require('../../utils/config');
+
 Page({
   data: {
     photoId: '',
@@ -9,7 +11,8 @@ Page({
     showDeleteConfirm: false,
     isAnalyzing: false,
     showTagModal: false,
-    newTag: { type: 'emotion', value: '' }
+    newTag: { type: 'emotion', value: '' },
+    themeColor: '#FF6B9D'
   },
 
   // 预定义标签
@@ -32,22 +35,38 @@ Page({
     }
   },
 
+  onShow() {
+    // 应用主题颜色
+    const themeColor = wx.getStorageSync('themeColor') || '#FF6B9D';
+    this.setData({ themeColor });
+    wx.setNavigationBarColor({
+      frontColor: '#ffffff',
+      backgroundColor: themeColor,
+      animation: { duration: 300, timingFunc: 'easeInOut' }
+    });
+  },
+
   // 加载照片详情
   loadPhotoDetail(id) {
     this.setData({ isLoading: true });
-    const db = wx.cloud.database();
-    
-    db.collection('photos').doc(id).get().then(res => {
-      const photo = res.data;
-      this.setData({
-        photo,
-        remark: photo.remark || '',
-        isLoading: false
-      });
-    }).catch(err => {
-      console.error('加载失败', err);
-      wx.showToast({ title: '加载失败', icon: 'none' });
-      this.setData({ isLoading: false });
+
+    wx.request({
+      url: `${BASE_URL}/api/photos/${id}`,
+      success: (res) => {
+        if (res.data && res.data.photo) {
+          const photo = res.data.photo;
+          this.setData({
+            photo,
+            remark: photo.remark || '',
+            isLoading: false
+          });
+        }
+      },
+      fail: (err) => {
+        console.error('加载失败', err);
+        wx.showToast({ title: '加载失败', icon: 'none' });
+        this.setData({ isLoading: false });
+      }
     });
   },
 
@@ -55,8 +74,8 @@ Page({
   previewImage() {
     const { photo } = this.data;
     wx.previewImage({
-      current: photo.fileID,
-      urls: [photo.fileID]
+      current: photo.url,
+      urls: [photo.url]
     });
   },
 
@@ -73,28 +92,28 @@ Page({
   // 保存备注
   saveRemark() {
     const { photoId, remark } = this.data;
-    const db = wx.cloud.database();
-    
+
     wx.showLoading({ title: '保存中...' });
-    
-    db.collection('photos').doc(photoId).update({
-      data: {
-        remark: remark,
-        _updateTime: db.serverDate()
+
+    wx.request({
+      url: `${BASE_URL}/api/photo/${photoId}`,
+      method: 'PUT',
+      data: { remark },
+      success: () => {
+        wx.hideLoading();
+        wx.showToast({ title: '保存成功', icon: 'success' });
+        this.setData({ isEditing: false, 'photo.remark': remark });
+      },
+      fail: () => {
+        wx.hideLoading();
+        wx.showToast({ title: '保存失败', icon: 'none' });
       }
-    }).then(() => {
-      wx.hideLoading();
-      wx.showToast({ title: '保存成功', icon: 'success' });
-      this.setData({ isEditing: false, 'photo.remark': remark });
-    }).catch(err => {
-      wx.hideLoading();
-      wx.showToast({ title: '保存失败', icon: 'none' });
     });
   },
 
   // 取消编辑
   cancelEdit() {
-    this.setData({ 
+    this.setData({
       isEditing: false,
       remark: this.data.photo.remark || ''
     });
@@ -102,23 +121,23 @@ Page({
 
   // 标记里程碑
   toggleMilestone() {
-    const { photoId, photo } = this.data;
-    const db = wx.cloud.database();
+    const { photo } = this.data;
     const newStatus = !photo.isMilestone;
-    
-    db.collection('photos').doc(photoId).update({
-      data: {
-        isMilestone: newStatus,
-        _updateTime: db.serverDate()
+
+    wx.request({
+      url: `${BASE_URL}/api/photo/${photo.id}`,
+      method: 'PUT',
+      data: { isMilestone: newStatus },
+      success: () => {
+        wx.showToast({
+          title: newStatus ? '已标记里程碑' : '已取消标记',
+          icon: 'success'
+        });
+        this.setData({ 'photo.isMilestone': newStatus });
+      },
+      fail: () => {
+        wx.showToast({ title: '操作失败', icon: 'none' });
       }
-    }).then(() => {
-      wx.showToast({ 
-        title: newStatus ? '已标记里程碑' : '已取消标记', 
-        icon: 'success' 
-      });
-      this.setData({ 'photo.isMilestone': newStatus });
-    }).catch(err => {
-      wx.showToast({ title: '操作失败', icon: 'none' });
     });
   },
 
@@ -134,34 +153,23 @@ Page({
 
   // 删除照片
   deletePhoto() {
-    const { photoId, photo } = this.data;
-    const db = wx.cloud.database();
-    
+    const { photoId } = this.data;
+
     wx.showLoading({ title: '删除中...' });
-    
-    // 删除云存储文件
-    wx.cloud.deleteFile({
-      fileList: [photo.fileID],
+
+    wx.request({
+      url: `${BASE_URL}/api/photo/${photoId}`,
+      method: 'DELETE',
       success: () => {
-        // 删除数据库记录
-        db.collection('photos').doc(photoId).remove().then(() => {
-          wx.hideLoading();
-          wx.showToast({ title: '删除成功', icon: 'success' });
-          setTimeout(() => {
-            wx.navigateBack();
-          }, 1500);
-        }).catch(err => {
-          wx.hideLoading();
-          wx.showToast({ title: '删除失败', icon: 'none' });
-        });
-      },
-      fail: (err) => {
         wx.hideLoading();
-        console.error('删除文件失败', err);
-        // 即使文件删除失败，仍尝试删除数据库记录
-        db.collection('photos').doc(photoId).remove().then(() => {
+        wx.showToast({ title: '删除成功', icon: 'success' });
+        setTimeout(() => {
           wx.navigateBack();
-        });
+        }, 1500);
+      },
+      fail: () => {
+        wx.hideLoading();
+        wx.showToast({ title: '删除失败', icon: 'none' });
       }
     });
   },
@@ -169,9 +177,9 @@ Page({
   // 复制 AI 描述
   copyDescription() {
     const { photo } = this.data;
-    if (photo.aiResult && photo.aiResult.description) {
+    if (photo.ai_result && photo.ai_result.description) {
       wx.setClipboardData({
-        data: photo.aiResult.description,
+        data: photo.ai_result.description,
         success: () => {
           wx.showToast({ title: '已复制', icon: 'success' });
         }
@@ -207,7 +215,6 @@ Page({
     this.setData({ isAnalyzing: true });
     wx.showLoading({ title: 'AI 分析中...' });
 
-    const { BASE_URL } = require('../../utils/config');
     wx.request({
       url: `${BASE_URL}/api/photo/${photoId}/analyze`,
       method: 'POST',

@@ -331,6 +331,16 @@ async def get_photos():
     return {"photos": photos}
 
 
+@app.get("/api/photos/{photo_id}", summary="获取单张照片详情")
+async def get_photo(photo_id: str):
+    """获取单张照片详情"""
+    photos = load_photos()
+    for photo in photos:
+        if photo["id"] == photo_id:
+            return {"photo": photo}
+    raise HTTPException(status_code=404, detail="照片不存在")
+
+
 @app.delete("/api/photo/{photo_id}", summary="删除照片")
 async def delete_photo(photo_id: str):
     """删除照片"""
