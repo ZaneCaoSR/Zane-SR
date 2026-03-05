@@ -78,11 +78,53 @@ App({
   },
 
   /**
-   * 更新主题颜色
+   * 更新主题颜色并应用到全局
    */
   updateThemeColor(color, colorDark) {
     this.globalData.themeColor = color;
     this.globalData.themeColorDark = colorDark;
+    wx.setStorageSync('themeColor', color);
+    wx.setStorageSync('themeColorDark', colorDark);
+
+    // 应用到导航栏
+    this.applyThemeToNavigation();
+  },
+
+  /**
+   * 应用主题到导航栏
+   */
+  applyThemeToNavigation() {
+    const pages = getCurrentPages();
+    const currentPage = pages[pages.length - 1];
+    if (currentPage) {
+      const color = this.globalData.themeColor;
+      // 将 HEX 转换为 RGB 用于背景
+      const bgColor = this.hexToRgb(color);
+      wx.setNavigationBarColor({
+        frontColor: '#ffffff',
+        backgroundColor: color,
+        animation: {
+          duration: 300,
+          timingFunc: 'easeInOut'
+        },
+        success: () => {
+          // 同时设置页面背景
+          currentPage.setData({ themeColor: color });
+        }
+      });
+    }
+  },
+
+  /**
+   * HEX 转 RGB
+   */
+  hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
   },
 
   /**

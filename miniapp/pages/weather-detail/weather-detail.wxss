@@ -1,145 +1,231 @@
-/* weather-detail.wxss - 天气详情页面样式 */
+/* 天气详情页面样式 - 奶油日记风格 */
 
 .container {
   min-height: 100vh;
-  background: #F0F6FF;
+  background: var(--color-bg);
   padding-bottom: 180rpx;
 }
 
 /* 顶部天气卡片 */
 .weather-header {
-  background: linear-gradient(135deg, #4A90D9, #7EC8E3);
-  padding: 60rpx 40rpx;
-  color: #fff;
+  position: relative;
+  background: linear-gradient(165deg, #FFF8F0 0%, #FFEFDF 50%, #FFE8D6 100%);
+  padding: 100rpx 40rpx 60rpx;
   text-align: center;
+  overflow: hidden;
+}
+
+.hero-decoration {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.deco-circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+.deco-1 {
+  width: 200rpx;
+  height: 200rpx;
+  background: radial-gradient(circle, rgba(255, 209, 102, 0.4) 0%, transparent 70%);
+  top: -60rpx;
+  right: -40rpx;
+}
+
+.deco-2 {
+  width: 160rpx;
+  height: 160rpx;
+  background: radial-gradient(circle, rgba(232, 168, 124, 0.3) 0%, transparent 70%);
+  bottom: -40rpx;
+  left: -30rpx;
 }
 
 .city-name {
+  font-family: var(--font-family-display);
   font-size: 36rpx;
-  opacity: 0.9;
-  margin-bottom: 10rpx;
+  color: var(--color-text-primary);
+  position: relative;
+  margin-bottom: var(--spacing-md);
+}
+
+.weather-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+}
+
+.weather-icon {
+  font-size: 80rpx;
+  line-height: 1;
+}
+
+.temp-wrapper {
+  position: relative;
 }
 
 .weather-temp {
-  font-size: 140rpx;
-  font-weight: 200;
+  font-family: var(--font-family-display);
+  font-size: 120rpx;
+  font-weight: 300;
+  color: var(--color-text-primary);
   line-height: 1;
-  margin: 20rpx 0;
 }
 
 .weather-desc {
   font-size: 36rpx;
-  margin-bottom: 10rpx;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  margin-bottom: var(--spacing-sm);
 }
 
 .weather-range {
-  font-size: 28rpx;
-  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+}
+
+.range-divider {
+  opacity: 0.5;
 }
 
 .update-time {
   font-size: 22rpx;
-  opacity: 0.6;
-  margin-top: 16rpx;
+  color: var(--color-text-tertiary);
+  margin-top: var(--spacing-md);
 }
 
-/* 详细数据卡片 */
+/* 卡片通用样式 */
 .detail-card, .aqi-card, .hourly-card, .forecast-card, .life-card {
-  background: #fff;
-  margin: 30rpx;
-  border-radius: 16rpx;
-  padding: 30rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.06);
+  background: var(--color-surface);
+  margin: var(--spacing-md);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
 }
 
-.detail-title, .aqi-title, .hourly-title, .forecast-title, .life-title {
-  font-size: 30rpx;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 24rpx;
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
 }
 
+.card-title {
+  font-family: var(--font-family-display);
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* 详细数据 */
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 30rpx;
+  gap: var(--spacing-md);
 }
 
 .detail-item {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: var(--spacing-md);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  transition: all var(--duration-normal);
+}
+
+.detail-item:active {
+  transform: scale(0.98);
+}
+
+.detail-icon-wrap {
+  width: 72rpx;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-xs);
+  box-shadow: var(--shadow-sm);
 }
 
 .detail-icon {
-  font-size: 40rpx;
-  margin-bottom: 10rpx;
+  font-size: 36rpx;
 }
 
 .detail-label {
-  font-size: 24rpx;
-  color: #999;
+  font-size: 22rpx;
+  color: var(--color-text-tertiary);
+  margin-bottom: 4rpx;
 }
 
 .detail-value {
   font-size: 32rpx;
-  color: #333;
-  font-weight: 500;
-  margin-top: 6rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
 }
 
 /* 空气质量 */
-.aqi-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24rpx;
-}
-
 .aqi-level {
-  font-size: 26rpx;
-  padding: 6rpx 20rpx;
-  border-radius: 20rpx;
-  background: #e6f7e6;
-  color: #52c41a;
+  font-size: 24rpx;
+  padding: 8rpx 20rpx;
+  border-radius: var(--radius-full);
+  background: rgba(149, 184, 160, 0.2);
+  color: #95B8A0;
 }
 
 .aqi-level.level-2 {
-  background: #fff7e6;
-  color: #faad14;
+  background: rgba(232, 192, 125, 0.2);
+  color: #E8C07D;
 }
 
 .aqi-level.level-3 {
-  background: #fff1f0;
-  color: #ff4d4f;
-}
-
-.aqi-level.level-4, .aqi-level.level-5 {
-  background: #f5f5f5;
-  color: #999;
+  background: rgba(212, 132, 124, 0.2);
+  color: #D4847C;
 }
 
 .aqi-values {
   display: flex;
   justify-content: space-around;
+  align-items: center;
+}
+
+.aqi-divider {
+  width: 2rpx;
+  height: 60rpx;
+  background: var(--color-bg-secondary);
 }
 
 .aqi-item {
   display: flex;
   flex-direction: column;
   align-items: center;
+  flex: 1;
 }
 
 .aqi-label {
-  font-size: 24rpx;
-  color: #999;
+  font-size: 22rpx;
+  color: var(--color-text-tertiary);
 }
 
 .aqi-num {
-  font-size: 40rpx;
-  font-weight: 500;
-  color: #333;
-  margin-top: 8rpx;
+  font-family: var(--font-family-display);
+  font-size: 48rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-top: var(--spacing-xs);
 }
 
 /* 小时预报 */
@@ -149,31 +235,41 @@
 }
 
 .hourly-list {
-  display: flex;
+  display: inline-flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-xs) 0;
 }
 
 .hourly-item {
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   align-items: center;
-  margin-right: 40rpx;
   min-width: 100rpx;
+  padding: var(--spacing-md) var(--spacing-sm);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  transition: all var(--duration-normal);
+}
+
+.hourly-item:active {
+  background: var(--color-accent-light);
 }
 
 .hourly-time {
-  font-size: 24rpx;
-  color: #999;
+  font-size: 22rpx;
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--spacing-xs);
 }
 
 .hourly-icon {
-  font-size: 48rpx;
-  margin: 10rpx 0;
+  font-size: 44rpx;
+  margin: var(--spacing-xs) 0;
 }
 
 .hourly-temp {
   font-size: 28rpx;
-  color: #333;
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--color-text-primary);
 }
 
 /* 日预报 */
@@ -185,66 +281,78 @@
 .forecast-item {
   display: flex;
   align-items: center;
-  padding: 20rpx 0;
-  border-bottom: 1rpx solid #f5f5f5;
+  padding: var(--spacing-md) 0;
+  border-bottom: 1rpx solid var(--color-bg-secondary);
+  transition: background var(--duration-fast);
 }
 
 .forecast-item:last-child {
   border-bottom: none;
 }
 
+.forecast-item:active {
+  background: var(--color-bg-secondary);
+}
+
 .forecast-date {
   width: 100rpx;
-  font-size: 28rpx;
-  color: #666;
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
 }
 
 .forecast-icon {
   font-size: 40rpx;
-  margin-right: 16rpx;
+  margin-right: var(--spacing-md);
 }
 
 .forecast-desc {
   flex: 1;
   font-size: 28rpx;
-  color: #333;
+  color: var(--color-text-primary);
 }
 
 .forecast-temp {
-  font-size: 28rpx;
-  color: #666;
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
 }
 
 /* 生活指数 */
 .life-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 24rpx;
+  gap: var(--spacing-md);
 }
 
 .life-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20rpx;
-  background: #f9f9f9;
-  border-radius: 12rpx;
+  padding: var(--spacing-lg) var(--spacing-md);
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  transition: all var(--duration-normal);
+}
+
+.life-item:active {
+  transform: scale(0.98);
 }
 
 .life-icon {
-  font-size: 40rpx;
-  margin-bottom: 8rpx;
+  font-size: 44rpx;
+  margin-bottom: var(--spacing-xs);
 }
 
 .life-type {
-  font-size: 24rpx;
-  color: #999;
+  font-size: 22rpx;
+  color: var(--color-text-tertiary);
+  margin-bottom: 4rpx;
 }
 
 .life-value {
   font-size: 26rpx;
-  color: #333;
-  margin-top: 6rpx;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  text-align: center;
 }
 
 /* 底部订阅栏 */
@@ -253,9 +361,10 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: #fff;
-  padding: 20rpx 30rpx;
-  box-shadow: 0 -4rpx 16rpx rgba(0,0,0,0.06);
+  background: var(--color-surface);
+  padding: var(--spacing-md) var(--spacing-lg);
+  padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom));
+  box-shadow: 0 -8rpx 24rpx rgba(74, 64, 58, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -263,12 +372,17 @@
 
 .subscribe-btn {
   width: 100%;
-  background: linear-gradient(135deg, #4A90D9, #7EC8E3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
   color: #fff;
-  border-radius: 50rpx;
-  font-size: 32rpx;
-  height: 88rpx;
-  line-height: 88rpx;
+  border-radius: var(--radius-full);
+  font-size: 30rpx;
+  padding: 24rpx 0;
+  border: none;
+  box-shadow: 0 8rpx 24rpx rgba(232, 168, 124, 0.3);
 }
 
 .subscribed-status {
@@ -278,21 +392,58 @@
   width: 100%;
 }
 
+.subscribed-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.subscribed-icon {
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(149, 184, 160, 0.2);
+  border-radius: 50%;
+  color: #95B8A0;
+  font-size: 22rpx;
+}
+
 .subscribed-text {
   font-size: 28rpx;
-  color: #4A90D9;
+  color: var(--color-accent);
 }
 
 .unsub-btn {
-  background: #f5f5f5;
-  color: #999;
-  font-size: 26rpx;
+  background: var(--color-bg-secondary);
+  color: var(--color-text-secondary);
+  font-size: 24rpx;
+  padding: 12rpx 24rpx;
+  border-radius: var(--radius-full);
+  border: none;
 }
 
 /* 加载中 */
 .loading-box {
-  text-align: center;
-  padding: 60rpx;
-  color: #999;
-  font-size: 28rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  color: var(--color-text-tertiary);
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 4rpx solid var(--color-bg-secondary);
+  border-top-color: var(--color-accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: var(--spacing-sm);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

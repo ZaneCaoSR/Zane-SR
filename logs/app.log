@@ -155,3 +155,46 @@
 2026-03-03 16:04:35 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
 2026-03-03 16:04:40 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
 2026-03-03 16:04:40 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 16:20:16 | INFO     | jwt_helper:get_jwt_token - [JWT] Token 生成成功
+2026-03-03 16:20:44 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 北京
+2026-03-03 16:21:11 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 18:10:02 | INFO     | jwt_helper:get_jwt_token - [JWT] Token 生成成功
+2026-03-03 18:10:28 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 18:10:41 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 18:15:46 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 18:16:02 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 19:45:50 | INFO     | jwt_helper:get_jwt_token - [JWT] Token 生成成功
+2026-03-03 19:47:59 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 19:48:00 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 19:48:42 | INFO     | jwt_helper:get_jwt_token - [JWT] Token 生成成功
+2026-03-03 19:48:53 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 19:48:53 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 19:49:04 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 19:50:06 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 19:50:06 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 19:52:57 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 19:52:58 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 19:54:20 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 19:54:21 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 19:55:28 | INFO     | jwt_helper:get_jwt_token - [JWT] Token 生成成功
+2026-03-03 19:56:36 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 19:56:37 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 19:58:10 | INFO     | jwt_helper:get_jwt_token - [JWT] Token 生成成功
+2026-03-03 19:58:57 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 19:59:05 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 19:59:15 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 19:59:15 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 北京
+2026-03-03 19:59:21 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 19:59:22 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 19:59:32 | INFO     | jwt_helper:get_jwt_token - [JWT] Token 生成成功
+2026-03-03 20:14:25 | INFO     | jwt_helper:get_jwt_token - [JWT] Token 生成成功
+2026-03-03 20:14:40 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 20:14:52 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 20:14:55 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 20:14:58 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 北京
+2026-03-03 20:15:21 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 20:18:18 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 20:18:18 | INFO     | weather:_get_cached_weather - [Weather] 命中缓存: 杭州
+2026-03-03 20:56:43 | INFO     | scheduler:stop_scheduler - [Scheduler] 定时任务已停止
+2026-03-03 20:56:44 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送
+2026-03-03 21:11:20 | INFO     | scheduler:start_scheduler - [Scheduler] 定时任务已启动，每天 08:00 推送

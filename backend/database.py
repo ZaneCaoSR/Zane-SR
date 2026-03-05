@@ -1,9 +1,11 @@
 """
 database.py - SQLite 数据库管理
 存储用户订阅信息：openid、城市、自定义推送时间（预留）
+支持多城市订阅
 """
 import sqlite3
 import os
+import json
 from datetime import datetime
 from config import DATABASE_PATH
 
@@ -22,8 +24,9 @@ def init_db():
         CREATE TABLE IF NOT EXISTS subscribers (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             openid TEXT UNIQUE NOT NULL,          -- 微信用户唯一标识
-            city TEXT NOT NULL DEFAULT '杭州',     -- 订阅城市名称
+            city TEXT NOT NULL DEFAULT '杭州',     -- 订阅城市名称（兼容旧版）
             city_id TEXT,                          -- 和风天气城市ID（查询后缓存）
+            cities TEXT,                           -- 多城市订阅JSON: [{"city": "杭州", "cityId": "101210101", "pushTime": "08:00", "isActive": true}]
             push_hour INTEGER DEFAULT 8,           -- 自定义推送小时（预留）
             push_minute INTEGER DEFAULT 0,         -- 自定义推送分钟（预留）
             is_active INTEGER DEFAULT 1,           -- 是否激活订阅
@@ -33,7 +36,7 @@ def init_db():
     """)
     conn.commit()
     conn.close()
-    
+
     # 初始化重试队列表
     from retry import init_retry_db
     init_retry_db()
@@ -118,3 +121,89 @@ def update_city_id(openid: str, city_id: str):
     """, (city_id, datetime.now().isoformat(), openid))
     conn.commit()
     conn.close()
+
+
+# ===== 多城市订阅支持 =====
+
+def get_cities(openid: str) -> list:
+    """获取用户订阅的多城市列表"""
+    conn = get_connection()
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    cursor.execute("SELECT cities FROM subscribers WHERE openid=?", (openid,))
+    row = cursor.fetchone()
+    conn.close()
+
+    if row and row["cities"]:
+        try:
+            return json.loads(row["cities"])
+        except json.JSONDecodeError:
+            return []
+    return []
+
+
+def set_cities(openid: str, cities: list):
+    """设置用户订阅的多城市列表"""
+    conn = get_connection()
+    cursor = conn.cursor()
+    now = datetime.now().isoformat()
+    cities_json = json.dumps(cities, ensure_ascii=False)
+
+    # 检查用户是否存在
+    cursor.execute("SELECT id FROM subscribers WHERE openid=?", (openid,))
+    exists = cursor.fetchone()
+
+    if exists:
+        cursor.execute("""
+            UPDATE subscribers SET cities=?, is_active=1, updated_at=? WHERE openid=?
+        """, (cities_json, now, openid))
+    else:
+        # 新用户，创建记录
+        default_city = cities[0] if cities else {"city": "杭州", "pushTime": "08:00", "isActive": True}
+        cursor.execute("""
+            INSERT INTO subscribers (openid, city, cities, is_active, created_at, updated_at)
+            VALUES (?, ?, ?, 1, ?, ?)
+        """, (openid, default_city.get("city", "杭州"), cities_json, now, now))
+
+    conn.commit()
+    conn.close()
+
+
+def add_city_to_subscription(openid: str, city: str, city_id: str = None, push_time: str = "08:00"):
+    """添加一个城市到订阅列表"""
+    cities = get_cities(openid)
+
+    # 检查城市是否已存在
+    for c in cities:
+        if c.get("city") == city:
+            c["isActive"] = True
+            if city_id:
+                c["cityId"] = city_id
+            break
+    else:
+        # 新城市
+        new_city = {"city": city, "pushTime": push_time, "isActive": True}
+        if city_id:
+            new_city["cityId"] = city_id
+        cities.append(new_city)
+
+    set_cities(openid, cities)
+    return cities
+
+
+def remove_city_from_subscription(openid: str, city: str):
+    """从订阅列表中移除一个城市"""
+    cities = get_cities(openid)
+    cities = [c for c in cities if c.get("city") != city]
+    set_cities(openid, cities)
+    return cities
+
+
+def update_city_id_in_cities(openid: str, city: str, city_id: str):
+    """更新某个城市的cityId"""
+    cities = get_cities(openid)
+    for c in cities:
+        if c.get("city") == city:
+            c["cityId"] = city_id
+            break
+    set_cities(openid, cities)

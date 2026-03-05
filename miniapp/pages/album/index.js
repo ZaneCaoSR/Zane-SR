@@ -7,7 +7,8 @@ Page({
     months: [],
     currentMonthIndex: 0,
     isLoading: true,
-    showCameraFab: true
+    showCameraFab: true,
+    themeColor: '#FF6B9D'
   },
 
   onLoad() {
@@ -16,6 +17,23 @@ Page({
   },
 
   onShow() {
+    // 应用主题颜色
+    const themeColor = wx.getStorageSync('themeColor') || '#FF6B9D';
+    this.setData({ themeColor });
+    wx.setNavigationBarColor({
+      frontColor: '#ffffff',
+      backgroundColor: themeColor,
+      animation: { duration: 300, timingFunc: 'easeInOut' }
+    });
+
+    // 更新自定义 tabBar 颜色和选中态
+    if (typeof this.getTabBar === 'function') {
+      const tabBar = this.getTabBar();
+      if (tabBar) {
+        tabBar.setData({ selectedColor: themeColor, selected: 0 });
+      }
+    }
+
     // 每次显示时刷新数据
     this.loadPhotos();
   },

@@ -51,8 +51,8 @@
       <text class="empty-icon">📷</text>
       <text>点击下方按钮选择照片</text>
       <view class="select-btns">
-        <button bindtap="takePhoto">📷 拍照</button>
-        <button bindtap="chooseFromAlbum">🖼️ 相册</button>
+        <button style="background: {{themeColor}};" bindtap="takePhoto">📷 拍照</button>
+        <button style="background: {{themeColor}};" bindtap="chooseFromAlbum">🖼️ 相册</button>
       </view>
     </view>
   </view>
@@ -83,16 +83,17 @@
     <text class="complete-title">上传完成！</text>
     <text class="complete-desc">AI 已识别 {{uploadedIds.length}} 张照片</text>
     <view class="complete-actions">
-      <button bindtap="goToAlbum">📸 查看相册</button>
+      <button style="background: {{themeColor}};" bindtap="goToAlbum">📸 查看相册</button>
       <button bindtap="reselect" class="secondary">继续上传</button>
     </view>
   </view>
 
   <!-- 底部操作栏 -->
   <view class="bottom-bar" wx:if="{{!uploadComplete && !isUploading && !isAnalyzing}}">
-    <button 
-      class="upload-btn" 
-      bindtap="startUpload" 
+    <button
+      class="upload-btn"
+      style="background: {{themeColor}};"
+      bindtap="startUpload"
       disabled="{{selectedPhotos.length === 0}}"
     >
       开始上传

@@ -1,71 +1,91 @@
-/* 宝宝信息设置页样式 */
+/* 宝宝信息设置页样式 - 奶油日记风格 */
 
 .settings-container {
   min-height: 100vh;
-  background: linear-gradient(180deg, #FFF5F8 0%, #FFF0F5 100%);
+  background: var(--color-bg);
   padding-bottom: 200rpx;
 }
 
 /* 头部 */
 .header {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 60rpx 40rpx 40rpx;
-  background: linear-gradient(135deg, #FF9ECA 0%, #FF6B9D 100%);
+  padding: 100rpx var(--spacing-lg) var(--spacing-xl);
+  background: linear-gradient(165deg, #FFF8F0 0%, #FFE8D6 100%);
+  overflow: hidden;
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: radial-gradient(circle at 20% 30%, rgba(232, 168, 124, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 70%, rgba(149, 184, 160, 0.15) 0%, transparent 50%);
 }
 
 .avatar-section {
   position: relative;
   width: 180rpx;
   height: 180rpx;
+  z-index: 1;
 }
 
 .avatar {
   width: 180rpx;
   height: 180rpx;
   border-radius: 50%;
-  border: 6rpx solid #fff;
-  box-shadow: 0 8rpx 30rpx rgba(255, 107, 157, 0.3);
+  border: 6rpx solid var(--color-surface);
+  box-shadow: var(--shadow-lg);
+  background: var(--color-bg-secondary);
 }
 
 .avatar-edit {
   position: absolute;
   bottom: 0;
   right: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--color-accent);
   color: #fff;
   font-size: 20rpx;
   padding: 8rpx 16rpx;
-  border-radius: 20rpx;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
 }
 
 .baby-age {
-  margin-top: 20rpx;
-  background: rgba(255, 255, 255, 0.2);
-  padding: 10rpx 30rpx;
-  border-radius: 30rpx;
+  position: relative;
+  z-index: 1;
+  margin-top: var(--spacing-md);
+  background: rgba(232, 168, 124, 0.2);
+  padding: 12rpx 32rpx;
+  border-radius: var(--radius-full);
 }
 
 .baby-age text {
-  color: #fff;
-  font-size: 28rpx;
+  color: var(--color-accent-dark);
+  font-size: 26rpx;
+  font-weight: 500;
 }
 
 /* 表单区域 */
 .form-section {
-  background: #fff;
-  margin: 30rpx;
-  border-radius: 24rpx;
-  padding: 10rpx 0;
+  background: var(--color-surface);
+  margin: var(--spacing-lg);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-sm) 0;
+  box-shadow: var(--shadow-md);
 }
 
 .form-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 30rpx 40rpx;
-  border-bottom: 1rpx solid #f0f0f0;
+  padding: var(--spacing-lg) var(--spacing-lg);
+  border-bottom: 1rpx solid var(--color-bg-secondary);
 }
 
 .form-item:last-child {
@@ -74,77 +94,81 @@
 
 .form-label {
   font-size: 30rpx;
-  color: #333;
+  color: var(--color-text-primary);
 }
 
 .form-input {
   flex: 1;
   text-align: right;
   font-size: 30rpx;
-  color: #333;
-  margin-left: 30rpx;
+  color: var(--color-text-secondary);
+  margin-left: var(--spacing-lg);
 }
 
 .form-picker {
   display: flex;
   align-items: center;
-  gap: 10rpx;
+  gap: var(--spacing-xs);
 }
 
 .form-picker text {
   font-size: 30rpx;
-  color: #333;
+  color: var(--color-text-primary);
 }
 
 .form-picker .placeholder {
-  color: #999;
+  color: var(--color-text-tertiary);
 }
 
 .form-picker .arrow {
-  color: #ccc;
+  color: var(--color-text-tertiary);
   font-size: 36rpx;
 }
 
 /* 性别选择 */
 .gender-select {
   display: flex;
-  gap: 20rpx;
+  gap: var(--spacing-md);
 }
 
 .gender-btn {
-  padding: 16rpx 30rpx;
-  border-radius: 50rpx;
-  background: #f5f5f5;
+  padding: 16rpx 32rpx;
+  border-radius: var(--radius-full);
+  background: var(--color-bg-secondary);
   font-size: 28rpx;
-  color: #666;
+  color: var(--color-text-secondary);
+  transition: all var(--duration-normal);
 }
 
 .gender-btn.active {
-  background: linear-gradient(135deg, #FF9ECA 0%, #FF6B9D 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
   color: #fff;
+  box-shadow: 0 8rpx 24rpx rgba(232, 168, 124, 0.3);
 }
 
 /* 隐私设置 */
 .privacy-section {
-  background: #fff;
-  margin: 30rpx;
-  border-radius: 24rpx;
-  padding: 30rpx 40rpx;
+  background: var(--color-surface);
+  margin: var(--spacing-lg);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
 }
 
 .section-title {
+  font-family: var(--font-family-display);
   font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
 }
 
 .privacy-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24rpx 0;
-  border-bottom: 1rpx solid #f5f5f5;
+  padding: var(--spacing-md) 0;
+  border-bottom: 1rpx solid var(--color-bg-secondary);
 }
 
 .privacy-item:last-child {
@@ -158,13 +182,13 @@
 
 .privacy-label {
   font-size: 30rpx;
-  color: #333;
+  color: var(--color-text-primary);
 }
 
 .privacy-desc {
-  font-size: 24rpx;
-  color: #999;
-  margin-top: 6rpx;
+  font-size: 22rpx;
+  color: var(--color-text-tertiary);
+  margin-top: 4rpx;
 }
 
 /* 底部保存按钮 */
@@ -173,19 +197,21 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 30rpx;
-  background: #fff;
-  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.05);
+  padding: var(--spacing-md) var(--spacing-lg);
+  padding-bottom: calc(var(--spacing-md) + env(safe-area-inset-bottom));
+  background: var(--color-surface);
+  box-shadow: 0 -8rpx 24rpx rgba(74, 64, 58, 0.08);
 }
 
 .save-btn {
   width: 100%;
-  padding: 30rpx;
-  border-radius: 50rpx;
+  padding: 28rpx;
+  border-radius: var(--radius-full);
   font-size: 32rpx;
-  background: linear-gradient(135deg, #FF9ECA 0%, #FF6B9D 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-dark) 100%);
   color: #fff;
   border: none;
+  box-shadow: 0 8rpx 24rpx rgba(232, 168, 124, 0.3);
 }
 
 /* 日期选择器 */
@@ -204,7 +230,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(74, 64, 58, 0.4);
+  backdrop-filter: blur(8rpx);
 }
 
 .picker-content {
@@ -212,24 +239,26 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: #fff;
-  border-radius: 32rpx 32rpx 0 0;
+  background: var(--color-surface);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
 .picker-header {
   display: flex;
   justify-content: space-between;
-  padding: 30rpx 40rpx;
-  border-bottom: 1rpx solid #f0f0f0;
+  align-items: center;
+  padding: var(--spacing-lg);
+  border-bottom: 1rpx solid var(--color-bg-secondary);
 }
 
 .picker-header text {
   font-size: 30rpx;
+  color: var(--color-text-secondary);
 }
 
 .picker-header .confirm {
-  color: #FF6B9D;
-  font-weight: bold;
+  color: var(--color-accent);
+  font-weight: 600;
 }
 
 picker-view {
@@ -241,5 +270,5 @@ picker-view {
   align-items: center;
   justify-content: center;
   font-size: 32rpx;
-  color: #333;
+  color: var(--color-text-primary);
 }

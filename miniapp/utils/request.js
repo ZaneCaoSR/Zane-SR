@@ -13,23 +13,29 @@ const { BASE_URL } = require('./config')
  */
 const request = (url, method = 'GET', data = {}) => {
   return new Promise((resolve, reject) => {
+    wx.showLoading({ title: '加载中...', mask: true })
+
     wx.request({
       url: `${BASE_URL}${url}`,
       method,
       data,
+      timeout: 10000, // 10秒超时
       header: { 'Content-Type': 'application/json' },
       success: (res) => {
+        wx.hideLoading()
         if (res.statusCode >= 200 && res.statusCode < 300) {
           resolve(res.data)
         } else {
-          wx.showToast({ title: '请求失败', icon: 'error' })
-          reject(new Error(`HTTP ${res.statusCode}`))
+          const message = res.data?.detail || res.data?.message || `请求失败 (${res.statusCode})`
+          wx.showToast({ title: message, icon: 'none' })
+          reject(new Error(message))
         }
       },
       fail: (err) => {
-        wx.showToast({ title: '网络错误', icon: 'error' })
+        wx.hideLoading()
+        wx.showToast({ title: '网络连接失败', icon: 'none' })
         reject(err)
-      },
+      }
     })
   })
 }

@@ -1,40 +1,251 @@
-<!-- 天气首页 -->
-<view class="weather-container">
+<!-- 天气首页 - 奶油日记风格 -->
+<view class="weather-container page-enter">
   <!-- 顶部城市选择 -->
-  <view class="city-selector" bindtap="onCitySelect">
-    <text class="city-name">{{city}}</text>
-    <text class="city-change">切换城市</text>
+  <view class="city-bar" bindtap="onCitySelect">
+    <view class="city-info">
+      <text class="city-icon">📍</text>
+      <text class="city-name">{{cities[currentCityIndex].city}}</text>
+    </view>
+    <view class="city-meta">
+      <text class="push-time" wx:if="{{cities[currentCityIndex].pushTime}}">🔔 {{cities[currentCityIndex].pushTime}}</text>
+      <text class="city-action-text">{{cities.length > 1 ? '滑动切换' : '切换'}}</text>
+      <text class="arrow">→</text>
+    </view>
   </view>
 
-  <!-- 天气卡片 -->
-  <view class="weather-card">
-    <view class="temp">{{weather.temp}}°</view>
-    <view class="weather-desc">{{weather.weather}}</view>
-    <view class="update-time">更新于 {{updateTime}}</view>
+  <!-- 天气提示 -->
+  <view class="tips-section" wx:if="{{cities[currentCityIndex].weatherTips && cities[currentCityIndex].weatherTips.length > 0}}">
+    <view class="tip-item" wx:for="{{cities[currentCityIndex].weatherTips}}" wx:key="index">
+      <text class="tip-icon">{{item.icon}}</text>
+      <text class="tip-text">{{item.text}}</text>
+    </view>
   </view>
 
-  <!-- 详细信息 -->
-  <view class="detail-list">
-    <view class="detail-item">
-      <text class="label">体感温度</text>
-      <text class="value">{{weather.feels_like}}°</text>
+  <!-- 天气预警 -->
+  <view class="alert-section" wx:if="{{cities[currentCityIndex].weatherData.alerts && cities[currentCityIndex].weatherData.alerts.length > 0}}">
+    <view class="alert-item {{item.level}}" wx:for="{{cities[currentCityIndex].weatherData.alerts}}" wx:key="id">
+      <text class="alert-icon">⚠️</text>
+      <view class="alert-content">
+        <text class="alert-title">{{item.title}}</text>
+        <text class="alert-text">{{item.text}}</text>
+      </view>
     </view>
-    <view class="detail-item">
-      <text class="label">湿度</text>
-      <text class="value">{{weather.humidity}}%</text>
-    </view>
-    <view class="detail-item">
-      <text class="label">风向</text>
-      <text class="value">{{weather.wind_dir}}</text>
-    </view>
-    <view class="detail-item">
-      <text class="label">风力</text>
-      <text class="value">{{weather.wind_scale}}级</text>
-    </view>
+  </view>
+
+  <!-- Swiper 滑动区域 -->
+  <swiper
+    class="weather-swiper"
+    indicator-dots="{{cities.length > 1}}"
+    indicator-color="rgba(255,255,255,0.5)"
+    indicator-active-color="{{themeColor}}"
+    autoplay="{{false}}"
+    circular="{{false}}"
+    bindchange="onSwiperChange"
+    current="{{currentCityIndex}}"
+  >
+    <swiper-item wx:for="{{cities}}" wx:key="city">
+      <view class="weather-slide">
+        <!-- 加载中提示 -->
+        <view class="city-loading" wx:if="{{item.loading}}">
+          <view class="loading-spinner"></view>
+          <text>加载天气中...</text>
+        </view>
+
+        <!-- 天气主卡片 -->
+        <view class="weather-hero theme-{{item.weatherTheme}}" wx:if="{{!item.loading || item.weatherData.temp}}">
+          <!-- 背景装饰 -->
+          <view class="hero-bg">
+            <view class="bg-circle circle-1"></view>
+            <view class="bg-circle circle-2"></view>
+            <view class="bg-circle circle-3"></view>
+          </view>
+
+          <view class="hero-content">
+            <!-- 天气图标 -->
+            <view class="weather-icon-wrapper">
+              <text class="weather-icon-large">{{item.weatherData.icon || '☀️'}}</text>
+            </view>
+
+            <!-- 温度 -->
+            <view class="temp-display">
+              <text class="temp-value">{{item.weatherData.temp || '--'}}</text>
+              <text class="temp-unit">°</text>
+            </view>
+
+            <!-- 天气描述 -->
+            <view class="weather-text">
+              <text class="weather-desc">{{item.weatherData.weather || '加载中...'}}</text>
+              <text class="feels-like">体感 {{item.weatherData.feels_like || '--'}}°</text>
+            </view>
+
+            <!-- 舒适度 -->
+            <view class="comfort-level" wx:if="{{item.comfort}}">
+              <text class="comfort-icon">{{item.comfort.icon}}</text>
+              <text class="comfort-text">{{item.comfort.level}}</text>
+              <view class="comfort-bar">
+                <view class="comfort-fill" style="width: {{item.comfort.score}}%"></view>
+              </view>
+            </view>
+
+            <!-- 今日温度 -->
+            <view class="temp-range">
+              <text class="temp-low">{{item.weatherData.min_temp || '--'}}°</text>
+              <text class="temp-divider">/</text>
+              <text class="temp-high">{{item.weatherData.max_temp || '--'}}°</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 天气详情网格 -->
+        <view class="detail-grid">
+          <view class="detail-card">
+            <text class="detail-icon">💧</text>
+            <text class="detail-label">湿度</text>
+            <text class="detail-value">{{item.weatherData.humidity || '--'}}%</text>
+          </view>
+          <view class="detail-card">
+            <text class="detail-icon">💨</text>
+            <text class="detail-label">风力</text>
+            <text class="detail-value">{{item.weatherData.wind_scale || '--'}}级</text>
+          </view>
+          <view class="detail-card">
+            <text class="detail-icon">🧭</text>
+            <text class="detail-label">风向</text>
+            <text class="detail-value">{{item.weatherData.wind_dir || '--'}}</text>
+          </view>
+          <view class="detail-card">
+            <text class="detail-icon">🌡️</text>
+            <text class="detail-label">气压</text>
+            <text class="detail-value">{{item.weatherData.pressure || '--'}} hPa</text>
+          </view>
+        </view>
+
+        <!-- 日出日落 -->
+        <view class="sun-section" wx:if="{{item.weatherData.forecast && item.weatherData.forecast[0]}}">
+          <view class="sun-item">
+            <text class="sun-icon">🌅</text>
+            <text class="sun-label">日出</text>
+            <text class="sun-value">{{item.weatherData.forecast[0].sunrise}}</text>
+          </view>
+          <view class="sun-item">
+            <text class="sun-icon">🌇</text>
+            <text class="sun-label">日落</text>
+            <text class="sun-value">{{item.weatherData.forecast[0].sunset}}</text>
+          </view>
+        </view>
+
+        <!-- 空气质量 -->
+        <view class="air-section" wx:if="{{item.weatherData.air}}">
+          <view class="air-header">
+            <text class="air-title">🌬️ 空气质量</text>
+            <text class="air-aqi">AQI {{item.weatherData.air.aqi}}</text>
+          </view>
+          <view class="air-info">
+            <text class="air-category {{item.weatherData.air.categoryClass}}">{{item.weatherData.air.category}}</text>
+            <view class="air-detail" wx:if="{{item.weatherData.air.pm25}}">
+              <text>PM2.5: {{item.weatherData.air.pm25}}</text>
+              <text>PM10: {{item.weatherData.air.pm10}}</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 温度曲线 -->
+        <view class="temp-chart-section" wx:if="{{item.weatherData.hourly && item.weatherData.hourly.length > 0}}">
+          <view class="temp-chart-header">
+            <text class="temp-chart-title">🌡️ 温度趋势</text>
+          </view>
+          <view class="temp-chart">
+            <view class="temp-chart-bars">
+              <view class="temp-bar-wrap" wx:for="{{item.weatherData.hourly}}" wx:key="time" wx:if="{{index < 24 && index % 2 === 0}}">
+                <view class="temp-bar {{item.temp > 20 ? 'warm' : 'cool'}}" style="height: {{(item.temp + 10) * 3}}rpx"></view>
+                <text class="temp-bar-label">{{item.temp}}°</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 逐小时预报 -->
+        <view class="hourly-section" wx:if="{{item.weatherData.hourly && item.weatherData.hourly.length > 0}}">
+          <view class="hourly-header">
+            <text class="hourly-title">🕐 逐小时</text>
+          </view>
+          <scroll-view class="hourly-scroll" scroll-x="true">
+            <view class="hourly-list">
+              <view class="hourly-item" wx:for="{{item.weatherData.hourly}}" wx:key="time" wx:if="{{index < 24}}">
+                <text class="hourly-time">{{item.time.substring(11, 16)}}</text>
+                <text class="hourly-temp">{{item.temp}}°</text>
+                <text class="hourly-weather">{{item.weather}}</text>
+                <text class="hourly-pop" wx:if="{{item.pop > 0}}">{{item.pop}}%</text>
+              </view>
+            </view>
+          </scroll-view>
+        </view>
+
+        <!-- 3日预报 -->
+        <view class="forecast-section" wx:if="{{item.weatherData.forecast && item.weatherData.forecast.length > 0}}">
+          <view class="forecast-header">
+            <text class="forecast-title">📅 3日预报</text>
+          </view>
+          <view class="forecast-list">
+            <view class="forecast-item" wx:for="{{item.weatherData.forecast}}" wx:key="date" wx:for-item="day">
+              <text class="forecast-date">{{index === 0 ? '今天' : index === 1 ? '明天' : '后天'}}</text>
+              <text class="forecast-weather">{{day.weather_day}}</text>
+              <text class="forecast-temp">{{day.temp_min}}° ~ {{day.temp_max}}°</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 生活指数 -->
+        <view class="indices-section" wx:if="{{item.indices}}">
+          <view class="indices-header">
+            <text class="indices-title">💡 生活指数</text>
+          </view>
+          <view class="indices-grid">
+            <view class="indices-item" wx:if="{{item.indices.uv}}">
+              <text class="indices-icon">☀️</text>
+              <text class="indices-label">紫外线</text>
+              <text class="indices-value">{{item.indices.uv.category}}</text>
+            </view>
+            <view class="indices-item" wx:if="{{item.indices.dressing}}">
+              <text class="indices-icon">👔</text>
+              <text class="indices-label">穿衣</text>
+              <text class="indices-value">{{item.indices.dressing.category}}</text>
+            </view>
+            <view class="indices-item" wx:if="{{item.indices.car_wash}}">
+              <text class="indices-icon">🚗</text>
+              <text class="indices-label">洗车</text>
+              <text class="indices-value">{{item.indices.car_wash.category}}</text>
+            </view>
+            <view class="indices-item" wx:if="{{item.indices.sport}}">
+              <text class="indices-icon">⚽</text>
+              <text class="indices-label">运动</text>
+              <text class="indices-value">{{item.indices.sport.category}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </swiper-item>
+  </swiper>
+
+  <!-- 城市指示器 -->
+  <view class="city-indicator" wx:if="{{cities.length > 1}}">
+    <text class="indicator-text">{{currentCityIndex + 1}} / {{cities.length}}</text>
+  </view>
+
+  <!-- 更新时间 -->
+  <view class="update-info">
+    <text class="update-text">最后更新 · {{updateTime || '--:--'}}</text>
   </view>
 
   <!-- 订阅按钮 -->
-  <button class="subscribe-btn" bindtap="onSubscribe">
-    订阅该城市天气
-  </button>
+  <view class="action-area">
+    <button class="btn btn-subscribe" style="background: {{themeColor}};" bindtap="onSubscribe">
+      <text class="btn-icon">🔔</text>
+      <text>订阅每日天气</text>
+    </button>
+    <button class="btn btn-share" open-type="share">
+      <text class="btn-icon">📤</text>
+      <text>分享天气</text>
+    </button>
+  </view>
 </view>

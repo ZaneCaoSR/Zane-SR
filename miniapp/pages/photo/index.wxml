@@ -29,40 +29,33 @@
         <text>{{formatDate(photo.shotDate || photo._createTime)}}</text>
       </view>
 
-      <!-- AI 识别结果 -->
-      <view class="ai-section" wx:if="{{photo.aiResult}}">
+      <!-- AI 识别结果 / 标签 -->
+      <view class="ai-section">
         <view class="section-title">
-          <text class="icon">🤖</text>
-          <text>AI 识别结果</text>
+          <text class="icon">🏷️</text>
+          <text>标签</text>
+          <text class="edit-btn" bindtap="analyzePhoto" wx:if="{{!photo.tags || photo.tags.length === 0}}">
+            {{isAnalyzing ? '分析中...' : '+ AI 分析'}}
+          </text>
+          <text class="edit-btn" bindtap="showAddTagModal" wx:else>+ 添加</text>
         </view>
-        
-        <!-- 表情标签 -->
-        <view class="tag-group" wx:if="{{photo.aiResult.expressions && photo.aiResult.expressions.length > 0}}">
-          <text class="group-label">表情:</text>
-          <view class="tags">
-            <block wx:for="{{photo.aiResult.expressions}}" wx:key="*this">
-              <text class="tag expression">{{item}}</text>
-            </block>
+
+        <!-- 标签展示 -->
+        <view class="tags-display" wx:if="{{photo.tags && photo.tags.length > 0}}">
+          <view
+            class="tag-item"
+            wx:for="{{photo.tags}}"
+            wx:key="index"
+            style="background: {{getTagColor(item.type)}};"
+          >
+            <text class="tag-text">{{item.value}}</text>
+            <text class="tag-remove" bindtap="removeTag" data-index="{{index}}">×</text>
           </view>
         </view>
 
-        <!-- 动作标签 -->
-        <view class="tag-group" wx:if="{{photo.aiResult.actions && photo.aiResult.actions.length > 0}}">
-          <text class="group-label">动作:</text>
-          <view class="tags">
-            <block wx:for="{{photo.aiResult.actions}}" wx:key="*this">
-              <text class="tag action">{{item}}</text>
-            </block>
-          </view>
-        </view>
-
-        <!-- AI 描述 -->
-        <view class="ai-description" wx:if="{{photo.aiResult.description}}">
-          <text class="group-label">AI 描述:</text>
-          <view class="description-content">
-            <text>{{photo.aiResult.description}}</text>
-            <text class="copy-btn" bindtap="copyDescription">复制</text>
-          </view>
+        <!-- 空状态 -->
+        <view class="tags-empty" wx:if="{{!photo.tags || photo.tags.length === 0}}">
+          <text>暂无标签，点击上方按钮添加</text>
         </view>
       </view>
 
@@ -116,6 +109,45 @@
       <view class="modal-actions">
         <button bindtap="hideDeleteModal">取消</button>
         <button class="delete-btn" bindtap="deletePhoto">删除</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 添加标签弹窗 -->
+  <view class="tag-modal" wx:if="{{showTagModal}}">
+    <view class="modal-mask" bindtap="hideTagModal"></view>
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">添加标签</text>
+        <text class="modal-close" bindtap="hideTagModal">×</text>
+      </view>
+
+      <picker range="{{tagTypes}}" range-key="label" bindchange="onTagTypeChange">
+        <view class="picker-selected">
+          <text>类型: {{tagTypes[newTag.type === 'emotion' ? 0 : newTag.type === 'action' ? 1 : newTag.type === 'milestone' ? 2 : newTag.type === 'scene' ? 3 : 4].label}}</text>
+        </view>
+      </picker>
+
+      <view class="tag-values">
+        <view
+          class="tag-value-item"
+          wx:for="{{tagTypes[newTag.type === 'emotion' ? 0 : newTag.type === 'action' ? 1 : newTag.type === 'milestone' ? 2 : newTag.type === 'scene' ? 3 : 4].values}}"
+          wx:key="*this"
+          bindtap="onTagValueTap"
+          data-value="{{item}}"
+        >
+          <text>{{item}}</text>
+        </view>
+      </view>
+
+      <view class="custom-tag">
+        <input
+          class="custom-input"
+          placeholder="或输入自定义标签"
+          value="{{newTag.value}}"
+          bindinput="onCustomTagInput"
+        />
+        <button size="mini" type="primary" bindtap="addTag">添加</button>
       </view>
     </view>
   </view>

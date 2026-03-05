@@ -1,6 +1,6 @@
 /**
  * city-select.js - 城市选择页面逻辑
- * 功能：搜索城市、选择城市、添加到订阅列表
+ * 功能：搜索城市、选择城市、添加到订阅列表（支持多城市）
  */
 const { request } = require('../../utils/request')
 const app = getApp()
@@ -37,6 +37,7 @@ Page({
     hotCities: hotCities,   // 热门城市
     commonCities: [],       // 最近使用的城市
     subscribedCities: [],   // 已订阅的城市
+    themeColor: '#FF6B9D'
   },
 
   onLoad() {
@@ -47,6 +48,15 @@ Page({
   },
 
   onShow() {
+    // 应用主题颜色
+    const themeColor = wx.getStorageSync('themeColor') || '#FF6B9D';
+    this.setData({ themeColor });
+    wx.setNavigationBarColor({
+      frontColor: '#ffffff',
+      backgroundColor: themeColor,
+      animation: { duration: 300, timingFunc: 'easeInOut' }
+    });
+
     // 每次显示时刷新订阅状态
     this.loadSubscribedCities()
   },
@@ -70,16 +80,13 @@ Page({
       return
     }
     try {
-      // 调用后端获取订阅状态（兼容：单个订阅）
-      const res = await request(`/api/subscriber/${openid}`)
-      const cities = []
-      if (res.subscribed && res.city) {
-        cities.push({
-          city: res.city,
-          push_time: '08:00'
-        })
+      // 调用后端获取订阅状态
+      const res = await request(`/api/subscribed-cities?openid=${openid}`)
+      if (res.subscribed && res.cities) {
+        this.setData({ subscribedCities: res.cities })
+      } else {
+        this.setData({ subscribedCities: [] })
       }
-      this.setData({ subscribedCities: cities })
     } catch (err) {
       console.error('[CitySelect] 加载订阅列表失败:', err)
       this.setData({ subscribedCities: [] })
@@ -92,7 +99,7 @@ Page({
   onSearchInput(e) {
     const value = e.detail.value
     this.setData({ searchKey: value })
-    
+
     if (value) {
       this.doSearch(value)
     } else {
@@ -112,7 +119,7 @@ Page({
    */
   async doSearch(key) {
     if (!key.trim()) return
-    
+
     this.setData({ searchLoading: true })
     try {
       // 调用后端城市搜索接口
@@ -120,7 +127,7 @@ Page({
       this.setData({ searchResult: res.cities || [] })
     } catch (err) {
       // 搜索失败时使用本地过滤
-      const filtered = hotCities.filter(c => 
+      const filtered = hotCities.filter(c =>
         c.name.includes(key) || c.province.includes(key)
       )
       this.setData({ searchResult: filtered })
@@ -130,22 +137,21 @@ Page({
   },
 
   /**
-   * 选择城市 - 跳转到天气详情页
+   * 选择城市 - 跳转到天气首页并切换城市
    */
   onSelectCity(e) {
     const city = e.currentTarget.dataset.city
     const cityName = city.name || city.city
-    
+
     // 保存到常用城市缓存
     this.saveCommonCity(cityName)
-    
+
     // 保存到全局数据
-    const app = getApp();
     app.globalData.userCity = cityName;
-    
-    // 跳转到天气详情页
-    wx.navigateTo({
-      url: `/pages/weather-detail/weather-detail?city=${encodeURIComponent(cityName)}`
+
+    // 跳转到天气首页
+    wx.switchTab({
+      url: '/pages/weather/index'
     })
   },
 
@@ -165,12 +171,12 @@ Page({
   },
 
   /**
-   * 添加到订阅列表
+   * 添加到订阅列表（多城市）
    */
   async onAddToSubscribe(e) {
     const city = e.currentTarget.dataset.city
     const cityName = city.name || city.city
-    
+
     const openid = app.globalData.openid
     if (!openid) {
       wx.showToast({ title: '请先登录', icon: 'none' })
@@ -184,16 +190,57 @@ Page({
       return
     }
 
+    // 预设推送时间选项
+    const timeOptions = ['06:00', '07:00', '08:00', '09:00', '10:00', '12:00', '18:00', '20:00']
+    const timeLabels = ['早上 6点', '早上 7点', '早上 8点', '早上 9点', '上午 10点', '中午 12点', '傍晚 6点', '晚上 8点']
+
+    // 显示时间选择器
+    wx.showActionSheet({
+      itemList: timeLabels,
+      success: (res) => {
+        const selectedTime = timeOptions[res.tapIndex]
+        this.doSubscribeCity(cityName, selectedTime)
+      },
+      fail: () => {
+        // 用户取消，不做任何操作
+      }
+    })
+  },
+
+  /**
+   * 执行订阅城市
+   */
+  async doSubscribeCity(cityName, pushTime) {
+    const openid = app.globalData.openid
     wx.showLoading({ title: '订阅中...' })
     try {
-      const res = await request('/api/subscribe', 'POST', {
-        openid,
+      // 获取当前订阅的城市列表
+      const currentCities = this.data.subscribedCities.map(c => ({
+        city: c.city,
+        cityId: c.cityId || null,
+        pushTime: c.pushTime || '08:00',
+        isActive: true
+      }))
+
+      // 添加新城市
+      currentCities.push({
         city: cityName,
+        pushTime: pushTime,
+        isActive: true
       })
-      wx.showToast({ title: '订阅成功', icon: 'success' })
-      
-      // 更新订阅列表
-      this.loadSubscribedCities()
+
+      const res = await request('/api/subscribe-multiple', 'POST', {
+        openid,
+        cities: currentCities
+      })
+
+      if (res.success) {
+        wx.showToast({ title: '订阅成功', icon: 'success' })
+        // 更新订阅列表
+        this.loadSubscribedCities()
+      } else {
+        wx.showToast({ title: res.message || '订阅失败', icon: 'error' })
+      }
     } catch (err) {
       wx.showToast({ title: '订阅失败', icon: 'error' })
     } finally {
@@ -202,11 +249,85 @@ Page({
   },
 
   /**
-   * 取消订阅
+   * 长按城市显示操作菜单
+   */
+  onCityLongPress(e) {
+    const index = e.currentTarget.dataset.index
+    const city = this.data.subscribedCities[index]
+
+    const options = ['修改推送时间', '删除该城市']
+
+    wx.showActionSheet({
+      itemList: options,
+      success: (res) => {
+        if (res.tapIndex === 0) {
+          // 修改推送时间
+          this.onEditPushTime(index, city)
+        } else if (res.tapIndex === 1) {
+          // 删除城市
+          this.onRemoveSubscribe({ currentTarget: { dataset: { city: city.city } } })
+        }
+      }
+    })
+  },
+
+  /**
+   * 修改推送时间
+   */
+  onEditPushTime(index, city) {
+    const timeOptions = ['06:00', '07:00', '08:00', '09:00', '10:00', '12:00', '18:00', '20:00']
+    const timeLabels = ['早上 6点', '早上 7点', '早上 8点', '早上 9点', '上午 10点', '中午 12点', '傍晚 6点', '晚上 8点']
+
+    wx.showActionSheet({
+      itemList: timeLabels,
+      success: (res) => {
+        const selectedTime = timeOptions[res.tapIndex]
+        this.doUpdatePushTime(index, city.city, selectedTime)
+      }
+    })
+  },
+
+  /**
+   * 执行修改推送时间
+   */
+  async doUpdatePushTime(index, cityName, pushTime) {
+    const openid = app.globalData.openid
+    if (!openid) return
+
+    wx.showLoading({ title: '更新中...' })
+
+    try {
+      const currentCities = this.data.subscribedCities.map((c, i) => ({
+        city: c.city,
+        cityId: c.cityId || null,
+        pushTime: i === index ? pushTime : (c.pushTime || '08:00'),
+        isActive: true
+      }))
+
+      const res = await request('/api/subscribe-multiple', 'POST', {
+        openid,
+        cities: currentCities
+      })
+
+      if (res.success) {
+        wx.showToast({ title: '更新时间成功', icon: 'success' })
+        this.loadSubscribedCities()
+      } else {
+        wx.showToast({ title: res.message || '更新失败', icon: 'error' })
+      }
+    } catch (err) {
+      wx.showToast({ title: '更新失败', icon: 'error' })
+    } finally {
+      wx.hideLoading()
+    }
+  },
+
+  /**
+   * 取消订阅（单个城市）
    */
   async onRemoveSubscribe(e) {
     const cityName = e.currentTarget.dataset.city
-    
+
     const confirmed = await new Promise((resolve) => {
       wx.showModal({
         title: '确认取消',
@@ -220,9 +341,9 @@ Page({
     if (!openid) return
 
     try {
-      await request('/api/unsubscribe', 'POST', { 
+      await request('/api/unsubscribe-city', 'POST', {
         openid,
-        city: cityName 
+        city: cityName
       })
       wx.showToast({ title: '已取消订阅', icon: 'success' })
       this.loadSubscribedCities()

@@ -12,6 +12,7 @@ Page({
     showTimePicker: false, // 时间选择器显示状态
     currentCity: '',       // 当前编辑的城市
     pushTime: '08:00',     // 推送时间
+    themeColor: '#FF6B9D'
   },
 
   onLoad() {
@@ -19,6 +20,15 @@ Page({
   },
 
   onShow() {
+    // 应用主题颜色
+    const themeColor = wx.getStorageSync('themeColor') || '#FF6B9D';
+    this.setData({ themeColor });
+    wx.setNavigationBarColor({
+      frontColor: '#ffffff',
+      backgroundColor: themeColor,
+      animation: { duration: 300, timingFunc: 'easeInOut' }
+    });
+
     this.loadSubscriptions()
   },
 

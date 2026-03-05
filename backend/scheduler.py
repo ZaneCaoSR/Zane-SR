@@ -1,10 +1,11 @@
 """
 scheduler.py - 定时推送任务
 使用 APScheduler AsyncIOScheduler，每天定时向所有订阅用户推送天气
+支持多城市订阅推送
 """
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
-from database import get_all_subscribers
+from database import get_all_subscribers, get_cities
 from weather import get_weather
 from wechat import send_weather_message
 from config import PUSH_HOUR, PUSH_MINUTE, LOG_PATH
@@ -21,6 +22,7 @@ scheduler = AsyncIOScheduler()
 async def push_daily_weather():
     """
     每日天气推送任务：拉取所有订阅者，逐一推送天气消息
+    支持多城市订阅推送
     失败用户加入重试队列
     """
     subscribers = get_all_subscribers()
@@ -30,27 +32,43 @@ async def push_daily_weather():
 
     logger.info(f"[Scheduler] 开始推送，共 {len(subscribers)} 名用户")
     success_count = 0
+    total_cities = 0
 
     for user in subscribers:
         openid = user["openid"]
-        city = user["city"]
 
-        # 获取天气数据
-        weather = await get_weather(city)
-        if not weather:
-            logger.warning(f"[Scheduler] 获取 {city} 天气失败，跳过 {openid}")
-            add_to_retry_queue(openid, city, "获取天气失败")
-            continue
+        # 获取用户订阅的多城市列表
+        cities = get_cities(openid)
 
-        # 发送订阅消息
-        ok = await send_weather_message(openid, weather)
-        if ok:
-            success_count += 1
-        else:
-            add_to_retry_queue(openid, city, "推送失败")
+        # 兼容旧数据：如果没有多城市数据，使用旧的 city 字段
+        if not cities:
+            city = user.get("city", "杭州")
+            cities = [{"city": city, "isActive": True}]
 
-    logger.info(f"[Scheduler] 推送完成：{success_count}/{len(subscribers)} 成功")
-    await check_and_alert(len(subscribers), success_count)
+        for city_info in cities:
+            # 只推送激活的城市
+            if not city_info.get("isActive", True):
+                continue
+
+            city = city_info.get("city", "杭州")
+            total_cities += 1
+
+            # 获取天气数据
+            weather = await get_weather(city)
+            if not weather:
+                logger.warning(f"[Scheduler] 获取 {city} 天气失败，跳过 {openid}")
+                add_to_retry_queue(openid, city, "获取天气失败")
+                continue
+
+            # 发送订阅消息
+            ok = await send_weather_message(openid, weather)
+            if ok:
+                success_count += 1
+            else:
+                add_to_retry_queue(openid, city, "推送失败")
+
+    logger.info(f"[Scheduler] 推送完成：{success_count}/{total_cities} 成功")
+    await check_and_alert(total_cities, success_count)
 
 
 def start_scheduler():

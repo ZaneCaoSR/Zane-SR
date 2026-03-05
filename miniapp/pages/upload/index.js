@@ -11,19 +11,31 @@ Page({
     isAnalyzing: false,
     analyzeProgress: 0,
     uploadComplete: false,
-    uploadedIds: []
+    uploadedIds: [],
+    themeColor: '#FF6B9D'
   },
 
   onLoad(options) {
     const type = options.type || 'camera';
     this.setData({ uploadType: type });
-    
+
     // 自动触发对应类型的选图
     if (type === 'camera') {
       this.takePhoto();
     } else {
       this.chooseFromAlbum();
     }
+  },
+
+  onShow() {
+    // 应用主题颜色
+    const themeColor = wx.getStorageSync('themeColor') || '#FF6B9D';
+    this.setData({ themeColor });
+    wx.setNavigationBarColor({
+      frontColor: '#ffffff',
+      backgroundColor: themeColor,
+      animation: { duration: 300, timingFunc: 'easeInOut' }
+    });
   },
 
   // 拍照

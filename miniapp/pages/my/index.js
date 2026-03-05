@@ -5,49 +5,99 @@ Page({
   data: {
     isLoggedIn: false,
     userInfo: {},
-    themeColor: '#FF6B9D',
-    themeColorDark: '#FF9ECA',
+    babyInfo: null,
+    themeColor: '#E8A87C',
+    themeColorDark: '#C38D6B',
     showThemeModal: false,
     customColor: '#FF6B9D',
+    aiModel: 'GPT-4o mini',
+    aiModelOptions: [
+      { id: 'gpt-4o-mini', name: 'GPT-4o mini', desc: '快速、免费' },
+      { id: 'gpt-4o', name: 'GPT-4o', desc: '更智能' },
+      { id: 'claude-3', name: 'Claude 3', desc: 'Claude 最新模型' },
+      { id: 'gemini', name: 'Gemini Pro', desc: 'Google 模型' }
+    ],
     colorOptions: [
-      { color: '#FF6B9D', colorDark: '#FF9ECA', name: '粉红' },
-      { color: '#4A90E2', colorDark: '#67B8DE', name: '蓝色' },
-      { color: '#52C41A', colorDark: '#95DE64', name: '绿色' },
-      { color: '#FAAD14', colorDark: '#FFC53D', name: '橙色' },
-      { color: '#F5222D', colorDark: '#FF7875', name: '红色' },
-      { color: '#722ED1', colorDark: '#9254DE', name: '紫色' },
-      { color: '#13C2C2', colorDark: '#36CFC9', name: '青色' },
-      { color: '#2F54EB', colorDark: '#597EF7', name: '深蓝' },
-      { color: '#EB2F96', colorDark: '#FF85C0', name: '玫红' },
-      { color: '#FA541C', colorDark: '#FF7A45', name: '橘红' },
-      { color: '#435444', colorDark: '#738A76', name: '墨绿' },
-      { color: '#722ED1', colorDark: '#B37FEB', name: '淡紫' },
+      { color: '#E8A87C', colorDark: '#C38D6B', name: '杏色' },
+      { color: '#FFCDB2', colorDark: '#FFB5A7', name: '蜜桃' },
+      { color: '#95B8A0', colorDark: '#7BA085', name: '薄荷' },
+      { color: '#A8C0D8', colorDark: '#8FAABE', name: '雾蓝' },
+      { color: '#E8C07D', colorDark: '#D4A968', name: '奶油' },
+      { color: '#D4847C', colorDark: '#C06C6C', name: '玫瑰' },
+      { color: '#B8AFA4', colorDark: '#9E968B', name: '奶茶' },
+      { color: '#7BA3C9', colorDark: '#5E8AB4', name: '天蓝' },
     ]
   },
 
   onLoad() {
     // 读取本地存储的用户信息
     const userInfo = wx.getStorageSync('userInfo') || {};
-    const themeColor = wx.getStorageSync('themeColor') || '#FF6B9D';
-    const themeColorDark = wx.getStorageSync('themeColorDark') || '#FF9ECA';
-    
+    const themeColor = wx.getStorageSync('themeColor') || '#E8A87C';
+    const themeColorDark = wx.getStorageSync('themeColorDark') || '#C38D6B';
+    const aiModel = wx.getStorageSync('aiModel') || 'GPT-4o mini';
+
     this.setData({
       userInfo,
       themeColor,
       themeColorDark,
+      aiModel,
       isLoggedIn: !!userInfo.openid
     });
+
+    // 加载宝宝信息
+    this.loadBabyInfo();
   },
 
-  // 登录
+  onShow() {
+    // 应用主题颜色
+    const themeColor = wx.getStorageSync('themeColor') || this.data.themeColor;
+    const themeColorDark = wx.getStorageSync('themeColorDark') || this.data.themeColorDark;
+    this.setData({ themeColor, themeColorDark });
+    wx.setNavigationBarColor({
+      frontColor: '#ffffff',
+      backgroundColor: themeColor,
+      animation: { duration: 300, timingFunc: 'easeInOut' }
+    });
+
+    // 更新自定义 tabBar 颜色和选中态
+    if (typeof this.getTabBar === 'function') {
+      const tabBar = this.getTabBar();
+      if (tabBar) {
+        tabBar.setData({ selectedColor: themeColor, selected: 2 });
+      }
+    }
+
+    // 每次显示时刷新宝宝信息
+    this.loadBabyInfo();
+  },
+
+  // 加载宝宝信息（从本地存储）
+  loadBabyInfo() {
+    // 从本地存储获取宝宝信息
+    const babyInfo = wx.getStorageSync('babyInfo');
+    if (babyInfo) {
+      this.setData({ babyInfo });
+    }
+  },
+
+  // 保存宝宝信息（到本地存储）
+  saveBabyInfo(babyInfo) {
+    wx.setStorageSync('babyInfo', babyInfo);
+    this.setData({ babyInfo });
+  },
+
+  // 登录 - 获取微信用户信息
   onLogin() {
     const that = this;
-    
+
+    // 先检查是否授权
     wx.getUserProfile({
       desc: '用于完善用户资料',
       success: (res) => {
         const userInfo = res.userInfo;
-        
+        console.log('[My] 获取用户信息成功:', userInfo);
+
+        // 获取 openid
         wx.login({
           success: (loginRes) => {
             wx.request({
@@ -55,32 +105,42 @@ Page({
               method: 'POST',
               data: { code: loginRes.code },
               success: (apiRes) => {
+                console.log('[My] 登录API返回:', apiRes.data);
                 if (apiRes.data && apiRes.data.openid) {
                   userInfo.openid = apiRes.data.openid;
                   wx.setStorageSync('userInfo', userInfo);
-                  
+
                   const app = getApp();
                   app.globalData.openid = userInfo.openid;
-                  
+                  app.globalData.userInfo = userInfo;
+
                   that.setData({ userInfo, isLoggedIn: true });
                   wx.showToast({ title: '登录成功', icon: 'success' });
                 }
               },
-              fail: () => {
-                const mockUserInfo = { nickName: '测试用户', avatarUrl: '', openid: 'mock_' + Date.now() };
-                wx.setStorageSync('userInfo', mockUserInfo);
-                that.setData({ userInfo: mockUserInfo, isLoggedIn: true });
-                wx.showToast({ title: '登录成功', icon: 'success' });
+              fail: (err) => {
+                console.error('[My] 登录API失败:', err);
+                // API 失败也保存用户信息，openid 后面再获取
+                userInfo.openid = 'temp_' + Date.now();
+                wx.setStorageSync('userInfo', userInfo);
+                that.setData({ userInfo, isLoggedIn: true });
+                wx.showToast({ title: '已获取用户信息', icon: 'success' });
               }
             });
+          },
+          fail: (err) => {
+            console.error('[My] wx.login失败:', err);
+            wx.showToast({ title: '登录失败', icon: 'none' });
           }
         });
       },
-      fail: () => {
-        const mockUserInfo = { nickName: '测试用户', avatarUrl: '', openid: 'mock_' + Date.now() };
-        wx.setStorageSync('userInfo', mockUserInfo);
-        this.setData({ userInfo: mockUserInfo, isLoggedIn: true });
-        wx.showToast({ title: '登录成功', icon: 'success' });
+      fail: (err) => {
+        console.log('[My] 用户拒绝授权:', err);
+        wx.showModal({
+          title: '提示',
+          content: '需要授权才能使用完整功能',
+          showCancel: false
+        });
       }
     });
   },
@@ -95,6 +155,25 @@ Page({
   // 主题颜色切换
   onThemeChange() {
     this.setData({ showThemeModal: true });
+  },
+
+  // AI 模型选择
+  onAIModelChange() {
+    const { aiModelOptions, aiModel } = this.data;
+    const modelNames = aiModelOptions.map(m => m.name);
+
+    wx.showActionSheet({
+      itemList: modelNames,
+      success: (res) => {
+        const selectedModel = aiModelOptions[res.tapIndex];
+        this.setData({ aiModel: selectedModel.name });
+        wx.setStorageSync('aiModel', selectedModel.name);
+        wx.showToast({
+          title: `已切换到 ${selectedModel.name}`,
+          icon: 'success'
+        });
+      }
+    });
   },
 
   // 关闭主题弹窗
@@ -142,5 +221,31 @@ Page({
       content: 'Zane-SR 宝宝成长相册\n\n记录宝宝成长的美好瞬间',
       showCancel: false
     });
+  },
+
+  // 跳转到设置页面
+  goToSettings() {
+    wx.navigateTo({
+      url: '/pages/settings/index'
+    });
+  },
+
+  // 计算宝宝月龄
+  getBabyAge(birthDate) {
+    if (!birthDate) return '';
+
+    const birth = new Date(birthDate);
+    const now = new Date();
+    const months = (now.getFullYear() - birth.getFullYear()) * 12 + (now.getMonth() - birth.getMonth());
+
+    if (months < 0) return '还未出生';
+    if (months === 0) return '新生儿';
+    if (months === 1) return '1个月';
+    if (months < 12) return `${months}个月`;
+
+    const years = Math.floor(months / 12);
+    const remainingMonths = months % 12;
+    if (remainingMonths === 0) return `${years}岁`;
+    return `${years}岁${remainingMonths}个月`;
   }
 });
