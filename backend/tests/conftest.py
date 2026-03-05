@@ -18,6 +18,10 @@ os.environ["QWEATHER_API_KEY"] = "test_qweather_key"
 os.environ["QWEATHER_KID"] = "test_kid"
 os.environ["QWEATHER_SUB"] = "test_sub"
 os.environ["LOG_PATH"] = "/tmp/test_weather.log"
+# file storage paths (avoid writing to /root in CI)
+os.environ["WEATHER_MINI_ROOT"] = "/tmp/weather-mini-test"
+os.environ["PHOTOS_DIR"] = "/tmp/weather-mini-test/photos"
+os.environ["PHOTOS_DB"] = "/tmp/weather-mini-test/data/photos.json"
 
 # 将 backend 目录加入 Python 路径
 backend_dir = Path(__file__).parent.parent
@@ -29,6 +33,8 @@ def setup_test_env():
     """每个测试前后设置和清理环境"""
     # 确保临时目录存在
     os.makedirs("/tmp", exist_ok=True)
+    os.makedirs(os.environ["PHOTOS_DIR"], exist_ok=True)
+    os.makedirs(str(Path(os.environ["PHOTOS_DB"]).parent), exist_ok=True)
     
     # 清理旧的测试数据库
     if os.path.exists("/tmp/test_weather.db"):

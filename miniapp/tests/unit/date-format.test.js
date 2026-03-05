@@ -12,8 +12,9 @@ describe('utils/date-format', () => {
   });
 
   test('format() should support time tokens', () => {
-    // Use an explicit +08:00 offset to avoid env timezone differences
-    const d = new Date('2026-03-05T01:02:03+08:00');
+    // Construct a *local time* Date so the expectation is stable across CI runners
+    // regardless of their timezone.
+    const d = new Date(2026, 2, 5, 1, 2, 3); // 2026-03-05 01:02:03 (local)
     expect(DateFormat.format(d, 'YYYY-MM-DD HH:mm:ss')).toBe('2026-03-05 01:02:03');
   });
 
