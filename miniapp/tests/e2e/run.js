@@ -27,15 +27,15 @@ async function main() {
   });
 
   try {
-    const page = await miniProgram.reLaunch('/pages/index/index');
-    await page.waitFor(1000);
+    // app.json first page
+    const page = await miniProgram.reLaunch('/pages/album/index');
+    await page.waitFor(1500);
 
-    // TODO: replace with real selectors/assertions.
-    // Example:
-    // const title = await page.$('.title');
-    // expect(await title.text()).toContain('xxx');
+    // Minimal smoke checks: page is loaded and we can query body.
+    const body = await page.$('page');
+    if (!body) throw new Error('Page did not render: /pages/album/index');
 
-    console.log('[e2e] smoke ok');
+    console.log('[e2e] smoke ok: /pages/album/index');
   } finally {
     await miniProgram.close();
   }
