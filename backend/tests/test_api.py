@@ -46,12 +46,15 @@ class TestSubscribeAPI:
         assert response.status_code == 422  # Pydantic 验证失败
 
     def test_subscribe_empty_openid(self, client, test_db):
-        """测试空 openid 的请求"""
+        """测试空 openid 的请求
+
+        FastAPI/Pydantic 会将空字符串视为字段校验失败（422）。
+        """
         response = client.post("/api/subscribe", json={
             "openid": "",
             "city": "杭州"
         })
-        assert response.status_code == 400
+        assert response.status_code == 422
 
 
 class TestUnsubscribeAPI:
