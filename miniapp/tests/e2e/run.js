@@ -5,8 +5,11 @@
  * The DevTools path and project path should be configured via env vars.
  *
  * Required env:
- *   WECHAT_DEVTOOLS_PATH   - path to cli.bat (or the devtools install dir)
  *   MINIPROGRAM_PROJECT_PATH - absolute path to the miniapp project
+ *
+ * Optional env:
+ *   WECHAT_DEVTOOLS_CLI - absolute path to WeChat DevTools `cli.bat`
+ *     Example: D:\\微信web开发者工具\\cli.bat
  */
 
 const automator = require('miniprogram-automator');
@@ -17,13 +20,11 @@ async function main() {
     throw new Error('Missing env MINIPROGRAM_PROJECT_PATH');
   }
 
-  // miniprogram-automator will auto-detect devtools in many cases on Windows/macOS.
-  // If your setup needs explicit config, extend this file accordingly.
+  const cliPath = process.env.WECHAT_DEVTOOLS_CLI;
 
   const miniProgram = await automator.launch({
     projectPath,
-    // headless: false,
-    // cliPath: process.env.WECHAT_DEVTOOLS_PATH,
+    ...(cliPath ? { cliPath } : {})
   });
 
   try {
