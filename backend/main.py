@@ -303,11 +303,17 @@ from fastapi import UploadFile, File
 from fastapi.responses import FileResponse
 
 # 照片存储目录
-PHOTOS_DIR = Path("/root/projects/weather-mini/photos")
-PHOTOS_DIR.mkdir(exist_ok=True)
+# NOTE: allow overriding storage paths in CI/tests via env vars.
+# Default keeps the original production path.
+DEFAULT_PROJECT_ROOT = Path("/root/projects/weather-mini")
+PROJECT_ROOT = Path(os.getenv("WEATHER_MINI_ROOT", str(DEFAULT_PROJECT_ROOT)))
+
+PHOTOS_DIR = Path(os.getenv("PHOTOS_DIR", str(PROJECT_ROOT / "photos")))
+PHOTOS_DIR.mkdir(parents=True, exist_ok=True)
 
 # 照片元数据存储文件
-PHOTOS_DB = Path("/root/projects/weather-mini/data/photos.json")
+PHOTOS_DB = Path(os.getenv("PHOTOS_DB", str(PROJECT_ROOT / "data" / "photos.json")))
+PHOTOS_DB.parent.mkdir(parents=True, exist_ok=True)
 if not PHOTOS_DB.exists():
     PHOTOS_DB.write_text("[]")
 
